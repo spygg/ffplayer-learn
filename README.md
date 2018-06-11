@@ -10,7 +10,7 @@
 
 
 
-* 第一阶段:(基于sdl)*
+*第一阶段:(基于sdl)*
 1. ffmpeg最新版源码 √
 2. video2YUV (从视频到yuv文件) √
 3. yuvplayer(YUV文件播放器) √

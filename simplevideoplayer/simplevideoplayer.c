@@ -19,14 +19,23 @@
 #include "libswresample/swresample.h"
 #include "SDL.h"
 
+int iQuitFlag = 0;
+int iPause = 0;
+
 //#define SCALE_OUTPUT
 #define REFRESH_EVENT  (SDL_USEREVENT + 1)
 
 int updateThread(void *pArg){
 
     while(1){
-        if(*((int*)pArg) == 1)
+        if(iQuitFlag == 1)
             break;
+
+        if(iPause == 1)
+        {
+            SDL_Delay(40);
+            continue;
+        }
 
         SDL_Event event;
         event.type = REFRESH_EVENT;
@@ -108,7 +117,7 @@ int main(int argc, char *argv[]){
     int iWindowWidth = 0;
     int iWindowHeight = 0;
     int iBufferSize = 0;
-    int iQuitFlag = 0;
+
     SDL_Rect rect;
     SDL_Event event;
 
@@ -292,6 +301,11 @@ int main(int argc, char *argv[]){
                     printf("%s\n", "收到退出事件!");
                     iQuitFlag = 1;
                     break;
+                }
+
+
+                if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE){
+                   iPause = !iPause;
                 }
 
                 if(event.type == SDL_WINDOWEVENT){

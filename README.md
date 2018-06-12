@@ -14,7 +14,7 @@
 1. ffmpeg最新版源码 √
 2. video2YUV (从视频到yuv文件) √
 3. yuvplayer(YUV文件播放器) √
-4. simplevideoplayer(视频播放器
+4. simplevideoplayer(视频播放器√
 5. simpleaduioplayer(音频播放器)
 6. player(播放器,同步音频和视频)
 

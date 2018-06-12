@@ -18,6 +18,8 @@
 #include "libavcodec/avfft.h"
 #include "libswresample/swresample.h"
 
+//#define SCALE_OUTPUT
+
 typedef int (*decodeCallBack)(void *pArg);
 
 int callBack(void *pArg){
@@ -67,6 +69,7 @@ int main(int argc, char *argv[]){
 
     int err = 0;
     int iVideoChannel = -1;
+    int iVideoWidth = 0;
     int iPicSize420P = 0;
     AVFormatContext *pFormatContext = NULL;
     AVCodecContext *pCodecContext = NULL;
@@ -134,7 +137,6 @@ int main(int argc, char *argv[]){
         return -1;
     }
 
-
     pCodec = avcodec_find_decoder(pVideoChannelCodecPara->codec_id);
     if(pCodec == NULL){
         printf("%s\n", "avcodec_find_decoder");
@@ -154,22 +156,22 @@ int main(int argc, char *argv[]){
     av_dump_format(pFormatContext, 0, szFileName, 0);
     printf("-------------------------------------------------\n");
 
+#ifdef SCALE_OUTPUT
+
     img_convert_ctx = sws_getContext(pCodecContext->width, pCodecContext->height, pCodecContext->pix_fmt, 
         pCodecContext->width, pCodecContext->height, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL); 
 
-    pFrame = av_frame_alloc();
     pFrameYUV = av_frame_alloc();
+#endif
+
+    pFrame = av_frame_alloc();
     pPacket = av_packet_alloc();
     
-
+#ifdef SCALE_OUTPUT
     //计算一个标准画面的大小
     iPicSize420P = av_image_get_buffer_size(AV_PIX_FMT_YUV420P,  pCodecContext->width, pCodecContext->height, 1);
     out_buffer = (unsigned char *)av_malloc(iPicSize420P);
     
-
-    // int av_image_fill_arrays(uint8_t *dst_data[4], int dst_linesize[4],
-    //                      const uint8_t *src,
-    //                      enum AVPixelFormat pix_fmt, int width, int height, int align);
     av_image_fill_arrays(pFrameYUV->data, 
         pFrameYUV->linesize, 
         out_buffer,
@@ -178,11 +180,7 @@ int main(int argc, char *argv[]){
         pCodecContext->height,
         1
     );
-    // char *pDot = strstr(szFileName, ".");
-    // if(pDot){
-    //     strncpy(szYUVFileName, szFileName, pDot - szFileName);
-    // }
-    // printf("%s\n", szYUVFileName);
+#endif
 
     sprintf(szYUVFileName, "%s_%d_%d.yuv", szFileName, pCodecContext->width, pCodecContext->height);
     fpYUV = fopen(szYUVFileName, "wb");
@@ -205,11 +203,8 @@ int main(int argc, char *argv[]){
             //解码
             while(avcodec_receive_frame(pCodecContext, pFrame) == 0){
                 // printf("%d, %d\n", pFrame->width, pFrame->height);
-
-                // printf("一行宽度: %d, 显示的: %d\n", pFrame->linesize[0], pFrame->display_picture_number);
-
-        
-
+                
+#ifdef SCALE_OUTPUT
                 sws_scale(img_convert_ctx, 
                     (const uint8_t* const*)pFrame->data, 
                     pFrame->linesize, 
@@ -219,9 +214,7 @@ int main(int argc, char *argv[]){
                     pFrameYUV->linesize
                 );  
                       
-                      
-                //RGB  
-               
+                //RGB 
                 if(fpYUV){
                     int y_size = pCodecContext->width * pCodecContext->height;  
                     fwrite(pFrameYUV->data[0], 1, y_size, fpYUV);    //Y 
@@ -229,6 +222,21 @@ int main(int argc, char *argv[]){
                     fwrite(pFrameYUV->data[2], 1, y_size/4, fpYUV);  //V
 
                 }
+#else
+                if(iVideoWidth == 0){
+                    printf("一行宽度: %d, 显示的: %d\n", pFrame->linesize[0], pFrame->display_picture_number);
+                    iVideoWidth = pFrame->linesize[0];
+                }
+                
+                
+                if(fpYUV){
+                    int y_size = pFrame->linesize[0] * pCodecContext->height;  
+                    fwrite(pFrame->data[0], 1, y_size, fpYUV);    //Y 
+                    fwrite(pFrame->data[1], 1, y_size/4, fpYUV);  //U
+                    fwrite(pFrame->data[2], 1, y_size/4, fpYUV);  //V
+
+                }
+#endif
             }
         }
     }
@@ -241,11 +249,11 @@ int main(int argc, char *argv[]){
             printf("%s, %d\n", "发送视频帧失败!", err);                
         }
 
-        //解码
-        while(avcodec_receive_frame(pCodecContext, pFrame) == 0){
-            // printf("%d, %d\n", pFrame->width, pFrame->height);
-            printf("缓冲区已经清空!\n");
-            if(fpYUV){
+            //解码
+            while(avcodec_receive_frame(pCodecContext, pFrame) == 0){
+                // printf("%d, %d\n", pFrame->width, pFrame->height);
+                // printf("一行宽度: %d, 显示的: %d\n", pFrame->linesize[0], pFrame->display_picture_number);
+#ifdef SCALE_OUTPUT
                 sws_scale(img_convert_ctx, 
                     (const uint8_t* const*)pFrame->data, 
                     pFrame->linesize, 
@@ -255,20 +263,36 @@ int main(int argc, char *argv[]){
                     pFrameYUV->linesize
                 );  
                       
-                      
-                //RGB  
-                int y_size = pCodecContext->width * pCodecContext->height;  
-                fwrite(pFrameYUV->data[0], 1, y_size, fpYUV);    //Y 
-                fwrite(pFrameYUV->data[1], 1, y_size/4, fpYUV);  //U
-                fwrite(pFrameYUV->data[2], 1, y_size/4, fpYUV);  //V
+                //RGB 
+                if(fpYUV){
+                    int y_size = pCodecContext->width * pCodecContext->height;  
+                    fwrite(pFrameYUV->data[0], 1, y_size, fpYUV);    //Y 
+                    fwrite(pFrameYUV->data[1], 1, y_size/4, fpYUV);  //U
+                    fwrite(pFrameYUV->data[2], 1, y_size/4, fpYUV);  //V
+
+                }
+#else
+                if(fpYUV){
+                    int y_size = pFrame->linesize[0] * pCodecContext->height;  
+                    fwrite(pFrame->data[0], 1, y_size, fpYUV);    //Y 
+                    fwrite(pFrame->data[1], 1, y_size/4, fpYUV);  //U
+                    fwrite(pFrame->data[2], 1, y_size/4, fpYUV);  //V
+
+                }
+#endif
             }
-        }
     }
 
 
     if(fpYUV){
         fclose(fpYUV);
     }
+
+#ifndef SCALE_OUTPUT
+    char szNewName[255] = {0};
+    sprintf(szNewName, "%s_%d_%d.yuv", szFileName, iVideoWidth, pCodecContext->height);
+    rename(szYUVFileName, szNewName);
+#endif
 
     //清理资源
     avcodec_close(pCodecContext);

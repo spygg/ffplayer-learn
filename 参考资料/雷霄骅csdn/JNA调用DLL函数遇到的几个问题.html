@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/11885341"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="最近一个JSP项目需要用到分词模块，而分词模块实用C++写成的DLL库。于是上网搜各种方法，最后选择了JNA作为JSP调用DLL的工具。
+
+JNA（Java Native Access ）提供一组Java工具类用于在运行期动态访问系统本地库（native library：如Window的dll）而不需要编写任何Native/JNI代码。开发人员只要在一个java接口中描述目标native li" />
+    <meta name="keywords" content="jna,java" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>JNA调用DLL函数遇到的几个问题 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/11885341"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-2 float-left">转</span>		<h1 class="title-article">JNA调用DLL函数遇到的几个问题</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年09月22日 01:24:45</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：2883</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+最近一个JSP项目需要用到分词模块，而分词模块实用C++写成的DLL库。于是上网搜各种方法，最后选择了JNA作为JSP调用DLL的工具。</p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+JNA（Java Native Access ）提供一组Java工具类用于在运行期动态访问系统本地库（native library：如Window的dll）而不需要编写任何Native/JNI代码。开发人员只要在一个java接口中描述目标native library的函数与结构，JNA将自动实现Java接口到native function的映射。</p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+JNA的使用方法有很多，这里只总结下我遇到的问题：</p>
+<h4 style="margin:0px 0px 10px;padding:0px;color:rgb(0,136,0);line-height:22px;font-family:'Microsoft YaHei', Arial;font-size:17px;">
+DLL放置的路径问题</h4>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+JSP本身分为bean的src目录和WebRoot的脚本目录，而我们的DLL需要在src下的类中调用，于是遇到了将DLL和资源文件放置到什么地方的问题。</p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+最后解决方法：<span style="color:#ff0000;"><strong>将调用的DLL和LIB文件拷贝到C:/Windows/System32目录下</strong></span>可以访问。</p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+解决过程：我试过将这些文件放到Src目录下，然后用Class.class.getResource("/").getPath()这种方法得到类的class路径，再得到资源文件的路径，结果没有成功。</p>
+<h4 style="margin:0px 0px 10px;padding:0px;color:rgb(0,136,0);line-height:22px;font-family:'Microsoft YaHei', Arial;font-size:17px;">
+DLL调用资源的路径问题</h4>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+DLL可能会调用其他资源文件，比如我这里需要用到词典，路径也是个问题，不过这个较为简单，很容易解决：</p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+将资源文件目录，<strong><span style="color:#ff0000;">拷贝到Src目录下面。在程序中使用Class.class.getResource("/").getPath()获得编译后的类所在的根目录</span></strong>，再连接上资源文件即可。</p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+<br /></p>
+<p style="color:rgb(85,85,85);line-height:22px;padding-top:0px;padding-bottom:0px;font-family:Arial, Verdana, 'BitStream vera Sans', Tahoma, Helvetica, sans-serif;font-size:14px;margin-top:0px;margin-bottom:10px;">
+原文地址：<a href="http://www.crazyant.net/2012/12/26/jsp%E4%BD%BF%E7%94%A8jna%E8%B0%83%E7%94%A8dll%E5%87%BD%E6%95%B0%E9%81%87%E5%88%B0%E7%9A%84%E5%87%A0%E4%B8%AA%E9%97%AE%E9%A2%98/">http://www.crazyant.net/2012/12/26/jsp使用jna调用dll函数遇到的几个问题/</a></p>
+            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=jna&t=blog" target="_blank">jna						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=java&t=blog" target="_blank">java						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=dll&t=blog" target="_blank">dll						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1362940"  target="_blank">J2EE						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/11885341#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/shumago/article/details/56831224" target="_blank" strategy="BlogCommendFromQuerySearch_0">
+				使用<em>JNA</em><em>调用</em><em>DLL</em><em>函数</em><em>遇到</em>的问题			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/shumago/article/details/56831224" target="_blank" >
+				在项目中需要使用JAVA<em>调用</em><em>DLL</em><em>函数</em>，搞了几天终于搞通了，赶紧把理解的重要内容记录下来。
+使用<em>DLL</em><em>函数</em>查看器进行查看<em>函数</em>名称及各参数
+
+
+
+
+本例子就拿GetMac<em>函数</em>进行举例，记事本...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/shumago" title="shumago" target="_blank">
+					<img src="https://avatar.csdn.net/0/8/D/3_shumago.jpg" alt="shumago" class="avatar-pic">
+					<span class="name">shumago</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-02-24 10:45:45</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3208</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qdqht2009/article/details/50592192" target="_blank" strategy="BlogCommendFromQuerySearch_1">
+				<em>jna</em><em>调用</em>c 的<em>dll</em>（包含回调<em>函数</em>）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qdqht2009/article/details/50592192" target="_blank" >
+				创建<em>dll</em>
+.h
+#ifndef __MAIN_H__
+#define __MAIN_H__
+
+#include 
+
+/*  To use this exported function of <em>dll</em>,...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qdqht2009" title="qdqht2009" target="_blank">
+					<img src="https://avatar.csdn.net/5/6/8/3_qdqht2009.jpg" alt="qdqht2009" class="avatar-pic">
+					<span class="name">qdqht2009</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-01-27 10:00:58</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3172</span>
+			</p>
+		</div>
+	</div>
+								<!-- 第四范式广告开关 -->
+<script>window.p4sdk_enable_recommendBox=true</script>
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zjutzmh/article/details/53574504" target="_blank" strategy="BlogCommendFromQuerySearch_2">
+				Java工作笔记：工作中使用<em>JNA</em><em>调用</em>C++库的一些细节			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zjutzmh/article/details/53574504" target="_blank" >
+				1.<em>调用</em>本地接口：
+先看最基本的<em>调用</em>代码：public interface testFunction extends Library{  
+  
+	testFunction INSTANCE = (t...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zjutzmh" title="zjutzmh" target="_blank">
+					<img src="https://avatar.csdn.net/D/9/C/3_zjutzmh.jpg" alt="zjutzmh" class="avatar-pic">
+					<span class="name">zjutzmh</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-11 18:21:32</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1711</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/javajc/2260681" target="_blank" strategy="BlogCommendFromQuerySearch_3">
+						<em>jna</em><em>调用</em><em>dll</em>的例子，包含<em>dll</em>文件和详细说明					</a>
+				</h4>
+				<p>
+					<span class="data">2010年04月20日 </span>
+					<span class="size">918KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/javajc/2260681" target="_blank" strategy="BlogCommendFromQuerySearch_3">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/l527719041/article/details/77461328" target="_blank" strategy="BlogCommendFromQuerySearch_4">
+				java<em>调用</em><em>dll</em>时回调<em>函数</em>的实现（<em>jna</em>）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/l527719041/article/details/77461328" target="_blank" >
+				java<em>调用</em><em>dll</em>文件需要使用回调<em>函数</em>作为公开<em>函数</em>的参数时，用以下方法实现：
+首先，看c++中定义的<em>dll</em>公开<em>函数</em>：
+typedef void (*ccback)(char *name ,int ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/l527719041" title="l527719041" target="_blank">
+					<img src="https://avatar.csdn.net/0/B/9/3_l527719041.jpg" alt="l527719041" class="avatar-pic">
+					<span class="name">l527719041</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-08-21 22:28:15</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：273</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u010477502/article/details/50583969" target="_blank" strategy="BlogCommendFromQuerySearch_5">
+				<em>JNA</em><em>调用</em><em>DLL</em>一点小结			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u010477502/article/details/50583969" target="_blank" >
+				<em>JNA</em><em>调用</em><em>DLL</em>一点小结
+
+
+
+
+
+声明：发表在其他博客的原创文章，会陆续转过来。
+　　前段时间碰到一客户需要在JAVA语言中<em>调用</em>C++编写的<em>DLL</em>，感觉操作很不方便。于是上网搜索，搜到...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u010477502" title="u010477502" target="_blank">
+					<img src="https://avatar.csdn.net/1/7/5/3_u010477502.jpg" alt="u010477502" class="avatar-pic">
+					<span class="name">u010477502</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-01-26 00:39:42</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1309</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/niuzehao/article/details/30220331" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+				Java<em>调用</em>C语言<em>Dll</em>库回调<em>函数</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/niuzehao/article/details/30220331" target="_blank" >
+				import com.sun.<em>jna</em>.Native;
+import com.sun.<em>jna</em>.win32.StdCallLibrary;
+
+public class Sa<em>Dll</em>CallbackFunct...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/niuzehao" title="niuzehao" target="_blank">
+					<img src="https://avatar.csdn.net/E/6/7/3_niuzehao.jpg" alt="niuzehao" class="avatar-pic">
+					<span class="name">niuzehao</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-06-12 11:06:18</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2447</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/ggmove/article/details/17377117" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+				Java<em>调用</em>C语言动态库（<em>JNA</em>方式）：回调<em>函数</em>、结构体数组传参、结构体数组返回			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/ggmove/article/details/17377117" target="_blank" >
+				一、开发环境
+系统、开发环境：win7、eclipse 32位、jdk 32位、jre 32位
+
+
+由于这里使用的<em>dll</em>文件是32位的，而我本身的环境是64位的，包括eclipse、jdk、jre都是...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/ggmove" title="ggmove" target="_blank">
+					<img src="https://avatar.csdn.net/9/A/C/3_ggmove.jpg" alt="ggmove" class="avatar-pic">
+					<span class="name">ggmove</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-12-17 16:13:59</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：8192</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zfng2008/article/details/51206117" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+				java通过<em>JNA</em><em>调用</em>c语言<em>dll</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zfng2008/article/details/51206117" target="_blank" >
+				Java可以通过JNI/<em>JNA</em><em>调用</em>本地其他语言生成的库文件。以<em>调用</em>c语言为例，可以将c的<em>函数</em>导出<em>dll</em>，java通过JNI/<em>JNA</em>来<em>调用</em>。本文涉及范围
+window平台
+Java<em>调用</em>c/c++
+JNI...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zfng2008" title="zfng2008" target="_blank">
+					<img src="https://avatar.csdn.net/0/1/3/3_zfng2008.jpg" alt="zfng2008" class="avatar-pic">
+					<span class="name">zfng2008</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-04-21 09:46:40</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1280</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/Hxn_Fight/article/details/44037433" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+				<em>JNA</em><em>调用</em><em>dll</em>\so文件的路径问题和测试样例。			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/Hxn_Fight/article/details/44037433" target="_blank" >
+				<em>JNA</em><em>调用</em><em>dll</em>\so的路径问题和测试样例
+本文主要几点内容如下：
+    1.jda具体的放置路径
+    2.jdk切换
+    3.测试代码
+
+    此文就是便于自己以后回顾使用，所以就不罗嗦...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/Hxn_Fight" title="Hxn_Fight" target="_blank">
+					<img src="https://avatar.csdn.net/B/2/F/3_hxn_fight.jpg" alt="Hxn_Fight" class="avatar-pic">
+					<span class="name">Hxn_Fight</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-03-03 13:59:50</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3605</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/11885341" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421616">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852474</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>0</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "JNA调用DLL函数遇到的几个问题";
+    var ChannelId = 16;
+    var articleId = "11885341";
+    var commentscount = 0;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/11885341";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "jsp+use+jna";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"JNA调用DLL函数遇到的几个问题");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=jsp+use+jna"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

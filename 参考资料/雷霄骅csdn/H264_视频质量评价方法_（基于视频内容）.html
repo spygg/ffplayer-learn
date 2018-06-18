@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12883747"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="Michal Ries等人在论文《Content Based Video Quality Estimation for H.264/AVC Video Streaming》中，描述了一种基于视频内容的视频质量评价方法。有一定的参考价值，在此记录一下。
+该质量评价方法的特别之处在于，根据视频内容的复杂程度将视频分成了几类，每种类别分别使用不同的模型系数。而一般的视频质量评价方法通常只有一个模型以及" />
+    <meta name="keywords" content="H.264,视频" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>H.264 视频质量评价方法 （基于视频内容） - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12883747"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">H.264 视频质量评价方法 （基于视频内容）</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月20日 16:18:32</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：5723</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                
+<p>Michal Ries等人在论文《Content Based Video Quality Estimation for H.264/AVC Video Streaming》中，描述了一种基于视频内容的视频质量评价方法。有一定的参考价值，在此记录一下。</p>
+<p>该质量评价方法的特别之处在于，根据视频内容的复杂程度将视频分成了几类，每种类别分别使用不同的模型系数。而一般的视频质量评价方法通常只有一个模型以及一套固定的系数。</p>
+<p>该论文将视频序列分为5类，以下是其中几类的截图（少了一类）</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020130909015?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>五类包括：</p>
+<blockquote style="margin:0px 0px 0px 40px;padding:0px;border:;">
+<p><strong>news（新闻）：</strong>仅有一小块感兴趣区域在运动（比如人脸，一般占视频画面的15%），背景是静止的。</p>
+<p><strong>soccer（足球）：</strong>包含大面积统一方向的运动。镜头通常会在一个统一颜色的背景下（绿色）跟踪一个快速运动的物体（足球）。</p>
+<p><strong>cartoon（卡通）：</strong>主题在运动，背景是绝对静止的（没有自然特性）。</p>
+<p><strong>panorama（全景画）：</strong>包含大面积统一方向的运动，运动方向是一致的。</p>
+<p><strong>rest（其他）：</strong>除以上几种之外的视频都属于这一类。通常包含大量杂乱的运动，或者有很多镜头切换。</p>
+</blockquote>
+<p><br /></p>
+<p>对视频内容进行分类的Content classifier（内容分类器）设计如下图所示：</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020133602890?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>下图统计了五种类别的视频中，统一运动所占的百分比以及零运动矢量百分比的<span style="font-family:arial;line-height:18px;font-size:13px;">经验累积分布函数。</span></p>
+<p>注：ECDF全称empirical cumulative distribution functions，<span style="font-family:arial;line-height:18px;font-size:13px;font-style:normal;">经验累积分布函数。</span></p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020133750515?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>对Content classifier（内容分类器）进行测试的结果如下表所示。False detection反映的是对视频进行了错误的分类的百分率。就是视频本身属于其他类，却分到了这一类。Good match反映的是对视频进行了正确的分类的百分率。<br /></p>
+<p>由表可见，内容分类器基本上是比较准确的。</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020134606546?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>测试序列的设置如下表所示。测试序列时长为10秒，分辨率为SIF，编码为H.264 baseline profile 1b。下表所示一共有36种组合。</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020134645843?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p><br /></p>
+<p>测试使用的设备如下图所示，是一个PDA。</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020134701218?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>下图是视频质量评价系统的设计。</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140608796?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>实验结果数据分析方面，用到了<span style="font-family:arial, '宋体', sans-serif;line-height:14px;">principal component analysis（PCA，<span style="font-family:arial, '宋体', sans-serif;line-height:14px;">主成分分析</span>）</span></p>
+<blockquote style="margin:0px 0px 0px 40px;padding:0px;border:;">
+<p>注：主成分分析作用是：<span style="font-size:12px;"><span style="font-family:arial, '宋体', sans-serif;line-height:25px;text-indent:28px;">将多个变量通过</span><span style="font-family:arial, '宋体', sans-serif;"><span style="line-height:25px;text-indent:28px;">线性变换</span></span><span style="font-family:arial, '宋体', sans-serif;line-height:25px;text-indent:28px;">以选出较少个数重要变量的一种</span><span style="font-family:arial, '宋体', sans-serif;"><span style="line-height:25px;text-indent:28px;">多元统计分析</span></span><span style="font-family:arial, '宋体', sans-serif;line-height:25px;text-indent:28px;">方法。又称</span><span style="font-family:arial, '宋体', sans-serif;"><span style="line-height:25px;text-indent:28px;">主分量分析</span></span><span style="font-family:arial, '宋体', sans-serif;line-height:25px;text-indent:28px;">。</span></span></p>
+</blockquote>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140619046?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>PCA分析结果如下图所示。</p>
+<blockquote style="margin:0px 0px 0px 40px;padding:0px;border:;">
+<p>注：BR代表码率。FR代表帧率。</p>
+</blockquote>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140630703?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p><br /></p>
+<p>最终给出的视频客观质量评价模型的形式如下：</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140641734?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>最终给出的视频客观质量评价模型如下式所示：</p>
+<blockquote style="margin:0px 0px 0px 40px;padding:0px;border:;">
+<p>注：BR代表码率。FR代表帧率。</p>
+</blockquote>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140650546?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>并且给出了五种不同的内容相应的系数：</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140701609?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>下表所示是对该模型性能的验证。</p>
+<p>r代表的是<span style="font-family:arial;line-height:18px;font-size:13px;">皮尔逊相关系数（</span><span style="font-family:arial;line-height:18px;font-size:13px;font-style:normal;">Pearson correlation </span><span style="font-family:arial;line-height:18px;font-size:13px;">coefficient）</span></p>
+<p><span style="font-family:arial;line-height:18px;font-size:13px;">r'代表的是<span style="font-family:arial;line-height:22px;font-size:13px;">Spearman相关系数（Spearmank correlation factor）</span></span></p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140711843?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>该模型预测的视频质量和实际主观视频质量之间的关系如下图所示：</p>
+<p align="center"><img alt="" src="https://img-blog.csdn.net/20131020140729812?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p><br /></p>
+<p>论文地址：<a href="http://ieeexplore.ieee.org/xpl/articleDetails@jsp?reload=true&amp;arnumber=4224741&amp;contentType=Conference+Publications">http://ieeexplore.ieee.org/xpl/articleDetails@jsp?reload=true&amp;arnumber=4224741&amp;contentType=Conference+Publications</a></p>
+<p><br /></p>
+            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/12883747		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=H.264&t=blog" target="_blank">H.264						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=视频&t=blog" target="_blank">视频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=质量评价&t=blog" target="_blank">质量评价						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=视频内容&t=blog" target="_blank">视频内容						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=分类&t=blog" target="_blank">分类						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1446693"  target="_blank">视频质量评价						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/videoquality.html" target="_blank">视频质量评价</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12883747#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/16359465" target="_blank" strategy="BlogCommendFromQuerySearch_0">
+				[总结]<em>视频质量评价</em>技术零基础学习<em>方法</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/16359465" target="_blank" >
+				前段时间略忙，因此一直计划要总结的很多东西都没来得及写，这两天趁着空闲时间写上一篇。以后等时间充裕了再补充一些内容。本文总结一下学习<em>视频质量评价</em>技术的<em>方法</em>。<em>视频质量评价</em>是我研究生阶段主要的工作，包括发...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-04-21 00:26:25</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：34167</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12857451" target="_blank" strategy="BlogCommendFromQuerySearch_1">
+				<em>基于</em>运动特征的<em>视频质量评价</em><em>方法</em>（<em>基于</em><em>H.264</em>）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12857451" target="_blank" >
+				Michal Ries等人在论文《Motion Based Reference-Free Quality Estimation for <em>H.264</em>/AVC Video Streaming》中提出了一种...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-19 15:10:37</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4226</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+					<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/bihaichentian/2391236" target="_blank" strategy="BlogCommendFromQuerySearch_2">
+						<em>H.264</em>视频编解码传输算法平台及码率控制研究					</a>
+				</h4>
+				<p>
+					<span class="data">2010年05月25日 </span>
+					<span class="size">13.2MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/bihaichentian/2391236" target="_blank" strategy="BlogCommendFromQuerySearch_2">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/unkonw.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/mazhitong1020/article/details/79196087" target="_blank" strategy="BlogCommendFromQuerySearch_3">
+				全参考图像和<em>视频质量评价</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/mazhitong1020/article/details/79196087" target="_blank" >
+				<em>基于</em>图像/视频质量评估传统的误差敏感性
+传统的图像感知质量评价<em>方法</em>是<em>基于</em>测量的误差（信号差异）之间的扭曲的图像和参考图像，并试图量化的方式，模拟人的视觉误差的误差敏感性特征。这些<em>方法</em>通常涉及
+
+...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/mazhitong1020" title="mazhitong1020" target="_blank">
+					<img src="https://avatar.csdn.net/8/0/A/3_mazhitong1020.jpg" alt="mazhitong1020" class="avatar-pic">
+					<span class="name">mazhitong1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-01-29 15:45:46</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：203</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/leixiaohua1020/6374037" target="_blank" strategy="BlogCommendFromQuerySearch_4">
+						Evalvid （<em>视频质量评价</em>工具）					</a>
+				</h4>
+				<p>
+					<span class="data">2013年10月09日 </span>
+					<span class="size">562KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/leixiaohua1020/6374037" target="_blank" strategy="BlogCommendFromQuerySearch_4">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/14535611" target="_blank" strategy="BlogCommendFromQuerySearch_5">
+				一种<em>H.264</em>高清视频的无参考<em>视频质量评价</em>算法（<em>基于</em>QP和跳过宏块数）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/14535611" target="_blank" >
+				本文记录一种无参考<em>视频质量评价</em>算法。这是我们自己实验室前两年一个师姐做的，算法还是比较准确的，在此记录一下。
+注意本算法前提是高清视频。而且是<em>H.264</em>编码方式。
+该<em>方法</em>主要使用两个码流里面的参数进行...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-12-08 21:28:56</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6528</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u010821666/article/details/77995960" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+				<em>基于</em>内容的视频检索（CBVR）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u010821666/article/details/77995960" target="_blank" >
+				参考1. 视频检索的基本流程2. 视频的结构分层 
+各层都可以用一些属性来描述： 
+1. 视频序列的属性主要包括场景的个数和持续时间； 
+2. 场景的属性包括标题、持续时间、镜头数目、开始镜头、结束镜...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u010821666" title="u010821666" target="_blank">
+					<img src="https://avatar.csdn.net/6/6/D/3_u010821666.jpg" alt="u010821666" class="avatar-pic">
+					<span class="name">u010821666</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-09-15 21:29:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：887</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12685297" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+				<em>视频质量评价</em><em>方法</em>：VQM			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12685297" target="_blank" >
+				如何确定一个视频质量的好坏一直以来都是个棘手的问题。目前常用的<em>方法</em>就是通过人眼来直接观看，但是由于人眼的主观性及观看人员的单体差异性，对于同样的视频质量，不同的人的感受是不一样的。为此多个研究机构提出...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-13 21:24:54</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：9306</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u012211748/article/details/48998731" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+				<em>视频质量评价</em>：常规<em>方法</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u012211748/article/details/48998731" target="_blank" >
+				1.quality_measure
+http://www.compression.ru/video/quality_measure/info_en.html
+http://www.compressio...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u012211748" title="u012211748" target="_blank">
+					<img src="https://avatar.csdn.net/B/0/4/3_u012211748.jpg" alt="u012211748" class="avatar-pic">
+					<span class="name">u012211748</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-10-09 13:21:33</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：607</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/wangxingqian/4172210" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+						qt使用<em>方法</em>,<em>视频质量评价</em><em>方法</em>，listctrl自绘					</a>
+				</h4>
+				<p>
+					<span class="data">2012年03月25日 </span>
+					<span class="size">24.45MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/wangxingqian/4172210" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12883747" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421452">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>7</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "H.264 视频质量评价方法 （基于视频内容）";
+    var ChannelId = 7;
+    var articleId = "12883747";
+    var commentscount = 1;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12883747";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"H.264 视频质量评价方法 （基于视频内容）");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

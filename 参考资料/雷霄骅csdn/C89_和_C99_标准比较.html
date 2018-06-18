@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12761053"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="注1： GCC支持C99, 通过 --std=c99 命令行参数开启，如：
+
+代码:
+gcc --std=c99 test.c 
+
+
+注2： FFMPEG使用的是C99。而VC支持的是C89。因此VC一般情况下是无法编译FFMPEG。
+---------------------------------------------------------------------------" />
+    <meta name="keywords" content="C89,C99" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>C89 和 C99 标准比较 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12761053"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-2 float-left">转</span>		<h1 class="title-article">C89 和 C99 标准比较</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月16日 16:34:39</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：12491</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                
+<div style="line-height:26px;font-family:Arial;font-size:14px;">注1： GCC支持C99, 通过 --std=c99 命令行参数开启，如：<br /></div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">代码:<br />
+gcc --std=c99 test.c </div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;"><br /></div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;"><span style="font-family:Arial;font-size:14px;line-height:26px;">注2：<span style="color:#cc0000;">FFMPEG使用的是C99。而VC支持的是C89（不支持C99）。因此VC一般情况下是无法编译FFMPEG的源代码的。</span></span><br />
+--------------------------------------------------------------------------------------------------<br />
+　　<br />
+　　1、增加restrict指针<br />
+　　C99中增加了公适用于指针的restrict类型修饰符，它是初始访问指针所指对象的惟一途径，因此只<br />
+有借助restrict指针表达式才能访问对象。restrict指针指针主要用做函数变元，或者指向由malloc()函<br />
+数所分配的内存变量。restrict数据类型不改变程序的语义。<br />
+　　如果某个函数定义了两个restrict指针变元，编译程序就假定它们指向两个不同的对象，memcpy()<br />
+函数就是restrict指针的一个典型应用示例。C89中memcpy()函数原型如下：</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">代码:<br />
+　　void *memcpy (void *s1, const void *s2, size_t size);　　如果s1和s2所指向的对象重叠，<br />
+其操作就是未定义的。memcpy()函数只能用于不重叠的对象。C99中memcpy()函数原型如下：</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">代码:<br />
+　　<br />
+　　void *memcpy(void *restrict s1, const void *restrict s2,size_t size);　　通过使用restrict<br />
+修饰s1和s2 变元，可确保它们在该原型中指向不同的对象。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　2、inline（内联）关键字<br />
+　　内联函数除了保持结构化和函数式的定义方式外,还能使程序员写出高效率的代码.函数的每次调用与<br />
+返回都会消耗相当大的系统资源,尤其是当函数调用发生在重复次数很多的循环语句中时.一般情况下,当发<br />
+生一次函数调用时,变元需要进栈,各种寄存器内存需要保存.当函数返回时,寄存器的内容需要恢复。如果该<br />
+函数在代码内进行联机扩展，当代码执行时，这些保存和恢复操作旅游活动会再发生，而且函数调用的执<br />
+行速度也会大大加快。函数的联机扩展会产生较长的代码，所以只应该内联对应用程序性能有显著影响的<br />
+函数以及长度较短的函数。<br />
+　<br />
+　　3、新增数据类型　<br />
+　　_Bool　<br />
+　　值是0或1。C99中增加了用来定义bool、true以及false宏的头文件夹&lt;stdbool.h&gt;，以便程序<br />
+员能够编写同时兼容于C与C++的应用程序。在编写新的应用程序时，应该使用<br />
+&lt;stdbool.h&gt;头文件中的bool宏。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　_Complex and _Imaginary<br />
+　C99标准中定义的复数类型如下：float_Complex; float_Imaginary; double_Complex; <br />
+double_Imaginary; long double_Complex; long double_Imaginary.<br />
+&lt;complex.h&gt;头文件中定义了complex和imaginary宏,并将它们扩展为_Complex和_Imaginary,<br />
+因此在编写新的应用程序时,应该使用&lt;stdbool.h&gt;头文件中的complex和imaginary宏。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　long long int<br />
+　　C99标准中引进了long long int（-(2e63 - 1)至2e63 - 1）和unsigned long long int（0 - 2e64 <br />
+- 1）。long long int能够支持的整数长度为64位。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　4、对数组的增强<br />
+　　可变长数组<br />
+　　C99中,程序员声明数组时,数组的维数可以由任一有效的整型表达式确定,包括只在运行时才能确定<br />
+其值的表达式,这类数组就叫做可变长数组,但是只有局部数组才可以是变长的.<br />
+可变长数组的维数在数组生存期内是不变的,也就是说,可变长数组不是动态的.可以变化的只是数组的大小.<br />
+可以使用*来定义不确定长的可变长数组。<br />
+　　<br />
+　　数组声明中的类型修饰符<br />
+　　在C99中，如果需要使用数组作为函数变元，可以在数组声明的方括号内使用static关键字，这相<br />
+当于告诉编译程序，变元所指向的数组将至少包含指定的元素个数。也可以在数组声明的方括号内使用<br />
+restrict,volatile,const关键字，但只用于函数变元。如果使用restrict，指针是初始访问该对象的惟一途<br />
+径。如果使用const，指针始终指向同一个数组。使用volatile没有任何意义。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　5、单行注释<br />
+　　引入了单行注释标记 "//" , 可以象C++一样使用这种注释了。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　6、分散代码与声明</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　7、预处理程序的修改<br />
+　　ａ、变元列表<br />
+　　宏可以带变元，在宏定义中用省略号（...）表示。内部预处理标识符__VA_ARGS__决定变元将在何<br />
+处得到替换。例：#define MySum(...) sum(__VA_ARGS__) 语句MySum(k,m,n);<br />
+将被转换成：sum(k, m, n);　变元还可以包含变元。例： #define compare(compf, ...) <br />
+compf(__VA_ARGS__) 其中的compare(strcmp,"small", "large"); 将替换成：<br />
+strcmp("small","large");<br />
+　　ｂ、_Pragma运算符<br />
+　　C99引入了在程序中定义编译指令的另外一种方法：_Pragma运算符。格式如下：<br />
+　　_Pragma("directive") <br />
+　　其中directive是要满打满算的编译指令。_Pragma运算符允许编译指令参与宏替换。<br />
+　　ｃ、内部编译指令<br />
+　　STDCFP_CONTRACT ON/OFF/DEFAULT 若为ON，浮点表达式被当做基于硬件方式处理的独立<br />
+单元。默认值是定义的工具。<br />
+　　STDCFEVN_ACCESS ON/OFF/DEFAULT 告诉编译程序可以访问浮点环境。默认值是定义的工具。<br />
+　　STDC CX_LIMITED_RANGE ON/OFF/DEFAULT 若值为ON，相当于告诉编译程序某程序某些含<br />
+有复数的公式是可靠的。默认是OFF。<br />
+　　ｄ、新增的内部宏<br />
+　　__STDC_HOSTED__ 若操作系统存在，则为1<br />
+　　__STDC_VERSION__ 199991L或更高。代表C的版本<br />
+　　__STDC_IEC_599__ 若支持IEC 60559浮点运算，则为1<br />
+　　__STDC_IEC_599_COMPLEX__ 若支持IEC 60599复数运算，则为1<br />
+　　__STDC_ISO_10646__ 由编译程序支持，用于说明ISO/IEC 10646标准的年和月格式：<br />
+yyymmmL</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　8、for语句内的变量声明　　<br />
+　　C99中，程序员可以在for语句的初始化部分定义一个或多个变量，这些变量的作用域仅于本for语<br />
+句所控制的循环体内。比如：</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">代码:<br />
+for(int i=0; i&lt;10; i++){<br />
+    // do someting ...<br />
+}<br />
+　　9、复合赋值<br />
+　　C99中，复合赋值中，可以指定对象类型的数组、结构或联合表达式。当使用复合赋值时，应在括弧<br />
+内指定类型，后跟由花括号围起来的初始化列表；若类型为数组，则不能指定数组的大小。建成的对象是<br />
+未命名的。<br />
+　　例： double *fp = (double[]) {1.1, 2.2, 3.3};<br />
+　　该语句用于建立一个指向double的指针fp，且该指针指向这个3元素数组的第一个元素。 在文件<br />
+域内建立的复合赋值只在程序的整个生存期内有效。在模块内建立的复合赋值是局部对象，在退出模块后<br />
+不再存在。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　10、柔性数组结构成员<br />
+　　C99中，结构中的最后一个元素允许是未知大小的数组，这就叫做柔性数组成员，但结构中的柔性数<br />
+组成员前面必须至少一个其他成员。柔性数组成员允许结构中包含一个大小可变的数组。sizeof返回的这<br />
+种结构大小不包括柔性数组的内存。包含柔性数组成员的结构用malloc()函数进行内存的动态分配，并且<br />
+分配的内存应该大于结构的大小，以适应柔性数组的预期大小。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　11、指定的初始化符<br />
+　　C99中，该特性对经常使用稀疏数组的程序员十分有用。指定的初始化符通常有两种用法：用于数组，<br />
+以及用于结构和联合。用于数组的格式：[index] = vol; 其中，index表示数组的下标，vol表示本数组<br />
+元素的初始化值。<br />
+　　例如： int x[10] = {[0] = 10, [5] = 30}; 其中只有x[0]和x[5]得到了初始化．用于结构或联<br />
+合的格式如下： <br />
+　　member-name(成员名称) <br />
+　　对结构进行指定的初始化时，允许采用简单的方法对结构中的指定成员进行初始化。<br />
+　　例如： struct example{ int k, m, n; } object = {m = 10,n = 200}; <br />
+　　其中，没有初始化k。对结构成员进行初始化的顺序没有限制。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　12、printf()和scanf()函数系列的增强<br />
+　　C99中printf()和scanf()函数系列引进了处理long long int和unsigned long long int数据类型<br />
+的特性。long long int 类型的格式修饰符是ll。在printf()和scanf()函数中，ll适用于d, i, o, u 和x<br />
+格式说明符。另外，C99还引进了hh修饰符。当使用d, i, o, u和x格式说明符时，hh用于指定char<br />
+型变元。ll和hh修饰符均可以用于n说明符。<br />
+　　格式修饰符a和A用在printf()函数中时，结果将会输出十六进制的浮点数。格式如下：[-]0xh, hhhhp <br />
++ d 使用A格式修饰符时，x和p必须是大写。A和a格式修饰符也可以用在scanf()函数中，用于读取<br />
+浮点数。调用printf()函数时，允许在%f说明符前加上l修饰符，即%lf，但不起作用。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　13、C99新增的库<br />
+　　<br />
+　　C89中标准的头文件<br />
+　　&lt;assert.h&gt; 定义宏assert()<br />
+　　&lt;ctype.h&gt; 字符处理<br />
+　　&lt;errno.h&gt; 错误报告<br />
+　　&lt;float.h&gt; 定义与实现相关的浮点值勤<br />
+　　&lt;limits.h&gt; 定义与实现相关的各种极限值<br />
+　　&lt;locale.h&gt; 支持函数setlocale()<br />
+　　&lt;math.h&gt; 数学函数库使用的各种定义<br />
+　　&lt;setjmp.h&gt; 支持非局部跳转<br />
+　　&lt;signal.h&gt; 定义信号值<br />
+　　&lt;stdarg.h&gt; 支持可变长度的变元列表<br />
+　　&lt;stddef.h&gt; 定义常用常数<br />
+　　&lt;stdio.h&gt; 支持文件输入和输出<br />
+　　&lt;stdlib.h&gt; 其他各种声明<br />
+　　&lt;string.h&gt; 支持串函数<br />
+　　&lt;time.h&gt; 支持系统时间函数</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　C99新增的头文件和库<br />
+　　&lt;complex.h&gt; 支持复数算法<br />
+　　&lt;fenv.h&gt; 给出对浮点状态标记和浮点环境的其他方面的访问<br />
+　　<span style="color:#cc0000;">&lt;inttypes.h&gt; 定义标准的、可移植的整型类型集合。也支持处理最大宽度整数的函数（常见）</span><br />
+　　&lt;iso646.h&gt; 首先在此1995年第一次修订时引进，用于定义对应各种运算符的宏<br />
+　　&lt;stdbool.h&gt; 支持布尔数据类型类型。定义宏bool，以便兼容于C++<br />
+　　<span style="color:#cc0000;">&lt;stdint.h&gt; 定义标准的、可移植的整型类型集合。该文件包含在&lt;inttypes.h&gt;中（常见）</span><br />
+　　&lt;tgmath.h&gt; 定义一般类型的浮点宏<br />
+　　&lt;wchar.h&gt; 首先在1995年第一次修订时引进，用于支持多字节和宽字节函数<br />
+　　&lt;wctype.h&gt; 首先在1995年第一次修订时引进，用于支持多字节和宽字节分类函数</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　14、__func__预定义标识符<br />
+　　用于指出__func__所存放的函数名，类似于字符串赋值。</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;"><br />
+　　15、其它特性的改动</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　放宽的转换限制<br />
+　<br />
+　　　　限制　　　　　　　　　　　　　C89标准　　C99标准<br />
+　　　　数据块的嵌套层数　　　　　　　15　　　　　127<br />
+　　　　条件语句的嵌套层数　　　　　　8　　　　　 63<br />
+　　　　内部标识符中的有效字符个数　　31　　　　　63<br />
+　　　　外部标识符中的有效字符个数　　6　　　　　　31<br />
+　　　　结构或联合中的成员个数　　　　127　　　　1023<br />
+　　　　函数调用中的参数个数　　　　　31　　　　　127</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;"><br />
+　　不再支持隐含式的int规则</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　删除了隐含式函数声明</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　对返回值的约束<br />
+　　　　C99中,非空类型函数必须使用带返回值的return语句.</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　扩展的整数类型<br />
+　　　　扩展类型 含义<br />
+　　　　int16_t 整数长度为精确16位<br />
+　　　　int_least16_t 整数长度为至少16位<br />
+　　　　int_fast32_t 最稳固的整数类型,其长度为至少32位<br />
+　　　　intmax_t 最大整数类型<br />
+　　　　uintmax_t 最大无符号整数类型</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">　　对整数类型提升规则的改进<br />
+　　　　C89中,表达式中类型为char,short int或int的值可以提升为int或unsigned int类型.<br />
+　　　　C99中,每种整数类型都有一个级别.例如:long long int 的级别高于int, int的级别高于char<br />
+等.在表达式中,其级别低于int或unsigned int的任何整数类型均可被替换成int或unsigned int类型.</div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;"><br /></div>
+<div style="line-height:26px;font-family:Arial;font-size:14px;">原文地址：<a href="http://blog.pfan.cn/watersky/14051.html">http://blog.pfan.cn/watersky/14051.html</a></div>
+            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=C89&t=blog" target="_blank">C89						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=C99&t=blog" target="_blank">C99						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=比较&t=blog" target="_blank">比较						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=ffmpeg&t=blog" target="_blank">ffmpeg						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=VC&t=blog" target="_blank">VC						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1360795"  target="_blank">FFMPEG						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1647545"  target="_blank">纯编程						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/ffmpeg-devel.html" target="_blank">FFmpeg</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12761053#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qq_31029351/article/details/53290990" target="_blank" strategy="BlogCommendFromBaidu_0">
+				c语言之<em>标准</em>（K&amp;RC 、<em>c89</em>、<em>c99</em>、c11)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_31029351/article/details/53290990" target="_blank" >
+				K&amp;R C　　1978年，丹尼斯•里奇（Dennis Ritchie）和布莱恩•柯林汉（Brian Kernighan）合作出版了《C程序设计语言》的第一版。书中介绍的C语言<em>标准</em>也被C语言程式设计师称...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qq_31029351" title="qq_31029351" target="_blank">
+					<img src="https://avatar.csdn.net/6/F/4/3_qq_31029351.jpg" alt="qq_31029351" class="avatar-pic">
+					<span class="name">qq_31029351</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-11-22 20:04:48</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5901</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/iefswang/article/details/8499226" target="_blank" strategy="BlogCommendFromBaidu_1">
+				<em>c89</em>与<em>c99</em>区别			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/iefswang/article/details/8499226" target="_blank" >
+				注： GCC支持<em>C99</em>, 通过 --std=<em>c99</em> 命令行参数开启，如：
+　　
+代码:
+gcc --std=<em>c99</em> test.c 
+------------------------------...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/iefswang" title="iefswang" target="_blank">
+					<img src="https://avatar.csdn.net/B/3/9/3_iefswang.jpg" alt="iefswang" class="avatar-pic">
+					<span class="name">iefswang</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-01-13 23:17:43</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3907</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/jixingzhong/article/details/1877445" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>C99</em>与<em>C89</em><em>比较</em>，新增特性内容			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/jixingzhong/article/details/1877445" target="_blank" >
+				  　　1、增加restrict指针<em>C99</em>中增加了公适用于指针的restrict类型修饰符，它是初始访问指针所指对象的惟一途径，因此只有借助restrict指针表达式才能访问对象。restrict指针...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/jixingzhong" title="jixingzhong" target="_blank">
+					<img src="https://avatar.csdn.net/6/2/6/3_jixingzhong.jpg" alt="jixingzhong" class="avatar-pic">
+					<span class="name">jixingzhong</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2007-11-10 11:55:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5447</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xgbing/article/details/2341941" target="_blank" strategy="BlogCommendFromBaidu_3">
+				<em>C89</em>和<em>C99</em><em>标准</em><em>比较</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xgbing/article/details/2341941" target="_blank" >
+				<em>C89</em>和<em>C99</em><em>标准</em><em>比较</em>  原文转载自: http://blog.programfan.com/article.asp?id=14051 注： GCC支持<em>C99</em>, 通过 --std=<em>c99</em> 命令行参数开...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xgbing" title="xgbing" target="_blank">
+					<img src="https://avatar.csdn.net/1/1/7/3_xgbing.jpg" alt="xgbing" class="avatar-pic">
+					<span class="name">xgbing</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2008-04-29 11:02:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6733</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zhenyongyuan123/article/details/5810253" target="_blank" strategy="BlogCommendFromBaidu_4">
+				<em>C99</em><em>标准</em>库函数			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhenyongyuan123/article/details/5810253" target="_blank" >
+				详细解释请看<em>C99</em><em>标准</em>：    http://www.open-std.org/     http://download.csdn.net/source/2512562  1. Diagnostics...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zhenyongyuan123" title="zhenyongyuan123" target="_blank">
+					<img src="https://avatar.csdn.net/1/C/3/3_zhenyongyuan123.jpg" alt="zhenyongyuan123" class="avatar-pic">
+					<span class="name">zhenyongyuan123</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2010-08-13 08:54:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4923</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xieyihua1994/article/details/51340354" target="_blank" strategy="BlogCommendFromBaidu_5">
+				<em>C89</em><em>标准</em>和<em>C99</em><em>标准</em>C11<em>标准</em>的区别			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xieyihua1994/article/details/51340354" target="_blank" >
+				注1： GCC支持<em>C99</em>, 通过 --std=<em>c99</em> 命令行参数开启，如：
+
+
+代码:
+gcc --std=<em>c99</em> test.c 
+
+
+
+
+注2：FFMPEG使用的是<em>C99</em>。而VC支持的是<em>C89</em>（不支...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xieyihua1994" title="xieyihua1994" target="_blank">
+					<img src="https://avatar.csdn.net/A/3/3/3_xieyihua1994.jpg" alt="xieyihua1994" class="avatar-pic">
+					<span class="name">xieyihua1994</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-05-07 22:02:02</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：12130</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/turingbook/article/details/841143" target="_blank" strategy="BlogCommendFromBaidu_6">
+				各编译器对<em>C99</em>的支持			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/turingbook/article/details/841143" target="_blank" >
+				在审一本C语言教材时，涉及到各编译器对<em>C99</em>的支持，于是Google了一番。 这篇文章是总结得<em>比较</em>全面的。不过其中对Borland编译器的说明已经过时。C++BuilderX已经全面支持<em>C99</em>了。用 ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/turingbook" title="turingbook" target="_blank">
+					<img src="https://avatar.csdn.net/1/A/9/3_turingbook.jpg" alt="turingbook" class="avatar-pic">
+					<span class="name">turingbook</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2006-06-27 17:10:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：26267</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/u011550727/9587751" target="_blank" strategy="BlogCommendFromBaidu_7">
+						C语言规范<em>标准</em>-<em>C99</em>					</a>
+				</h4>
+				<p>
+					<span class="data">2016年07月27日 </span>
+					<span class="size">46.48MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/u011550727/9587751" target="_blank" strategy="BlogCommendFromBaidu_7">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/syrchina/article/details/6662273" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>C99</em> 百度百科			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/syrchina/article/details/6662273" target="_blank" >
+				<em>c99</em>是在<em>c89</em>的基础上发展起来的，增加了基本数据类型，关键字和一些系统函数等。其实在初学阶段<em>C89</em>（ANSI C）和<em>C99</em>的区别是不易察觉的，所以不必太在意这个。
+
+　　<em>C99</em>有一部分是对于大字...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/syrchina" title="syrchina" target="_blank">
+					<img src="https://avatar.csdn.net/6/4/8/3_syrchina.jpg" alt="syrchina" class="avatar-pic">
+					<span class="name">syrchina</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2011-08-05 10:36:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1021</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u010871244/article/details/38586933" target="_blank" strategy="BlogCommendFromBaidu_9">
+				C<em>标准</em>：C90、<em>C99</em>、C11			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u010871244/article/details/38586933" target="_blank" >
+				C语言原来是没有统一的<em>标准</em>的，第一个<em>标准</em>是90			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u010871244" title="u010871244" target="_blank">
+					<img src="https://avatar.csdn.net/8/6/3/3_u010871244.jpg" alt="u010871244" class="avatar-pic">
+					<span class="name">u010871244</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-08-15 16:37:40</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2873</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12761053" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421475">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>2</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "C89 和 C99 标准比较";
+    var ChannelId = 16;
+    var articleId = "12761053";
+    var commentscount = 0;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12761053";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "c99+memcpy";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"C89 和 C99 标准比较");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=c99+memcpy"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

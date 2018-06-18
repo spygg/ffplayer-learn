@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/40525591"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文记录SDL播放视频的技术。在这里使用的版本是SDL2。实际上SDL本身并不提供视音频播放的功能，它只是封装了视音频播放的底层API。在Windows平台下，SDL封装了Direct3D这类的API用于播放视频；封装了DirectSound这类的API用于播放音频。因为SDL的编写目的就是简化视音频播放的开发难度，所以使用SDL播放视频（YUV/RGB）和音频（PCM）数据非常的容易。" />
+    <meta name="keywords" content="SDL,YUV" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的视音频播放示例7：SDL2播放RGB/YUV - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40525591"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">最简单的视音频播放示例7：SDL2播放RGB/YUV</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2014年10月29日 00:18:23</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：17115</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================<br /></p><p>最简单的视音频播放示例系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783">最简单的视音频播放示例1：总述</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40266503">最简单的视音频播放示例2：GDI播放YUV, RGB</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40279297">最简单的视音频播放示例3：Direct3D播放YUV，RGB（通过Surface）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40301179">最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40333583">最简单的视音频播放示例5：OpenGL播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40379845">最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40525591">最简单的视音频播放示例7：SDL2播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40540147">最简单的视音频播放示例8：DirectSound播放PCM</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40544521">最简单的视音频播放示例9：SDL2播放PCM</a><br /></p><p>=====================================================</p><br /><p>本文记录SDL播放视频的技术。在这里使用的版本是SDL2。实际上SDL本身并不提供视音频播放的功能，它只是封装了视音频播放的底层API。在Windows平台下，SDL封装了Direct3D这类的API用于播放视频；封装了DirectSound这类的API用于播放音频。因为SDL的编写目的就是简化视音频播放的开发难度，所以使用SDL播放视频（YUV/RGB）和音频（PCM）数据非常的容易。下文记录一下使用SDL播放视频数据的技术。</p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028011700375?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br /><h2>SDL简介</h2><br />SDL（Simple DirectMedia Layer）是一套开放源代码的跨平台多媒体开发库，使用C语言写成。SDL提供了数种控制图像、声音、输出入的函数，让开发者只要用相同或是相似的代码就可以开发出跨多个平台（Linux、Windows、Mac OS X等）的应用软件。目前SDL多用于开发游戏、模拟器、媒体播放器等多媒体应用领域。用下面这张图可以很明确地说明SDL的位置。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028011855768?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br />SDL实际上并不限于视音频的播放，它将功能分成下列数个子系统（subsystem）：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">Video（图像）：图像控制以及线程（thread）和事件管理（event）。<br />Audio（声音）：声音控制<br />Joystick（摇杆）：游戏摇杆控制<br />CD-ROM（光盘驱动器）：光盘媒体控制<br />Window Management（视窗管理）：与视窗程序设计集成<br />Event（事件驱动）：处理事件驱动</blockquote><p><br /></p><p>在Windows下，SDL与DirectX的对应关系如下。</p><p></p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="409"><tbody><tr><td nowrap="nowrap" valign="top"><p align="left"><span style="color:#ff6600;">SDL</span></p></td>  <td nowrap="nowrap" valign="top"><p align="left"><span style="color:#ff6600;">DirectX</span></p></td> </tr><tr><td nowrap="nowrap" valign="top"><p align="left">SDL_Video、SDL_Image</p></td>  <td nowrap="nowrap" valign="top"><p align="left">DirectDraw、Direct3D</p></td> </tr><tr><td nowrap="nowrap" valign="top"><p align="left">SDL_Audio、SDL_Mixer</p></td>  <td nowrap="nowrap" valign="top"><p align="left">DirectSound</p></td> </tr><tr><td nowrap="nowrap" valign="top"><p align="left">SDL_Joystick、SDL_Base</p></td>  <td nowrap="nowrap" valign="top"><p align="left">DirectInput</p></td> </tr><tr><td nowrap="nowrap" valign="top"><p align="left">SDL_Net</p></td>  <td nowrap="nowrap" valign="top"><p align="left">DirectPlay</p></td> </tr></tbody></table></div><p></p><br /><h2>SDL播放视频的流程</h2>SDL播放视频的技术在此前做的FFmpeg的示例程序中已经多次用到。在这里重新总结一下流程。<br /> <br />1.       初始化<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)         初始化SDL<br />2)         创建窗口（Window）<br />3)         基于窗口创建渲染器（Render）<br />4)         创建纹理（Texture）</blockquote>2.       循环显示画面<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)       设置纹理的数据<br />2)       纹理复制给渲染目标<br />3)       显示</blockquote> <br />下面详细分析一下上文的流程。<br /><p><strong>1.       初始化</strong></p><p><strong>1)         初始化SDL</strong></p>使用SDL_Init()初始化SDL。该函数可以确定希望激活的子系统。SDL_Init()函数原型如下：<br /><pre class="cpp">int SDLCALL SDL_Init(Uint32 flags)</pre><br />其中，flags可以取下列值：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">SDL_INIT_TIMER：定时器<br />SDL_INIT_AUDIO：音频<br />SDL_INIT_VIDEO：视频<br />SDL_INIT_JOYSTICK：摇杆<br />SDL_INIT_HAPTIC：触摸屏<br />SDL_INIT_GAMECONTROLLER：游戏控制器<br />SDL_INIT_EVENTS：事件<br />SDL_INIT_NOPARACHUTE：不捕获关键信号（这个没研究过）<br />SDL_INIT_EVERYTHING：包含上述所有选项</blockquote><p><br /></p><p>有关SDL_Init()有一点需要注意：初始化的时候尽量做到“够用就好”，而不要用SDL_INIT_EVERYTHING。因为有些情况下使用SDL_INIT_EVERYTHING会出现一些不可预知的问题。例如，在MFC应用程序中播放纯音频，如果初始化SDL的时候使用SDL_INIT_EVERYTHING，那么就会出现听不到声音的情况。后来发现，去掉了SDL_INIT_VIDEO之后，问题才得以解决。</p> <br /><strong>2)         创建窗口（Window）</strong><br />使用SDL_CreateWindow()创建一个用于视频播放的窗口。SDL_CreateWindow()的原型如下。<br /><pre class="cpp">SDL_Window * SDLCALL SDL_CreateWindow(const char *title,
+                                                      int x, int y, int w,
+                                                      int h, Uint32 flags);</pre><br />参数含义如下。<br />title  ：窗口标题<br />x       ：窗口位置x坐标。也可以设置为SDL_WINDOWPOS_CENTERED或SDL_WINDOWPOS_UNDEFINED。<br />y       ：窗口位置y坐标。同上。<br />w      ：窗口的宽<br />h       ：窗口的高<br />flags ：支持下列标识。包括了窗口的是否最大化、最小化，能否调整边界等等属性。<br />       ::SDL_WINDOW_FULLSCREEN,    ::SDL_WINDOW_OPENGL,<br />       ::SDL_WINDOW_HIDDEN,        ::SDL_WINDOW_BORDERLESS,<br />       ::SDL_WINDOW_RESIZABLE,     ::SDL_WINDOW_MAXIMIZED,<br />       ::SDL_WINDOW_MINIMIZED,     ::SDL_WINDOW_INPUT_GRABBED,<br />       ::SDL_WINDOW_ALLOW_HIGHDPI.<br /> 返回创建完成的窗口的ID。如果创建失败则返回0。<br /> <br /> <br /><strong>3)         基于窗口创建渲染器（Render）</strong><br />使用SDL_CreateRenderer()基于窗口创建渲染器。SDL_CreateRenderer()原型如下。<br /><pre class="cpp">SDL_Renderer * SDLCALL SDL_CreateRenderer(SDL_Window * window,
+                                               int index, Uint32 flags);</pre><br />参数含义如下。<br />window    ： 渲染的目标窗口。<br />index         ：打算初始化的渲染设备的索引。设置“-1”则初始化默认的渲染设备。<br />flags          ：支持以下值（位于SDL_RendererFlags定义中）<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">    SDL_RENDERER_SOFTWARE ：使用软件渲染<br />    SDL_RENDERER_ACCELERATED ：使用硬件加速<br />    SDL_RENDERER_PRESENTVSYNC：和显示器的刷新率同步<br />    SDL_RENDERER_TARGETTEXTURE ：不太懂</blockquote>返回创建完成的渲染器的ID。如果创建失败则返回NULL。<br /> <br /><strong>4)         创建纹理（Texture）</strong><br />使用SDL_CreateTexture()基于渲染器创建一个纹理。SDL_CreateTexture()的原型如下。<br /><pre class="cpp">SDL_Texture * SDLCALL SDL_CreateTexture(SDL_Renderer * renderer,
+                                                        Uint32 format,
+                                                        int access, int w,
+                                                        int h);</pre><br />参数的含义如下。<br />renderer：目标渲染器。<br />format      ：纹理的格式。后面会详述。<br />access      ：可以取以下值（定义位于SDL_TextureAccess中）<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">    SDL_TEXTUREACCESS_STATIC         ：变化极少<br />    SDL_TEXTUREACCESS_STREAMING        ：变化频繁<br />    SDL_TEXTUREACCESS_TARGET       ：暂时没有理解</blockquote>w               ：纹理的宽<br />h                ：纹理的高<br />创建成功则返回纹理的ID，失败返回0。<br /> <br />在纹理的创建过程中，需要指定纹理的格式（即第二个参数）。SDL的中的格式很多，如下所列。<br /> <br /><pre class="cpp">    SDL_PIXELFORMAT_UNKNOWN,
+    SDL_PIXELFORMAT_INDEX1LSB =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX1, SDL_BITMAPORDER_4321, 0,
+                               1, 0),
+    SDL_PIXELFORMAT_INDEX1MSB =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX1, SDL_BITMAPORDER_1234, 0,
+                               1, 0),
+    SDL_PIXELFORMAT_INDEX4LSB =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX4, SDL_BITMAPORDER_4321, 0,
+                               4, 0),
+    SDL_PIXELFORMAT_INDEX4MSB =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX4, SDL_BITMAPORDER_1234, 0,
+                               4, 0),
+    SDL_PIXELFORMAT_INDEX8 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_INDEX8, 0, 0, 8, 1),
+    SDL_PIXELFORMAT_RGB332 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED8, SDL_PACKEDORDER_XRGB,
+                               SDL_PACKEDLAYOUT_332, 8, 1),
+    SDL_PIXELFORMAT_RGB444 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB,
+                               SDL_PACKEDLAYOUT_4444, 12, 2),
+    SDL_PIXELFORMAT_RGB555 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB,
+                               SDL_PACKEDLAYOUT_1555, 15, 2),
+    SDL_PIXELFORMAT_BGR555 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XBGR,
+                               SDL_PACKEDLAYOUT_1555, 15, 2),
+    SDL_PIXELFORMAT_ARGB4444 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_ARGB,
+                               SDL_PACKEDLAYOUT_4444, 16, 2),
+    SDL_PIXELFORMAT_RGBA4444 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_RGBA,
+                               SDL_PACKEDLAYOUT_4444, 16, 2),
+    SDL_PIXELFORMAT_ABGR4444 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_ABGR,
+                               SDL_PACKEDLAYOUT_4444, 16, 2),
+    SDL_PIXELFORMAT_BGRA4444 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_BGRA,
+                               SDL_PACKEDLAYOUT_4444, 16, 2),
+    SDL_PIXELFORMAT_ARGB1555 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_ARGB,
+                               SDL_PACKEDLAYOUT_1555, 16, 2),
+    SDL_PIXELFORMAT_RGBA5551 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_RGBA,
+                               SDL_PACKEDLAYOUT_5551, 16, 2),
+    SDL_PIXELFORMAT_ABGR1555 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_ABGR,
+                               SDL_PACKEDLAYOUT_1555, 16, 2),
+    SDL_PIXELFORMAT_BGRA5551 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_BGRA,
+                               SDL_PACKEDLAYOUT_5551, 16, 2),
+    SDL_PIXELFORMAT_RGB565 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XRGB,
+                               SDL_PACKEDLAYOUT_565, 16, 2),
+    SDL_PIXELFORMAT_BGR565 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED16, SDL_PACKEDORDER_XBGR,
+                               SDL_PACKEDLAYOUT_565, 16, 2),
+    SDL_PIXELFORMAT_RGB24 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_ARRAYORDER_RGB, 0,
+                               24, 3),
+    SDL_PIXELFORMAT_BGR24 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_ARRAYORDER_BGR, 0,
+                               24, 3),
+    SDL_PIXELFORMAT_RGB888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_XRGB,
+                               SDL_PACKEDLAYOUT_8888, 24, 4),
+    SDL_PIXELFORMAT_RGBX8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_RGBX,
+                               SDL_PACKEDLAYOUT_8888, 24, 4),
+    SDL_PIXELFORMAT_BGR888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_XBGR,
+                               SDL_PACKEDLAYOUT_8888, 24, 4),
+    SDL_PIXELFORMAT_BGRX8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_BGRX,
+                               SDL_PACKEDLAYOUT_8888, 24, 4),
+    SDL_PIXELFORMAT_ARGB8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_ARGB,
+                               SDL_PACKEDLAYOUT_8888, 32, 4),
+    SDL_PIXELFORMAT_RGBA8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_RGBA,
+                               SDL_PACKEDLAYOUT_8888, 32, 4),
+    SDL_PIXELFORMAT_ABGR8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_ABGR,
+                               SDL_PACKEDLAYOUT_8888, 32, 4),
+    SDL_PIXELFORMAT_BGRA8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_BGRA,
+                               SDL_PACKEDLAYOUT_8888, 32, 4),
+    SDL_PIXELFORMAT_ARGB2101010 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_ARGB,
+                               SDL_PACKEDLAYOUT_2101010, 32, 4),
+ 
+    SDL_PIXELFORMAT_YV12 =      /**&lt; Planar mode: Y + V + U  (3 planes) */
+        SDL_DEFINE_PIXELFOURCC('Y', 'V', '1', '2'),
+    SDL_PIXELFORMAT_IYUV =      /**&lt; Planar mode: Y + U + V  (3 planes) */
+        SDL_DEFINE_PIXELFOURCC('I', 'Y', 'U', 'V'),
+    SDL_PIXELFORMAT_YUY2 =      /**&lt; Packed mode: Y0+U0+Y1+V0 (1 plane) */
+        SDL_DEFINE_PIXELFOURCC('Y', 'U', 'Y', '2'),
+    SDL_PIXELFORMAT_UYVY =      /**&lt; Packed mode: U0+Y0+V0+Y1 (1 plane) */
+        SDL_DEFINE_PIXELFOURCC('U', 'Y', 'V', 'Y'),
+    SDL_PIXELFORMAT_YVYU =      /**&lt; Packed mode: Y0+V0+Y1+U0 (1 plane) */
+        SDL_DEFINE_PIXELFOURCC('Y', 'V', 'Y', 'U')</pre><br />这一看确实给人一种“眼花缭乱”的感觉。简单分析一下其中的定义吧。例如ARGB8888的定义如下。<br /><pre class="cpp">SDL_PIXELFORMAT_ARGB8888 =
+        SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_ARGB,
+                               SDL_PACKEDLAYOUT_8888, 32, 4),</pre><br />其中用了一个宏SDL_DEFINE_PIXELFORMAT用于将几种属性合并到一个格式中。下面我们看看一个格式都包含哪些属性：<br /><strong>SDL_PIXELTYPE_PACKED32</strong>：代表了像素分量的存储方式。PACKED代表了像素的几个分量是一起存储的，内存中存储方式如下：R1|G1|B1，R2|G2|B2…；ARRAY则代表了像素的几个分量是分开存储的，内存中存储方式如下：R1|R2|R3…，G1|G2|G3…，B1|B2|B3…<br /><strong>SDL_PACKEDORDER_ARGB</strong>：代表了PACKED存储方式下像素分量的顺序。注意，这里所说的顺序涉及到了一个“大端”和“小端”的问题。这个问题在《<a href="http://blog.csdn.net/leixiaohua1020/article/details/40266503">最简单的视音频播放示例2：GDI播放YUV, RGB</a>》中已经叙述，不再重复记录。对于Windows这样的“小端”系统，“ARGB”格式在内存中的存储顺序是B|G|R|A。<br /><strong>SDL_PACKEDLAYOUT_8888</strong>：说明了每个分量占据的比特数。例如ARGB格式每个分量分别占据了8bit。<br /><strong>32</strong>：每个像素占用的比特数。例如ARGB格式占用了32bit（每个分量占据8bit）。<br /><strong>4</strong>：每个像素占用的字节数。例如ARGB格式占用了4Byte（每个分量占据1Byte）。<br /> <br /><p><strong>2.       循环显示画面</strong></p><p><strong>1)       设置纹理的数据</strong></p>使用SDL_UpdateTexture()设置纹理的像素数据。SDL_UpdateTexture()的原型如下。<br /><pre class="cpp">int SDLCALL SDL_UpdateTexture(SDL_Texture * texture,
+                                              const SDL_Rect * rect,
+                                              const void *pixels, int pitch);</pre><br />参数的含义如下。<br />texture：目标纹理。<br />rect：更新像素的矩形区域。设置为NULL的时候更新整个区域。<br />pixels：像素数据。<br />pitch：一行像素数据的字节数。<br />成功的话返回0，失败的话返回-1。<br /> <br />2)       纹理复制给渲染目标<br />使用SDL_RenderCopy()将纹理数据复制给渲染目标。在使用SDL_RenderCopy()之前，可以使用SDL_RenderClear()先使用清空渲染目标。实际上视频播放的时候不使用SDL_RenderClear()也是可以的，因为视频的后一帧会完全覆盖前一帧。<br />SDL_RenderClear()原型如下。<br /><pre class="cpp">int SDLCALL SDL_RenderClear(SDL_Renderer * renderer);</pre><br />参数renderer用于指定渲染目标。<br />SDL_RenderCopy()原型如下。<br /><pre class="cpp">int SDLCALL SDL_RenderCopy(SDL_Renderer * renderer,
+                                           SDL_Texture * texture,
+                                           const SDL_Rect * srcrect,
+                                           const SDL_Rect * dstrect);</pre><br />参数的含义如下。<br />renderer：渲染目标。<br />texture：输入纹理。<br />srcrect：选择输入纹理的一块矩形区域作为输入。设置为NULL的时候整个纹理作为输入。<br />dstrect：选择渲染目标的一块矩形区域作为输出。设置为NULL的时候整个渲染目标作为输出。<br />成功的话返回0，失败的话返回-1。<br /> <br />3)       显示<br />使用SDL_RenderPresent()显示画面。SDL_RenderPresent()原型如下。<br /><pre class="cpp">void SDLCALL SDL_RenderPresent(SDL_Renderer * renderer);</pre><br /> 参数renderer用于指定渲染目标。<br /><h2>流程总结</h2><br />在《最简单的基于FFMPEG+SDL的视频播放器 ver2（采用SDL2.0）》中总结过SDL2播放视频的流程，在这里简单复制过来。<br />使用SDL播放视频的流程可以概括为下图。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028012407644?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br />SDL中几个关键的结构体之间的关系可以用下图概述。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028012414914?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br />简单解释一下各变量的作用：<br />SDL_Window就是使用SDL的时候弹出的那个窗口。在SDL1.x版本中，只可以创建一个一个窗口。在SDL2.0版本中，可以创建多个窗口。<br />SDL_Texture用于显示YUV数据。一个SDL_Texture对应一帧YUV数据。<br />SDL_Renderer用于渲染SDL_Texture至SDL_Window。<br />SDL_Rect用于确定SDL_Texture显示的位置。<br /><p><br /></p><h2>代码</h2><p>贴出源代码。</p><p></p><pre class="cpp">/**
+ * 最简单的SDL2播放视频的例子（SDL2播放RGB/YUV）
+ * Simplest Video Play SDL2 (SDL2 play RGB/YUV) 
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ *
+ * 本程序使用SDL2播放RGB/YUV视频像素数据。SDL实际上是对底层绘图
+ * API（Direct3D，OpenGL）的封装，使用起来明显简单于直接调用底层
+ * API。
+ *
+ * 函数调用步骤如下: 
+ *
+ * [初始化]
+ * SDL_Init(): 初始化SDL。
+ * SDL_CreateWindow(): 创建窗口（Window）。
+ * SDL_CreateRenderer(): 基于窗口创建渲染器（Render）。
+ * SDL_CreateTexture(): 创建纹理（Texture）。
+ *
+ * [循环渲染数据]
+ * SDL_UpdateTexture(): 设置纹理的数据。
+ * SDL_RenderCopy(): 纹理复制给渲染器。
+ * SDL_RenderPresent(): 显示。
+ *
+ * This software plays RGB/YUV raw video data using SDL2.
+ * SDL is a wrapper of low-level API (Direct3D, OpenGL).
+ * Use SDL is much easier than directly call these low-level API.  
+ *
+ * The process is shown as follows:
+ *
+ * [Init]
+ * SDL_Init(): Init SDL.
+ * SDL_CreateWindow(): Create a Window.
+ * SDL_CreateRenderer(): Create a Render.
+ * SDL_CreateTexture(): Create a Texture.
+ *
+ * [Loop to Render data]
+ * SDL_UpdateTexture(): Set Texture's data.
+ * SDL_RenderCopy(): Copy Texture to Render.
+ * SDL_RenderPresent(): Show.
+ */
+
+#include &lt;stdio.h&gt;
+
+extern "C"
+{
+#include "sdl/SDL.h"
+};
+
+//set '1' to choose a type of file to play
+#define LOAD_BGRA    1
+#define LOAD_RGB24   0
+#define LOAD_BGR24   0
+#define LOAD_YUV420P 0
+
+//Bit per Pixel
+#if LOAD_BGRA
+const int bpp=32;
+#elif LOAD_RGB24|LOAD_BGR24
+const int bpp=24;
+#elif LOAD_YUV420P
+const int bpp=12;
+#endif
+
+int screen_w=500,screen_h=500;
+const int pixel_w=320,pixel_h=180;
+
+unsigned char buffer[pixel_w*pixel_h*bpp/8];
+//BPP=32
+unsigned char buffer_convert[pixel_w*pixel_h*4];
+
+//Convert RGB24/BGR24 to RGB32/BGR32
+//And change Endian if needed
+void CONVERT_24to32(unsigned char *image_in,unsigned char *image_out,int w,int h){
+	for(int i =0;i&lt;h;i++)
+		for(int j=0;j&lt;w;j++){
+			//Big Endian or Small Endian?
+			//"ARGB" order:high bit -&gt; low bit.
+			//ARGB Format Big Endian (low address save high MSB, here is A) in memory : A|R|G|B
+			//ARGB Format Little Endian (low address save low MSB, here is B) in memory : B|G|R|A
+			if(SDL_BYTEORDER==SDL_LIL_ENDIAN){
+				//Little Endian (x86): R|G|B --&gt; B|G|R|A
+				image_out[(i*w+j)*4+0]=image_in[(i*w+j)*3+2];
+				image_out[(i*w+j)*4+1]=image_in[(i*w+j)*3+1];
+				image_out[(i*w+j)*4+2]=image_in[(i*w+j)*3];
+				image_out[(i*w+j)*4+3]='0';
+			}else{
+				//Big Endian: R|G|B --&gt; A|R|G|B
+				image_out[(i*w+j)*4]='0';
+				memcpy(image_out+(i*w+j)*4+1,image_in+(i*w+j)*3,3);
+			}
+		}
+}
+
+
+//Refresh Event
+#define REFRESH_EVENT  (SDL_USEREVENT + 1)
+
+int thread_exit=0;
+
+int refresh_video(void *opaque){
+	while (thread_exit==0) {
+		SDL_Event event;
+		event.type = REFRESH_EVENT;
+		SDL_PushEvent(&amp;event);
+		SDL_Delay(40);
+	}
+	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	if(SDL_Init(SDL_INIT_VIDEO)) {  
+		printf( "Could not initialize SDL - %s\n", SDL_GetError()); 
+		return -1;
+	} 
+
+	SDL_Window *screen; 
+	//SDL 2.0 Support for multiple windows
+	screen = SDL_CreateWindow("Simplest Video Play SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		screen_w, screen_h,SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+	if(!screen) {  
+		printf("SDL: could not create window - exiting:%s\n",SDL_GetError());  
+		return -1;
+	}
+	SDL_Renderer* sdlRenderer = SDL_CreateRenderer(screen, -1, 0);  
+
+	Uint32 pixformat=0;
+#if LOAD_BGRA
+	//Note: ARGB8888 in "Little Endian" system stores as B|G|R|A
+	pixformat= SDL_PIXELFORMAT_ARGB8888;  
+#elif LOAD_RGB24
+	pixformat= SDL_PIXELFORMAT_RGB888;  
+#elif LOAD_BGR24
+	pixformat= SDL_PIXELFORMAT_BGR888;  
+#elif LOAD_YUV420P
+	//IYUV: Y + U + V  (3 planes)
+	//YV12: Y + V + U  (3 planes)
+	pixformat= SDL_PIXELFORMAT_IYUV;  
+#endif
+
+	SDL_Texture* sdlTexture = SDL_CreateTexture(sdlRenderer,pixformat, SDL_TEXTUREACCESS_STREAMING,pixel_w,pixel_h);
+
+
+
+	FILE *fp=NULL;
+#if LOAD_BGRA
+	fp=fopen("../test_bgra_320x180.rgb","rb+");
+#elif LOAD_RGB24
+	fp=fopen("../test_rgb24_320x180.rgb","rb+");
+#elif LOAD_BGR24
+	fp=fopen("../test_bgr24_320x180.rgb","rb+");
+#elif LOAD_YUV420P
+	fp=fopen("../test_yuv420p_320x180.yuv","rb+");
+#endif
+	if(fp==NULL){
+		printf("cannot open this file\n");
+		return -1;
+	}
+
+	SDL_Rect sdlRect;  
+
+	SDL_Thread *refresh_thread = SDL_CreateThread(refresh_video,NULL,NULL);
+	SDL_Event event;
+	while(1){
+		//Wait
+		SDL_WaitEvent(&amp;event);
+		if(event.type==REFRESH_EVENT){
+			if (fread(buffer, 1, pixel_w*pixel_h*bpp/8, fp) != pixel_w*pixel_h*bpp/8){
+				// Loop
+				fseek(fp, 0, SEEK_SET);
+				fread(buffer, 1, pixel_w*pixel_h*bpp/8, fp);
+			}
+
+#if LOAD_BGRA
+			//We don't need to change Endian
+			//Because input BGRA pixel data(B|G|R|A) is same as ARGB8888 in Little Endian (B|G|R|A)
+			SDL_UpdateTexture( sdlTexture, NULL, buffer, pixel_w*4);  
+#elif LOAD_RGB24|LOAD_BGR24
+			//change 24bit to 32 bit
+			//and in Windows we need to change Endian
+			CONVERT_24to32(buffer,buffer_convert,pixel_w,pixel_h);
+			SDL_UpdateTexture( sdlTexture, NULL, buffer_convert, pixel_w*4);  
+#elif LOAD_YUV420P
+			SDL_UpdateTexture( sdlTexture, NULL, buffer, pixel_w);  
+#endif
+			//FIX: If window is resize
+			sdlRect.x = 0;  
+			sdlRect.y = 0;  
+			sdlRect.w = screen_w;  
+			sdlRect.h = screen_h;  
+			
+			SDL_RenderClear( sdlRenderer );   
+			SDL_RenderCopy( sdlRenderer, sdlTexture, NULL, &amp;sdlRect);  
+			SDL_RenderPresent( sdlRenderer );  
+			//Delay 40ms
+			SDL_Delay(40);
+			
+		}else if(event.type==SDL_WINDOWEVENT){
+			//If Resize
+			SDL_GetWindowSize(screen,&amp;screen_w,&amp;screen_h);
+		}else if(event.type==SDL_QUIT){
+			break;
+		}
+	}
+
+	return 0;
+}
+</pre><br /><br /><p></p><h2>运行结果</h2>程序的运行结果如下图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028012434757?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br /><h2>下载</h2><br />代码位于“Simplest Media Play”中<br /> <br /> <br /><p>SourceForge项目地址：<a href="https://sourceforge.net/projects/simplestmediaplay/">https://sourceforge.net/projects/simplestmediaplay/</a></p><p>CSDN下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8054395">http://download.csdn.net/detail/leixiaohua1020/8054395</a></p> <br /> <p>注：</p><p>该项目会不定时的更新并修复一些小问题，最新的版本请参考该系列文章的总述页面：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783"> 《最简单的视音频播放示例1：总述》</a></p><br />上述工程包含了使用各种API（Direct3D，OpenGL，GDI，DirectSound，SDL2）播放多媒体例子。其中音频输入为PCM采样数据。输出至系统的声卡播放出来。视频输入为YUV/RGB像素数据。输出至显示器上的一个窗口播放出来。<br />通过本工程的代码初学者可以快速学习使用这几个API播放视频和音频的技术。<br />一共包括了如下几个子工程：<br />simplest_audio_play_directsound:         使用DirectSound播放PCM音频采样数据。<br />simplest_audio_play_sdl2:                       使用SDL2播放PCM音频采样数据。<br />simplest_video_play_direct3d:                使用Direct3D的Surface播放RGB/YUV视频像素数据。<br />simplest_video_play_direct3d_texture:使用Direct3D的Texture播放RGB视频像素数据。<br />simplest_video_play_gdi:                          使用GDI播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl:                   使用OpenGL播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl_texture:    使用OpenGL的Texture播放YUV视频像素数据。<br /><span style="color:#ff0000;">simplest_video_play_sdl2:                        使用SDL2播放RGB/YUV视频像素数据。</span><br /> <br />             </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/40525591		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=SDL&t=blog" target="_blank">SDL						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=YUV&t=blog" target="_blank">YUV						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=RGB&t=blog" target="_blank">RGB						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=视频&t=blog" target="_blank">视频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=显示&t=blog" target="_blank">显示						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2619497"  target="_blank">SDL						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40525591#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/lgh1992314/article/details/52259481" target="_blank" strategy="BlogCommendFromBaidu_0">
+				FFMPEG学习----使用SDL<em>播放</em><em>YUV</em>数据			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/lgh1992314/article/details/52259481" target="_blank" >
+				命令行下配置：
+G:\Coding\Video\SDL\proj&gt;tree /F
+文件夹 PATH 列表
+卷序列号为 0FD5-0CC8
+G:.
+│  sdl.cpp
+│  <em>SDL2</em>.dll
+│  S...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/lgh1992314" title="lgh1992314" target="_blank">
+					<img src="https://avatar.csdn.net/6/8/5/3_lgh1992314.jpg" alt="lgh1992314" class="avatar-pic">
+					<span class="name">lgh1992314</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-08-20 10:43:39</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1170</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dux003/article/details/5459391" target="_blank" strategy="BlogCommendFromBaidu_1">
+				使用SDL<em>播放</em><em>YUV</em>图像数据			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dux003/article/details/5459391" target="_blank" >
+				SDL提供了针对<em>YUV</em>格式数据的直接写屏操作。废话不多说，直接上代码吧/** * file show<em>yuv</em>.c * author: rare * date: 2009/12/06 * email: d...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dux003" title="dux003" target="_blank">
+					<img src="https://avatar.csdn.net/9/B/0/3_dux003.jpg" alt="dux003" class="avatar-pic">
+					<span class="name">dux003</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2010-04-07 18:57:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4605</span>
+			</p>
+		</div>
+	</div>
+								<!-- 第四范式广告开关 -->
+<script>window.p4sdk_enable_recommendBox=true</script>
+			
+					<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/i_scream_/9644380" target="_blank" strategy="BlogCommendFromBaidu_2">
+						SDL的使用<em>示例</em>_显示<em>YUV</em>数据					</a>
+				</h4>
+				<p>
+					<span class="data">2016年10月01日 </span>
+					<span class="size">1.29MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/i_scream_/9644380" target="_blank" strategy="BlogCommendFromBaidu_2">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/unkonw.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/38868499" target="_blank" strategy="BlogCommendFromBaidu_3">
+				最<em>简单</em>的基于FFMPEG+SDL的视频<em>播放</em>器 ver2 （采用<em>SDL2</em>.0）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/38868499" target="_blank" >
+				之前做过一个FFMPEG+SDL的<em>简单</em><em>播放</em>器：《100行代码实现最<em>简单</em>的基于FFMPEG+SDL的视频<em>播放</em>器》。最近有不少人反映SDL已经升级到2.0版本了，甚至官网的Wiki上都只有<em>SDL2</em>.0的文...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-08-31 01:20:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：78965</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/rankun1/article/details/51302402" target="_blank" strategy="BlogCommendFromBaidu_4">
+				SDL使用内存像素数据绘制（SDL_Create<em>RGB</em>SurfaceFrom）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/rankun1/article/details/51302402" target="_blank" >
+				不多说，主要是利用SDL_Create<em>RGB</em>SurfaceFrom函数使用内存中的像素数据创建一个Suiface
+
+SDL_Surface* SDL_Create<em>RGB</em>SurfaceFrom(vo...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/rankun1" title="rankun1" target="_blank">
+					<img src="https://avatar.csdn.net/4/F/5/3_rankun1.jpg" alt="rankun1" class="avatar-pic">
+					<span class="name">rankun1</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-05-03 10:15:36</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1848</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/velanjun/article/details/20643545" target="_blank" strategy="BlogCommendFromBaidu_5">
+				<em>yuv</em>数据显示			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/velanjun/article/details/20643545" target="_blank" >
+				转自：http://ticktick.blog.51cto.com/823160/568928
+
+
+关于如何显示原始的<em>YUV</em>码流，根据我的经验，一般有三种方法：
+   （1） 利用 matla...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/velanjun" title="velanjun" target="_blank">
+					<img src="https://avatar.csdn.net/D/2/3/3_velanjun.jpg" alt="velanjun" class="avatar-pic">
+					<span class="name">velanjun</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-03-06 18:12:24</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4088</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/WificamSDK7/article/details/48679431" target="_blank" strategy="BlogCommendFromBaidu_6">
+				使用<em>SDL2</em>.0进行<em>YUV</em>显示			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/WificamSDK7/article/details/48679431" target="_blank" >
+				本文描述如何从ffmpeg decode出来的<em>YUV</em> frame到<em>SDL2</em>.0显示，重点在如何将ffmpeg decode的<em>yuv</em> format转换到<em>SDL2</em>.0可以显示的format，以及SDL如何...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/WificamSDK7" title="WificamSDK7" target="_blank">
+					<img src="https://avatar.csdn.net/2/A/8/3_wificamsdk7.jpg" alt="WificamSDK7" class="avatar-pic">
+					<span class="name">WificamSDK7</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-09-23 14:01:38</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2021</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/RobertBaker/2798600" target="_blank" strategy="BlogCommendFromBaidu_7">
+						<em>YUV</em>文件显示工具 <em>YUV</em>Viewer					</a>
+				</h4>
+				<p>
+					<span class="data">2010年10月31日 </span>
+					<span class="size">312KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/RobertBaker/2798600" target="_blank" strategy="BlogCommendFromBaidu_7">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/exe.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/gz_chen/article/details/72639146" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>SDL2</em>显示<em>YUV</em>图像			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/gz_chen/article/details/72639146" target="_blank" >
+				<em>SDL2</em>显示<em>YUV</em>图像<em>简单</em>例子			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/gz_chen" title="gz_chen" target="_blank">
+					<img src="https://avatar.csdn.net/A/F/9/3_gz_chen.jpg" alt="gz_chen" class="avatar-pic">
+					<span class="name">gz_chen</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-23 13:59:23</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：610</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/lbaihao/article/details/52254396" target="_blank" strategy="BlogCommendFromBaidu_9">
+				最<em>简单</em>的<em>SDL2</em><em>播放</em>视频的例子（<em>SDL2</em><em>播放</em><em>RGB</em>/<em>YUV</em>）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/lbaihao/article/details/52254396" target="_blank" >
+				/**
+ * 最<em>简单</em>的<em>SDL2</em><em>播放</em>视频的例子（<em>SDL2</em><em>播放</em><em>RGB</em>/<em>YUV</em>）
+ * Simplest Video Play <em>SDL2</em> (<em>SDL2</em> play <em>RGB</em>/<em>YUV</em>) 
+ *
+ * 雷霄骅...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/lbaihao" title="lbaihao" target="_blank">
+					<img src="https://avatar.csdn.net/2/2/7/3_lbaihao.jpg" alt="lbaihao" class="avatar-pic">
+					<span class="name">lbaihao</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-08-19 21:41:31</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：758</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40525591" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421245">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>11</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的视音频播放示例7：SDL2播放RGB/YUV";
+    var ChannelId = 16;
+    var articleId = "40525591";
+    var commentscount = 22;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/40525591";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "ffmpeg%E3%80%80sdl2+yuv";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的视音频播放示例7：SDL2播放RGB/YUV");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=ffmpeg%E3%80%80sdl2+yuv"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

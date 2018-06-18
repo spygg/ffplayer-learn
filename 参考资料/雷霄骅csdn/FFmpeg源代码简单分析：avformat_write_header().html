@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/44116215"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="打算写两篇文章简单分析FFmpeg的写文件用到的3个函数：avformat_write_header()，av_write_frame()以及av_write_trailer()。其中av_write_frame()用于写视频数据，avformat_write_header()用于写视频文件头，而av_write_trailer()用于写视频文件尾。本文首先分析avformat_write_hea" />
+    <meta name="keywords" content="FFmpeg,源代码" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>FFmpeg源代码简单分析：avformat_write_header() - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/44116215"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">FFmpeg源代码简单分析：avformat_write_header()</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2015年03月08日 18:45:57</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：24409</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p align="left">=====================================================</p><p align="left">FFmpeg的库函数源代码分析文章列表：</p><p align="left">【架构图】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44220151"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码结构图 - </span><span style="color:#0000FF;">解码</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44226355"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码结构图 - </span><span style="color:#0000FF;">编码</span></a></p><p align="left">【通用】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/12677129"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">av_register_all()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/12677265"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avcodec_register_all()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/41176777"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：内存的分配和释放（</span><span style="color:#0000FF;">av_malloc()</span><span style="color:#0000FF;">、</span><span style="color:#0000FF;">av_free()</span><span style="color:#0000FF;">等）</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/41181155"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：常见结构体的初始化和销毁（</span><span style="color:#0000FF;">AVFormatContext</span><span style="color:#0000FF;">，</span><span style="color:#0000FF;">AVFrame</span><span style="color:#0000FF;">等）</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/41199947"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avio_open2()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44084557"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">av_find_decoder()</span><span style="color:#0000FF;">和</span><span style="color:#0000FF;">av_find_encoder()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44117891"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avcodec_open2()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44206699"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avcodec_close()</span></a></p><p align="left">【解码】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/8661601"><span style="color:#0000FF;">图解</span><span style="color:#0000FF;">FFMPEG</span><span style="color:#0000FF;">打开媒体的函数</span><span style="color:#0000FF;">avformat_open_input</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44064715"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avformat_open_input()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44084321"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avformat_find_stream_info()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/12678577"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">av_read_frame()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/12679719"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avcodec_decode_video2()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44110683"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avformat_close_input()</span></a></p><p align="left">【编码】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/41198929"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avformat_alloc_output_context2()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44116215"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avformat_write_header()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44206485"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">avcodec_encode_video()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44199673"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">av_write_frame()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44201645"><span style="color:#0000FF;">FFmpeg </span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">av_write_trailer()</span></a></p><p align="left">【其它】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44243155"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：日志输出系统（</span><span style="color:#0000FF;">av_log()</span><span style="color:#0000FF;">等）</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44268323"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：结构体成员管理系统</span><span style="color:#0000FF;">-AVClass</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44279329"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：结构体成员管理系统</span><span style="color:#0000FF;">-AVOption</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44305697"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">libswscale</span><span style="color:#0000FF;">的</span><span style="color:#0000FF;">sws_getContext()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44346687"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">libswscale</span><span style="color:#0000FF;">的</span><span style="color:#0000FF;">sws_scale()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/41211121"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">libavdevice</span><span style="color:#0000FF;">的</span><span style="color:#0000FF;">avdevice_register_all()</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44597955"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">libavdevice</span><span style="color:#0000FF;">的</span><span style="color:#0000FF;">gdigrab</span></a></p><p align="left">【脚本】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44556525"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">makefile</span></a></p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44587465"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">源代码简单分析：</span><span style="color:#0000FF;">configure</span></a></p><p align="left">【H.264】</p><p align="left"><a href="http://blog.csdn.net/leixiaohua1020/article/details/44864509"><span style="color:#0000FF;">FFmpeg</span><span style="color:#0000FF;">的</span><span style="color:#0000FF;">H.264</span><span style="color:#0000FF;">解码器源代码简单分析：概述</span></a></p><p align="left">=====================================================</p><br /><p>打算写两篇文章简单分析FFmpeg的写文件用到的3个函数：avformat_write_header()，av_write_frame()以及av_write_trailer()。其中av_write_frame()用于写视频数据，avformat_write_header()用于写视频文件头，而av_write_trailer()用于写视频文件尾。</p>本文首先分析avformat_write_header()。<br /><span style="font-family:'FangSong_GB2312';">PS：<br />需要注意的是，尽管这3个函数功能是配套的，但是它们的前缀却不一样，写文件头Header的函数前缀是“avformat_”，其他两个函数前缀是“av_”（不太明白其中的原因）。</span><br />avformat_write_header()的声明位于libavformat\avformat.h，如下所示。<br /><pre class="cpp">/**
+ * Allocate the stream private data and write the stream header to
+ * an output media file.
+ *
+ * @param s Media file handle, must be allocated with avformat_alloc_context().
+ *          Its oformat field must be set to the desired output format;
+ *          Its pb field must be set to an already opened AVIOContext.
+ * @param options  An AVDictionary filled with AVFormatContext and muxer-private options.
+ *                 On return this parameter will be destroyed and replaced with a dict containing
+ *                 options that were not found. May be NULL.
+ *
+ * @return 0 on success, negative AVERROR on failure.
+ *
+ * @see av_opt_find, av_dict_set, avio_open, av_oformat_next.
+ */
+int avformat_write_header(AVFormatContext *s, AVDictionary **options);</pre>简单解释一下它的参数的含义：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">s：用于输出的AVFormatContext。<br />options：额外的选项，目前没有深入研究过，一般为NULL。</blockquote>函数正常执行后返回值等于0。<br /><br />该函数最典型的例子可以参考：<br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/25430425">最简单的基于FFMPEG的视频编码器（YUV编码为H.264）</a><br /><br /><h2>函数调用关系图</h2><p>avformat_write_header()的调用关系如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150307142222277" alt="" /><br /></p><p style="text-align:center;"><br /></p><h2>avformat_write_header()</h2>avformat_write_header()的定义位于libavformat\mux.c，如下所示。<br /><pre class="cpp">int avformat_write_header(AVFormatContext *s, AVDictionary **options)
+{
+    int ret = 0;
+
+    if (ret = init_muxer(s, options))
+        return ret;
+
+    if (s-&gt;oformat-&gt;write_header) {
+        ret = s-&gt;oformat-&gt;write_header(s);
+        if (ret &gt;= 0 &amp;&amp; s-&gt;pb &amp;&amp; s-&gt;pb-&gt;error &lt; 0)
+            ret = s-&gt;pb-&gt;error;
+        if (ret &lt; 0)
+            return ret;
+        if (s-&gt;flush_packets &amp;&amp; s-&gt;pb &amp;&amp; s-&gt;pb-&gt;error &gt;= 0 &amp;&amp; s-&gt;flags &amp; AVFMT_FLAG_FLUSH_PACKETS)
+            avio_flush(s-&gt;pb);
+    }
+
+    if ((ret = init_pts(s)) &lt; 0)
+        return ret;
+
+    if (s-&gt;avoid_negative_ts &lt; 0) {
+        av_assert2(s-&gt;avoid_negative_ts == AVFMT_AVOID_NEG_TS_AUTO);
+        if (s-&gt;oformat-&gt;flags &amp; (AVFMT_TS_NEGATIVE | AVFMT_NOTIMESTAMPS)) {
+            s-&gt;avoid_negative_ts = 0;
+        } else
+            s-&gt;avoid_negative_ts = AVFMT_AVOID_NEG_TS_MAKE_NON_NEGATIVE;
+    }
+
+    return 0;
+}
+</pre><br />从源代码可以看出，avformat_write_header()完成了以下工作：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">（1）调用init_muxer()初始化复用器<br />（2）调用AVOutputFormat的write_header()</blockquote>下面看一下这两个函数。<br /><br /><h2>init_muxer()</h2>init_muxer()用于初始化复用器，它的定义如下所示。<br /><pre class="cpp">static int init_muxer(AVFormatContext *s, AVDictionary **options)
+{
+    int ret = 0, i;
+    AVStream *st;
+    AVDictionary *tmp = NULL;
+    AVCodecContext *codec = NULL;
+    AVOutputFormat *of = s-&gt;oformat;
+    AVDictionaryEntry *e;
+
+    if (options)
+        av_dict_copy(&amp;tmp, *options, 0);
+
+    if ((ret = av_opt_set_dict(s, &amp;tmp)) &lt; 0)
+        goto fail;
+    if (s-&gt;priv_data &amp;&amp; s-&gt;oformat-&gt;priv_class &amp;&amp; *(const AVClass**)s-&gt;priv_data==s-&gt;oformat-&gt;priv_class &amp;&amp;
+        (ret = av_opt_set_dict2(s-&gt;priv_data, &amp;tmp, AV_OPT_SEARCH_CHILDREN)) &lt; 0)
+        goto fail;
+
+#if FF_API_LAVF_BITEXACT
+    if (s-&gt;nb_streams &amp;&amp; s-&gt;streams[0]-&gt;codec-&gt;flags &amp; CODEC_FLAG_BITEXACT)
+        s-&gt;flags |= AVFMT_FLAG_BITEXACT;
+#endif
+
+    // some sanity checks
+    if (s-&gt;nb_streams == 0 &amp;&amp; !(of-&gt;flags &amp; AVFMT_NOSTREAMS)) {
+        av_log(s, AV_LOG_ERROR, "No streams to mux were specified\n");
+        ret = AVERROR(EINVAL);
+        goto fail;
+    }
+
+    for (i = 0; i &lt; s-&gt;nb_streams; i++) {
+        st    = s-&gt;streams[i];
+        codec = st-&gt;codec;
+
+#if FF_API_LAVF_CODEC_TB
+FF_DISABLE_DEPRECATION_WARNINGS
+        if (!st-&gt;time_base.num &amp;&amp; codec-&gt;time_base.num) {
+            av_log(s, AV_LOG_WARNING, "Using AVStream.codec.time_base as a "
+                   "timebase hint to the muxer is deprecated. Set "
+                   "AVStream.time_base instead.\n");
+            avpriv_set_pts_info(st, 64, codec-&gt;time_base.num, codec-&gt;time_base.den);
+        }
+FF_ENABLE_DEPRECATION_WARNINGS
+#endif
+
+        if (!st-&gt;time_base.num) {
+            /* fall back on the default timebase values */
+            if (codec-&gt;codec_type == AVMEDIA_TYPE_AUDIO &amp;&amp; codec-&gt;sample_rate)
+                avpriv_set_pts_info(st, 64, 1, codec-&gt;sample_rate);
+            else
+                avpriv_set_pts_info(st, 33, 1, 90000);
+        }
+
+        switch (codec-&gt;codec_type) {
+        case AVMEDIA_TYPE_AUDIO:
+            if (codec-&gt;sample_rate &lt;= 0) {
+                av_log(s, AV_LOG_ERROR, "sample rate not set\n");
+                ret = AVERROR(EINVAL);
+                goto fail;
+            }
+            if (!codec-&gt;block_align)
+                codec-&gt;block_align = codec-&gt;channels *
+                                     av_get_bits_per_sample(codec-&gt;codec_id) &gt;&gt; 3;
+            break;
+        case AVMEDIA_TYPE_VIDEO:
+            if ((codec-&gt;width &lt;= 0 || codec-&gt;height &lt;= 0) &amp;&amp;
+                !(of-&gt;flags &amp; AVFMT_NODIMENSIONS)) {
+                av_log(s, AV_LOG_ERROR, "dimensions not set\n");
+                ret = AVERROR(EINVAL);
+                goto fail;
+            }
+            if (av_cmp_q(st-&gt;sample_aspect_ratio, codec-&gt;sample_aspect_ratio)
+                &amp;&amp; FFABS(av_q2d(st-&gt;sample_aspect_ratio) - av_q2d(codec-&gt;sample_aspect_ratio)) &gt; 0.004*av_q2d(st-&gt;sample_aspect_ratio)
+            ) {
+                if (st-&gt;sample_aspect_ratio.num != 0 &amp;&amp;
+                    st-&gt;sample_aspect_ratio.den != 0 &amp;&amp;
+                    codec-&gt;sample_aspect_ratio.num != 0 &amp;&amp;
+                    codec-&gt;sample_aspect_ratio.den != 0) {
+                    av_log(s, AV_LOG_ERROR, "Aspect ratio mismatch between muxer "
+                           "(%d/%d) and encoder layer (%d/%d)\n",
+                           st-&gt;sample_aspect_ratio.num, st-&gt;sample_aspect_ratio.den,
+                           codec-&gt;sample_aspect_ratio.num,
+                           codec-&gt;sample_aspect_ratio.den);
+                    ret = AVERROR(EINVAL);
+                    goto fail;
+                }
+            }
+            break;
+        }
+
+        if (of-&gt;codec_tag) {
+            if (   codec-&gt;codec_tag
+                &amp;&amp; codec-&gt;codec_id == AV_CODEC_ID_RAWVIDEO
+                &amp;&amp; (   av_codec_get_tag(of-&gt;codec_tag, codec-&gt;codec_id) == 0
+                    || av_codec_get_tag(of-&gt;codec_tag, codec-&gt;codec_id) == MKTAG('r', 'a', 'w', ' '))
+                &amp;&amp; !validate_codec_tag(s, st)) {
+                // the current rawvideo encoding system ends up setting
+                // the wrong codec_tag for avi/mov, we override it here
+                codec-&gt;codec_tag = 0;
+            }
+            if (codec-&gt;codec_tag) {
+                if (!validate_codec_tag(s, st)) {
+                    char tagbuf[32], tagbuf2[32];
+                    av_get_codec_tag_string(tagbuf, sizeof(tagbuf), codec-&gt;codec_tag);
+                    av_get_codec_tag_string(tagbuf2, sizeof(tagbuf2), av_codec_get_tag(s-&gt;oformat-&gt;codec_tag, codec-&gt;codec_id));
+                    av_log(s, AV_LOG_ERROR,
+                           "Tag %s/0x%08x incompatible with output codec id '%d' (%s)\n",
+                           tagbuf, codec-&gt;codec_tag, codec-&gt;codec_id, tagbuf2);
+                    ret = AVERROR_INVALIDDATA;
+                    goto fail;
+                }
+            } else
+                codec-&gt;codec_tag = av_codec_get_tag(of-&gt;codec_tag, codec-&gt;codec_id);
+        }
+
+        if (of-&gt;flags &amp; AVFMT_GLOBALHEADER &amp;&amp;
+            !(codec-&gt;flags &amp; CODEC_FLAG_GLOBAL_HEADER))
+            av_log(s, AV_LOG_WARNING,
+                   "Codec for stream %d does not use global headers "
+                   "but container format requires global headers\n", i);
+
+        if (codec-&gt;codec_type != AVMEDIA_TYPE_ATTACHMENT)
+            s-&gt;internal-&gt;nb_interleaved_streams++;
+    }
+
+    if (!s-&gt;priv_data &amp;&amp; of-&gt;priv_data_size &gt; 0) {
+        s-&gt;priv_data = av_mallocz(of-&gt;priv_data_size);
+        if (!s-&gt;priv_data) {
+            ret = AVERROR(ENOMEM);
+            goto fail;
+        }
+        if (of-&gt;priv_class) {
+            *(const AVClass **)s-&gt;priv_data = of-&gt;priv_class;
+            av_opt_set_defaults(s-&gt;priv_data);
+            if ((ret = av_opt_set_dict2(s-&gt;priv_data, &amp;tmp, AV_OPT_SEARCH_CHILDREN)) &lt; 0)
+                goto fail;
+        }
+    }
+
+    /* set muxer identification string */
+    if (!(s-&gt;flags &amp; AVFMT_FLAG_BITEXACT)) {
+        av_dict_set(&amp;s-&gt;metadata, "encoder", LIBAVFORMAT_IDENT, 0);
+    } else {
+        av_dict_set(&amp;s-&gt;metadata, "encoder", NULL, 0);
+    }
+
+    for (e = NULL; e = av_dict_get(s-&gt;metadata, "encoder-", e, AV_DICT_IGNORE_SUFFIX); ) {
+        av_dict_set(&amp;s-&gt;metadata, e-&gt;key, NULL, 0);
+    }
+
+    if (options) {
+         av_dict_free(options);
+         *options = tmp;
+    }
+
+    return 0;
+
+fail:
+    av_dict_free(&amp;tmp);
+    return ret;
+}
+</pre><br />init_muxer()代码很长，但是它所做的工作比较简单，可以概括成两个字：检查。函数的流程可以概括成以下几步：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">（1）将传入的AVDictionary形式的选项设置到AVFormatContext<br />（2）遍历AVFormatContext中的每个AVStream，并作如下检查：<blockquote style="margin:0 0 0 40px;border:none;padding:0px;">a)AVStream的time_base是否正确设置。如果发现AVStream的time_base没有设置，则会调用avpriv_set_pts_info()进行设置。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">b)对于音频，检查采样率设置是否正确；对于视频，检查宽、高、宽高比。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">c)其他一些检查，不再详述。</blockquote></blockquote><br /><h2>AVOutputFormat-&gt;write_header()</h2>avformat_write_header()中最关键的地方就是调用了AVOutputFormat的write_header()。write_header()是AVOutputFormat中的一个函数指针，指向写文件头的函数。不同的AVOutputFormat有不同的write_header()的实现方法。在这里我们举例子看一下FLV封装格式对应的AVOutputFormat，它的定义位于libavformat\flvenc.c，如下所示。<br /><pre class="cpp">AVOutputFormat ff_flv_muxer = {
+    .name           = "flv",
+    .long_name      = NULL_IF_CONFIG_SMALL("FLV (Flash Video)"),
+    .mime_type      = "video/x-flv",
+    .extensions     = "flv",
+    .priv_data_size = sizeof(FLVContext),
+    .audio_codec    = CONFIG_LIBMP3LAME ? AV_CODEC_ID_MP3 : AV_CODEC_ID_ADPCM_SWF,
+    .video_codec    = AV_CODEC_ID_FLV1,
+    .write_header   = flv_write_header,
+    .write_packet   = flv_write_packet,
+    .write_trailer  = flv_write_trailer,
+    .codec_tag      = (const AVCodecTag* const []) {
+                          flv_video_codec_ids, flv_audio_codec_ids, 0
+                      },
+    .flags          = AVFMT_GLOBALHEADER | AVFMT_VARIABLE_FPS |
+                      AVFMT_TS_NONSTRICT,
+};
+</pre><br />从ff_flv_muxer的定义中可以看出，write_header()指向的函数为flv_write_header()。我们继续看一下flv_write_header()函数。flv_write_header()的定义同样位于libavformat\flvenc.c，如下所示。<br /><pre class="cpp">static int flv_write_header(AVFormatContext *s)
+{
+    int i;
+    AVIOContext *pb = s-&gt;pb;
+    FLVContext *flv = s-&gt;priv_data;
+    int64_t data_size;
+    //设置参数
+    for (i = 0; i &lt; s-&gt;nb_streams; i++) {
+        AVCodecContext *enc = s-&gt;streams[i]-&gt;codec;
+        FLVStreamContext *sc;
+        switch (enc-&gt;codec_type) {
+        case AVMEDIA_TYPE_VIDEO:
+            if (s-&gt;streams[i]-&gt;avg_frame_rate.den &amp;&amp;
+                s-&gt;streams[i]-&gt;avg_frame_rate.num) {
+            	//设置帧率，从AVStream拷贝过来
+                flv-&gt;framerate = av_q2d(s-&gt;streams[i]-&gt;avg_frame_rate);
+            }
+            if (flv-&gt;video_enc) {
+                av_log(s, AV_LOG_ERROR,
+                       "at most one video stream is supported in flv\n");
+                return AVERROR(EINVAL);
+            }
+            //视频编码的AVCodecContext
+            flv-&gt;video_enc = enc;
+            if (enc-&gt;codec_tag == 0) {
+                av_log(s, AV_LOG_ERROR, "Video codec '%s' for stream %d is not compatible with FLV\n",
+                       avcodec_get_name(enc-&gt;codec_id), i);
+                return AVERROR(EINVAL);
+            }
+            if (enc-&gt;codec_id == AV_CODEC_ID_MPEG4 ||
+                enc-&gt;codec_id == AV_CODEC_ID_H263) {
+                int error = s-&gt;strict_std_compliance &gt; FF_COMPLIANCE_UNOFFICIAL;
+                av_log(s, error ? AV_LOG_ERROR : AV_LOG_WARNING,
+                       "Codec %s is not supported in the official FLV specification,\n", avcodec_get_name(enc-&gt;codec_id));
+
+                if (error) {
+                    av_log(s, AV_LOG_ERROR,
+                           "use vstrict=-1 / -strict -1 to use it anyway.\n");
+                    return AVERROR(EINVAL);
+                }
+            } else if (enc-&gt;codec_id == AV_CODEC_ID_VP6) {
+                av_log(s, AV_LOG_WARNING,
+                       "Muxing VP6 in flv will produce flipped video on playback.\n");
+            }
+            break;
+        case AVMEDIA_TYPE_AUDIO:
+            if (flv-&gt;audio_enc) {
+                av_log(s, AV_LOG_ERROR,
+                       "at most one audio stream is supported in flv\n");
+                return AVERROR(EINVAL);
+            }
+            //音频编码的AVCodecContext
+            flv-&gt;audio_enc = enc;
+            if (get_audio_flags(s, enc) &lt; 0)
+                return AVERROR_INVALIDDATA;
+            if (enc-&gt;codec_id == AV_CODEC_ID_PCM_S16BE)
+                av_log(s, AV_LOG_WARNING,
+                       "16-bit big-endian audio in flv is valid but most likely unplayable (hardware dependent); use s16le\n");
+            break;
+        case AVMEDIA_TYPE_DATA:
+            if (enc-&gt;codec_id != AV_CODEC_ID_TEXT &amp;&amp; enc-&gt;codec_id != AV_CODEC_ID_NONE) {
+                av_log(s, AV_LOG_ERROR, "Data codec '%s' for stream %d is not compatible with FLV\n",
+                       avcodec_get_name(enc-&gt;codec_id), i);
+                return AVERROR_INVALIDDATA;
+            }
+            flv-&gt;data_enc = enc;
+            break;
+        default:
+            av_log(s, AV_LOG_ERROR, "Codec type '%s' for stream %d is not compatible with FLV\n",
+                   av_get_media_type_string(enc-&gt;codec_type), i);
+            return AVERROR(EINVAL);
+        }
+        avpriv_set_pts_info(s-&gt;streams[i], 32, 1, 1000); /* 32 bit pts in ms */
+
+        sc = av_mallocz(sizeof(FLVStreamContext));
+        if (!sc)
+            return AVERROR(ENOMEM);
+        s-&gt;streams[i]-&gt;priv_data = sc;
+        sc-&gt;last_ts = -1;
+    }
+
+    flv-&gt;delay = AV_NOPTS_VALUE;
+    //开始写入
+    //Signature
+    avio_write(pb, "FLV", 3);
+    //Version
+    avio_w8(pb, 1);
+    //“！！”意思是把非0转换成1
+    //Flags
+    avio_w8(pb, FLV_HEADER_FLAG_HASAUDIO * !!flv-&gt;audio_enc +
+                FLV_HEADER_FLAG_HASVIDEO * !!flv-&gt;video_enc);
+    //Header size
+    avio_wb32(pb, 9);
+    //Header结束
+    //Previous Tag Size
+    avio_wb32(pb, 0);
+
+    for (i = 0; i &lt; s-&gt;nb_streams; i++)
+        if (s-&gt;streams[i]-&gt;codec-&gt;codec_tag == 5) {
+            avio_w8(pb, 8);     // message type
+            avio_wb24(pb, 0);   // include flags
+            avio_wb24(pb, 0);   // time stamp
+            avio_wb32(pb, 0);   // reserved
+            avio_wb32(pb, 11);  // size
+            flv-&gt;reserved = 5;
+        }
+
+    write_metadata(s, 0);
+
+    for (i = 0; i &lt; s-&gt;nb_streams; i++) {
+        AVCodecContext *enc = s-&gt;streams[i]-&gt;codec;
+        if (enc-&gt;codec_id == AV_CODEC_ID_AAC || enc-&gt;codec_id == AV_CODEC_ID_H264 || enc-&gt;codec_id == AV_CODEC_ID_MPEG4) {
+            int64_t pos;
+            avio_w8(pb, enc-&gt;codec_type == AVMEDIA_TYPE_VIDEO ?
+                    FLV_TAG_TYPE_VIDEO : FLV_TAG_TYPE_AUDIO);
+            avio_wb24(pb, 0); // size patched later
+            avio_wb24(pb, 0); // ts
+            avio_w8(pb, 0);   // ts ext
+            avio_wb24(pb, 0); // streamid
+            pos = avio_tell(pb);
+            if (enc-&gt;codec_id == AV_CODEC_ID_AAC) {
+                avio_w8(pb, get_audio_flags(s, enc));
+                avio_w8(pb, 0); // AAC sequence header
+                avio_write(pb, enc-&gt;extradata, enc-&gt;extradata_size);
+            } else {
+                avio_w8(pb, enc-&gt;codec_tag | FLV_FRAME_KEY); // flags
+                avio_w8(pb, 0); // AVC sequence header
+                avio_wb24(pb, 0); // composition time
+                ff_isom_write_avcc(pb, enc-&gt;extradata, enc-&gt;extradata_size);
+            }
+            data_size = avio_tell(pb) - pos;
+            avio_seek(pb, -data_size - 10, SEEK_CUR);
+            avio_wb24(pb, data_size);
+            avio_skip(pb, data_size + 10 - 3);
+            avio_wb32(pb, data_size + 11); // previous tag size
+        }
+    }
+
+    return 0;
+}
+</pre><br />从源代码可以看出，flv_write_header()完成了FLV文件头的写入工作。该函数的工作可以大体分为以下两部分：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">（1）给FLVContext设置参数<br />（2）写文件头，以及相关的Tag</blockquote>写文件头的代码很短，如下所示。<br /><pre class="cpp">avio_write(pb, "FLV", 3);
+avio_w8(pb, 1);
+avio_w8(pb, FLV_HEADER_FLAG_HASAUDIO * !!flv-&gt;audio_enc +
+            FLV_HEADER_FLAG_HASVIDEO * !!flv-&gt;video_enc);
+avio_wb32(pb, 9);</pre>可以参考下图中FLV文件头的定义比对一下上面的代码。<br /><p style="text-align:center;"> <img src="https://img-blog.csdn.net/20150307142609507" alt="" /></p><p><br /></p><p><strong><span style="color:#660000;">雷霄骅<br />leixiaohua1020@126.com<br />http://blog.csdn.net/leixiaohua1020</span></strong><br /></p><br /><br /><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/44116215		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=FFmpeg&t=blog" target="_blank">FFmpeg						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=源代码&t=blog" target="_blank">源代码						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=文件头&t=blog" target="_blank">文件头						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=封装格式&t=blog" target="_blank">封装格式						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1360795"  target="_blank">FFMPEG						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/ffmpeg-devel.html" target="_blank">FFmpeg</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/44116215#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u014030821/article/details/52882925" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>ffmpeg</em>——<em>avformat_write_header</em>写文件头			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u014030821/article/details/52882925" target="_blank" >
+				一：介绍
+<em>ffmpeg</em> 的 Mux 主要分为 三步操作：
+    <em>avformat_write_header</em> ： 写文件头
+    av_write_frame/av_interleaved_w...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u014030821" title="u014030821" target="_blank">
+					<img src="https://avatar.csdn.net/7/D/E/3_u014030821.jpg" alt="u014030821" class="avatar-pic">
+					<span class="name">u014030821</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-10-21 15:40:35</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3765</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/smilestone322/article/details/17842663" target="_blank" strategy="BlogCommendFromBaidu_1">
+				avio_open成功<em>avformat_write_header</em>失败			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/smilestone322/article/details/17842663" target="_blank" >
+				<em>ffmpeg</em> 写avi时候，avio_open成功，但是写avi头时调用<em>avformat_write_header</em>失败			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/smilestone322" title="smilestone322" target="_blank">
+					<img src="https://avatar.csdn.net/2/A/6/3_smilestone322.jpg" alt="smilestone322" class="avatar-pic">
+					<span class="name">smilestone322</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-01-04 14:53:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：8391</span>
+			</p>
+		</div>
+	</div>
+								<!-- 第四范式广告开关 -->
+<script>window.p4sdk_enable_recommendBox=true</script>
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zhuweigangzwg/article/details/46990417" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>ffmpeg</em>关于<em>avformat_write_header</em>问题			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhuweigangzwg/article/details/46990417" target="_blank" >
+				最近做转码遇到一些问题，先贴个代码在说明：
+int init_mux()
+{
+	int i = 0;
+	/* allocate the output media context */
+	avform...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zhuweigangzwg" title="zhuweigangzwg" target="_blank">
+					<img src="https://avatar.csdn.net/F/A/4/3_zhuweigangzwg.jpg" alt="zhuweigangzwg" class="avatar-pic">
+					<span class="name">zhuweigangzwg</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-07-21 19:02:15</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3809</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qq_35044535/article/details/77878472" target="_blank" strategy="BlogCommendFromBaidu_3">
+				<em>avformat_write_header</em>()			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_35044535/article/details/77878472" target="_blank" >
+				<em>avformat_write_header</em>()，av_write_frame()以及av_write_trailer()这三个函数一般是配套使用，其中av_write_frame()用于写视频数据，a...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qq_35044535" title="qq_35044535" target="_blank">
+					<img src="https://avatar.csdn.net/F/C/B/3_qq_35044535.jpg" alt="qq_35044535" class="avatar-pic">
+					<span class="name">qq_35044535</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-09-07 10:48:41</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：225</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/wishfly/article/details/51015882" target="_blank" strategy="BlogCommendFromBaidu_4">
+				<em>FFMPEG</em> <em>avformat_write_header</em> changing my stream time_base			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/wishfly/article/details/51015882" target="_blank" >
+				I am muxing video using <em>ffmpeg</em> 2.1.3 with libavcodec 55.39.101 (forced to that version because is th...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/wishfly" title="wishfly" target="_blank">
+					<img src="https://avatar.csdn.net/4/E/7/3_wishfly.jpg" alt="wishfly" class="avatar-pic">
+					<span class="name">wishfly</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-03-30 16:01:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：757</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/44201645" target="_blank" strategy="BlogCommendFromBaidu_5">
+				<em>FFmpeg</em><em>源代码</em><em>简单</em><em>分析</em>：av_write_trailer()			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/44201645" target="_blank" >
+				打算写两篇文章<em>简单</em><em>分析</em><em>FFmpeg</em>的写文件用到的3个函数<em>avformat_write_header</em>()，av_write_frame()以及av_write_trailer()。这篇文章继续<em>分析</em>av_...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-03-11 17:29:06</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：14899</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/jacke121/article/details/80335962" target="_blank" strategy="BlogCommendFromBaidu_6">
+				Using AVStream.codec.time_base as a timebase hint to the muxer is deprecated			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/jacke121/article/details/80335962" target="_blank" >
+				Using AVStream.codec.time_base as a timebase hint to the muxer is deprecatedAVStream *out_stream = a...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/jacke121" title="jacke121" target="_blank">
+					<img src="https://avatar.csdn.net/3/7/5/3_jacke121.jpg" alt="jacke121" class="avatar-pic">
+					<span class="name">jacke121</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-05-16 13:55:10</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：38</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/peckjerry/article/details/48344389" target="_blank" strategy="BlogCommendFromBaidu_7">
+				<em>ffmpeg</em> time_base详解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/peckjerry/article/details/48344389" target="_blank" >
+				<em>ffmpeg</em> time_base
+<em>ffmpeg</em>存在多个时间基准(time_base)，对应不同的阶段(结构体)，每个time_base具体的值不一样，<em>ffmpeg</em>提供函数在各个time_base中进行...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/peckjerry" title="peckjerry" target="_blank">
+					<img src="https://avatar.csdn.net/9/B/A/3_peckjerry.jpg" alt="peckjerry" class="avatar-pic">
+					<span class="name">peckjerry</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-09-10 15:46:41</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：9796</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dafeng5455/article/details/52103902" target="_blank" strategy="BlogCommendFromBaidu_8">
+				关于使用<em>ffmpeg</em>把mp4转化m3u8文件的命令			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dafeng5455/article/details/52103902" target="_blank" >
+				<em>ffmpeg</em> -i b.mp4 -codec
+ copy -bsf h264_mp4toannexb a.ts
+
+
+
+
+如果不使用-bsf h264_mp4toannexb参数，会提示错误...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dafeng5455" title="dafeng5455" target="_blank">
+					<img src="https://avatar.csdn.net/E/D/4/3_dafeng5455.jpg" alt="dafeng5455" class="avatar-pic">
+					<span class="name">dafeng5455</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-08-03 15:16:54</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3011</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/luopeiyuan1990/article/details/46544393" target="_blank" strategy="BlogCommendFromBaidu_9">
+				使用<em>FFmpeg</em>将mp4转为ts（代码实现）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/luopeiyuan1990/article/details/46544393" target="_blank" >
+				使用<em>ffmpeg</em>将mp4转为ts的命令格式如下：
+
+
+
+
+
+点击(此处)折叠或打开
+
+
+
+
+<em>ffmpeg</em> -i b.mp4 -codec
+ copy -bsf h264_mp4...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/luopeiyuan1990" title="luopeiyuan1990" target="_blank">
+					<img src="https://avatar.csdn.net/5/2/A/3_luopeiyuan1990.jpg" alt="luopeiyuan1990" class="avatar-pic">
+					<span class="name">luopeiyuan1990</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-06-18 09:48:13</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2498</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/44116215" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421197">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>13</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "FFmpeg源代码简单分析：avformat_write_header()";
+    var ChannelId = 16;
+    var articleId = "44116215";
+    var commentscount = 2;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/44116215";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "could+not+write+header+for+output";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"FFmpeg源代码简单分析：avformat_write_header()");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=could+not+write+header+for+output"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

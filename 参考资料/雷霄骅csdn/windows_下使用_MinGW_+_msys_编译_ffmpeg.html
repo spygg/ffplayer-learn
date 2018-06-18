@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12755173"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文参考了网络上的不少文章，但由于版本环境的问题参考文章并不能直接指导编译，本文吸收多方经验，并在自己多次编译实验的基础上写成，欢迎转载，请注名出处。
+    FFmpeg是在Linux平台下开发的，但它同样可以在其它操作系统环境中编译运行，本文介绍的就是在windows下编译FFmpeg。
+一 编译准备
+    您最好新建一个目录专门用来保存以下下载的文件。
+1 下载 MinGW 和 M" />
+    <meta name="keywords" content="windows,MinGW" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>windows 下使用 MinGW + msys 编译 ffmpeg - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12755173"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-2 float-left">转</span>		<h1 class="title-article">windows 下使用 MinGW + msys 编译 ffmpeg</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月16日 19:24:35</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：10268</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                
+    本文参考了网络上的不少文章，但由于版本环境的问题参考文章并不能直接指导编译，本文吸收多方经验，并在自己多次编译实验的基础上写成，欢迎转载，请注名出处。<br />
+    FFmpeg是在Linux平台下开发的，但它同样可以在其它操作系统环境中编译运行，本文介绍的就是在windows下编译FFmpeg。<br />
+一 编译准备<br />
+    您最好新建一个目录专门用来保存以下下载的文件。<br />
+1 下载 MinGW 和 MSYS<br />
+    MinGW(Minimalist GNU on Windows)：一个可自由使用和自由发布的Windows特定头文件和使用GNU工具集导入库的集合，允许你生成本地的Windows程序而不需要第三方C运行时库。<br />
+    到：http://sourceforge.net/projects/mingw/ 去下载即可 <br />
+    A 点击“DownLoad mingw-get-inst-...exe”<br />
+    B 切换到页面：download? Check your browser's security bar, or try a direct link, or try another mirror.<br />
+    C 点击“direct link”下载类似：mingw-get-inst-20111118.exe 的文件<br />
+    提示：msys此处就不用再下载了，mingw-get-inst-20111118.exe 中已经包含了msys1.0，后面安装的时候就可以看到该选项。<br />
+2 下载 yasm(汇编编译器)<br />
+    ffmpeg编译的时候里面的汇编代码需要yasm.exe<br />
+    去官网：http://yasm.tortall.net/Download.html 下载<br />
+    在Latest Release栏，直接下载：Win32 .exe (for general use on 32-bit Windows) <br />
+    文件名类似为：yasm-1.2.0-win32.exe<br />
+3 下载 ffmpeg<br />
+    ffmpeg可以到 http://www.ffmpeg.org/releases/ 下载<br />
+    选择的一个最新版本下载即可，如：ffmpeg-0.8.6.tar.gz <br />
+    文件名类似为：ffmpeg-0.8.6.tar.gz<br />
+    当然你也使用网上介绍的使用SVN直接下载源代码的方法。  <br />
+    svn://svn.mplayerhq.hu/ffmpeg/trunk<br />
+4 下载 mp3lame(支持mp3，可选项)<br />
+    为了让编译出来的ffmpeg支持对mp3格式的编解码，您需要先下载lame。<br />
+    到：http://sourceforge.net/projects/lame/files/ 下载 <br />
+    文件名类似为：lame-3.99.2.tar.gz 的包。<br />
+5 下载 x264(支持x264，可选项)<br />
+    为了让编译出来的ffmpeg支持对x264格式的编解码，您需要先下载x264。<br />
+    到：http://www.videolan.org/developers/x264.html下载 <br />
+    文件名类似为：last_x264.tar.bz2 的包。<br />
+6 下载 Xvid(支持Xvid，可选项)<br />
+    为了让编译出来的ffmpeg支持对Xvid格式的编解码，您需要先下载Xvid。<br />
+    到：http://www.xvid.org/ 下载 <br />
+    文件名类似为：xvidcore-1.3.2.tar.gz 的包。<br />
+7 下载 faad2(支持faad，可选项)<br />
+    到：http://www.audiocoding.com/downloads.html 下载：Version 2.7 bootstrapped TAR.GZ Package<br />
+    文件名类似为：faad2-2.7.tar.gz 的包。<br />
+8 下载 faac(支持faac，可选项)<br />
+    到：http://www.audiocoding.com/downloads.html 下载：Version 1.28 bootstrapped TAR.GZ Package<br />
+    文件名类似为：faac-1.28.tar.gz 的包。<br />
+9 下载 aacenc(支持aac，可选项)<br />
+    到：http://sourceforge.net/projects/opencore-amr/files/ 下载：vo-aacenc<br />
+    文件名类似为：vo-aacenc-0.1.1.tar.gz 的包。<br />
+10 下载 amr-nb与amr-wb (早期ffmpeg支持3gp，可选项)<br />
+    到：http://www.penguin.cz/%7Eutx/amr 下载：amrnb-7.0.0.2.tar.bz2与amrwb-7.0.0.4.tar.bz2<br />
+    文件名类似为：amrnb-7.0.0.2.tar.tar 与amrwb-7.0.0.4.tar.tar 的包。<br />
+11 下载 opencore-amr与vo-amrwbenc (支持3gp，可选项)<br />
+    到：http://sourceforge.net/projects/opencore-amr/files/ 下载：opencore-amr 与 vo-amrwbenc<br />
+    文件名类似为：opencore-amr-0.1.2.tar.gz 与vo-amrwbenc-0.1.1.tar.gz 的包。<br />
+12 下载 SDL(支持SDL，可选项)<br />
+    SDL下载可以到：http://www.libsdl.org/download-1.2.php<br />
+    在Source Code栏选择类似：SDL-1.2.14.tar.gz - GPG signed 进行下载，<br />
+    文件名类似为：SDL-1.2.14.tar.tar，此文件需要编译才能生成lib库。<br />
+    也可以直接下载 SDL-devel-1.2.14-mingw32.tar.gz (Mingw32)，文件名类似为：SDL-devel-1.2.14-mingw32.tar.tar，此文件带有编译好的lib，在编译ffmpeg时可以直接使用。<br />
+13 下载 pthreadGC2.dll<br />
+    pthreadgc2.dll是功能强大的处理数字化影视作品编辑软件premiere6运行所需的一个DLL文件。这是一个无威胁文件。属于Open Source Software community project的文件。<br />
+    直接去baidu.com三搜索下载就可以了。<br />
+二 编译步骤<br />
+1 安装 mingw 和 msys<br />
+    执行下载文件：mingw-get-inst-20111118.exe，<br />
+    在第3步选择“Download latest repository catalogues”<br />
+    选择安装路径：C:\MinGW（我直接采用默认路径，未做修改）<br />
+    在“Select Components”步骤中选择：<br />
+      √  C Compiler (默认且一定选择)<br />
+      √  C++ Compiler<br />
+      √  MSYS Basic System（选择此项将会安装msys，msys则不需要另外安装）<br />
+      √  MinGW Developer ToolKit<br />
+    等待安装完成！（需要等待一定的时间，因为安装过程需要下载文件，可想而知，网速越快，安装越快）<br />
+    安装完成后，在C:\MinGW目录下可以看到 msys 文件夹，msys也已经安装。<br />
+2 配置 msys.bat 批处理文件<br />
+    为了方便VS200X以及VS2010调用ffmpeg的动态库，可以通过配置让ffmpeg编译时产生windows下调用dll对应的lib，当然，如果你没有这个需要，那么就可以省略以下处理，直接进入步骤3。<br />
+    进入：C:\MinGW\msys\1.0\文件夹，使用UltraEdit打开msys.bat文件，在文件的最最前面加入如下一行：<br />
+    call "D:\Program Files\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat"<br />
+    添加后效果如下：<br />
+      call "D:\Program Files\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat"<br />
+         @echo off<br />
+         rem Copyright (C):  2001, 2002, 2003, 2004, 2005  Earnie Boyd<br />
+         rem   mailto:earnie@users.sf.net<br />
+         rem This file is part of Minimal SYStem<br />
+         rem   http://www.mingw.org/msys.shtml<br />
+         rem<br />
+         rem File:     msys.bat<br />
+         rem Revision:     2.4<br />
+         rem Revision Date:  December 8th, 2005<br />
+         rem ember to set the "Start in:" field of the shortcut.<br />
+         rem A value similar to C:\msys\1.0\bin is what the "Start in:" field needs<br />
+         rem to represent.<br />
+    其中“D:\Program Files\Microsoft Visual Studio 10.0”为你机器上安装VS200X或VS2010的目录，我的电脑安装的是VS2010，并且安装在了D盘。文件修改后保存即可。<br />
+3 系统整合<br />
+    使用UltraEdit修改C:\MinGW\msys\1.0\etc目下的fstab文件，如果不存在fstab，请复制一份fstab.sample，然后改名为：fstab，再修改其内容为：C:/MinGW /mingw，也即为MinGW的安装路径。<br />
+4 配置 yasm<br />
+    为了减少配置环境变量的麻烦，本处直接把 yasm-1.1.0-win32.exe 文件名修改成：yasm.exe，并放到系统目录下：C:\WINDOWS\system32。<br />
+5 编译 mp3lame(可选项)<br />
+    lame-3.99.2.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，切换到lame目录：D:\ffmpeg\lame-3.99.2<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd lame-3.99.2<br />
+    再执行以下命令：<br />
+    $./configure --disable-shared (首选)<br />
+或: $./configure --disable-static --enable-shared<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+6 编译 x264(可选项)<br />
+    last_x264.tar.bz2 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，切换到x264目录：D:\ffmpeg\x264-20111124-2245<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd x264-20111124-2245<br />
+    再执行以下命令：<br />
+    $./configure --enable-shared --disable-asm<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+7 编译 Xvid(可选项)<br />
+    xvidcore-1.3.2.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，切换到xvidcore目录：D:\ffmpeg\xvidcore\build\generic<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd xvidcore/build/generic<br />
+    再执行以下命令：<br />
+    $./configure --prefix=C:/MinGW/msys/1.0/local<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下。<br />
+    需要注意的就是：此处编译加上了路径<br />
+    如果make时出现：cc1.exe: error: unrecognized command line option '-mno-cygwin' 错误，请在./configure后make之前修改xvidcore\build\generic里的 platform.inc文件，直接删除里面的“-mno-cygwin”。 <br />
+    具体可以参考：http://ffmpeg.zeranoe.com/forum/viewtopic.php?f=5&amp;t=111里2楼的回答，如果按他说的：I recommend re running ./bootstrap.sh after you do this.，我发现不太行，一运行bootstrap.sh后，platform.inc文件会被还原，并且./configure时也会还原该文件，所以我选择在./configure后make前修改，可以编译通过，目前没检验Xvid是否可用。<br />
+8 编译 faad2(可选项)<br />
+    faad2-2.7.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。切换到faac2目录：D:\ffmpeg\faad2-2.7<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd faad2-2.7<br />
+    再执行以下命令：<br />
+    $./bootstrap<br />
+    $./configure --disable-static --enable-shared<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+9 编译faac(可选项)<br />
+    faac-1.28.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。切换到faac2目录：D:\ffmpeg\faac-1.28<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd faac-1.28<br />
+    再执行以下命令：<br />
+    $./bootstrap<br />
+    $./configure --disable-static --enable-shared<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+10 编译vo-aacenc (可选项)<br />
+    vo-aacenc-0.1.1.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。切换到vo-aacenc目录：D:\ffmpeg\vo-aacenc-0.1.1<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd vo-aacenc-0.1.1<br />
+    再执行以下命令：<br />
+    $./configure --disable-shared<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+11 编译amr-nb和amr-wb (早期ffmpeg版本，可选项)<br />
+    在编译amrnb和amrwb之前还需要做点其它的准备工作：<br />
+    A 先到网上搜索下载wget工具，解压后放到C:\MinGW\bin目录下，此工具是个网络下载工具，用来在编译时自动下载3gpp源码。 <br />
+    B 再先到http://downloads.sourceforge.net/gnuwin32/unzip-5.51-1-bin.zip 下载unzip-5.51-1-bin.zip后进行解压，并把unzip-5.51-1-bin\bin中的unzip.exe拷贝到C:\MinGW\bin目录下，此工具用来在编译时自动解压3gpp源码。<br />
+    amrnb-7.0.0.2.tar.tar 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。切换到amrnb目录：D:\ffmpeg\amrnb-7.0.0.2<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd amrnb-7.0.0.2<br />
+    再执行以下命令：<br />
+    $./configure --disable-static --enable-shared<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+    amrwb-7.0.0.4.tar.tar 接压到：D:\ffmpeg\ 目录下，双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。切换到amrwb目录：D:\ffmpeg\amrwb-7.0.0.4<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd amrwb-7.0.0.4<br />
+    再执行以下命令：<br />
+    $./configure --disable-static --enable-shared<br />
+    $ make<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+12 编译opencore-amr 和vo-amrwbenc (可选项)<br />
+    opencore-amr-0.1.2.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。<br />
+    如果是opencore-amr-0.1.1.tar.gz请注释掉以下Makefile中的几行<br />
+    文件: ./opencore-amr/amrnb/Makefile<br />
+    install: libopencore-amrnb.a $(SHLIB)<br />
+    install -d $(DESTDIR)$(PREFIX)/lib<br />
+    install -m 644 libopencore-amrnb.a $(DESTDIR)$(PREFIX)/lib<br />
+    # install $(SHLIB) $(DESTDIR)$(PREFIX)/lib<br />
+    ifneq ($(shell uname), Darwin)<br />
+    # ln -sf $(SHLIB) $(DESTDIR)$(PREFIX)/lib/$(SONAME)<br />
+    # ln -sf $(SONAME) $(DESTDIR)$(PREFIX)/lib/libopencore-amrnb.so<br />
+    endif<br />
+    文件: ./opencore-amr/amrwb/Makefile<br />
+    install: libopencore-amrwb.a $(SHLIB)<br />
+    install -d $(DESTDIR)$(PREFIX)/lib<br />
+    install -m 644 libopencore-amrwb.a $(DESTDIR)$(PREFIX)/lib<br />
+    # install $(SHLIB) $(DESTDIR)$(PREFIX)/lib<br />
+    ifneq ($(shell uname), Darwin)<br />
+    # ln -sf $(SHLIB) $(DESTDIR)$(PREFIX)/lib/$(SONAME)<br />
+    # ln -sf $(SONAME) $(DESTDIR)$(PREFIX)/lib/libopencore-amrwb.so<br />
+    endif<br />
+    切换到opencore-amr目录：D:\ffmpeg\ opencore-amr-0.1.2<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd opencore-amr-0.1.2<br />
+    再执行以下命令：<br />
+    $./configure --disable-shared<br />
+    $ make CC=gcc<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+    vo-amrwbenc-0.1.1.tar.gz 接压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，已经启动的话就不用再重新启动了。切换到vo-amrwbenc目录：D:\ffmpeg\ vo-amrwbenc-0.1.1<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd vo-amrwbenc-0.1.1<br />
+    再执行以下命令：<br />
+    $./configure --disable-shared<br />
+    $ make CC=gcc<br />
+    $ make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下<br />
+13 编译SDL(可选项)<br />
+   SDL-1.2.14.tar.tar 解压到：D:\ffmpeg\ 目录下, 双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，切换到SDL目录：D:\ffmpeg\SDL-1.2.14，切换方法如下：<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd SDL-1.2.14<br />
+    再执行以下命令：<br />
+    ./configure<br />
+    make<br />
+    make install<br />
+    编译结果在：C:\MinGW\msys\1.0\local 目录下 <br />
+    注意：如果是使用编译好的SDL-devel-1.2.14-mingw32.tar.tar，那么就可以省掉上面的编译工作，直接解压SDL-devel-1.2.14-mingw32.tar.tar文件即可。自己编译或直接使用编译好的都需要做下面的修改和拷贝工作。<br />
+    使用UltraEdit打开C:\MinGW\msys\1.0\local\bin下的 sdl-config文件<br />
+    把 prefix=/usr 该成： prefix=c:/mingw<br />
+    其中：c:/mingw 为 mingw的安装路径，请根据你的安装进行修改。为了编译时msys能识别sdl并开启 SDL support yes 进行编译，请把C:\MinGW\msys\1.0\local编译结果bin、include和lib中有关sdl的拷贝一份到C:\MinGW\的对应目录中。<br />
+14 拷贝编译结果<br />
+    C:\MinGW\msys\1.0\local  到 D:\ffmpeg\ffmpeg-0.8.6<br />
+    bin拷贝到 bin中<br />
+    include拷贝到 include中<br />
+    lib拷贝到 lib中<br />
+    当然该拷贝过程你可以不做，只要在编译的时候把路径指到：C:\MinGW\msys\1.0\local里面。<br />
+15 编译 ffmpeg<br />
+    ffmpeg-0.8.6.tar.bz2 解压到：D:\ffmpeg\ 目录下,双击“C:\MinGW\msys\1.0\msys.bat”，启动“MinGW32”，切换到ffmpeg目录：D:\ffmpeg\ffmpeg-0.8.6，切换方法如下：<br />
+    $ cd /d<br />
+    $ cd ffmpeg<br />
+    $ cd ffmpeg-0.8.6<br />
+    如果你的“MinGW32”没有关闭，可以直接切换路径到：D:\ffmpeg\ffmpeg-0.8.6。<br />
+    再执行以下命令：<br />
+    $ ./configure --enable-shared --disable-static --enable-ffplay<br />
+    --enable-nonfree --enable-memalign-hack<br />
+    --enable-libmp3lame<br />
+    --enable-gpl--enable-libx264   <br />
+    --enable-libxvid<br />
+    --enable-faad --enable-libfaac<br />
+    --enable-libvo-aacenc<br />
+    --enable-version3 --enable-libopencore-amrnb   <br />
+    --enable-libopencore-amrwb --enable-libvo-amrwbenc<br />
+    --extra-cflags=-Id:/ffmpeg/ffmpeg-0.8.6/include<br />
+    --extra-ldflags=-Ld:/ffmpeg/ffmpeg-0.8.6/lib<br />
+    请耐心等待一段时间，以上命令不能直接换行哦并且根据ffmpeg的版本不同有所变化,具体看./configure --help，你知道的。。。<br />
+    $ make<br />
+    需要等待很长一段时间，等待编译结束。<br />
+    为了汇总编译结果，请继续执行以下命令：<br />
+    $ make install<br />
+    等待完成，在C:\MinGW\msys\1.0\local中将会生成 bin、include、lib等文件夹，其中包含了ffmpeg.exe、ffplay.exe、ffprobe.exe、dll、lib和头文件等。<br />
+16 运行测试<br />
+    直接双击运行”ffplay.exe”，如果提示没有“pthreadGC2.dll”文件，你可以包“pthreadGC2.dll”直接拷贝到当前目录，也可放到系统目录C:\WINDOWS\system32中。<br />
+ffplay f:/xxx.mp4<br /><br /><br />
+参考:<br /><a href="http://blog.csdn.net/yangshu168/archive/2010/01/17/5204269.aspx">http://blog.csdn.net/yangshu168/archive/2010/01/17/5204269.aspx</a><br /><a href="http://blog.csdn.net/himulakensin/article/details/6693457">http://blog.csdn.net/himulakensin/article/details/6693457</a><br /><a href="http://blog.csdn.net/huangxiansheng1980/article/details/5712003">http://blog.csdn.net/huangxiansheng1980/article/details/5712003</a>
+<p><br /></p>
+<p>原文地址：<a href="http://blog.chinaunix.net/uid-20718335-id-2980793.html">http://blog.chinaunix.net/uid-20718335-id-2980793.html</a></p>
+<p><br /></p>
+<p>另一篇资料：<a href="http://download.csdn.net/detail/leixiaohua1020/6389413">http://download.csdn.net/detail/leixiaohua1020/6389413</a></p>
+            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=windows&t=blog" target="_blank">windows						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=MinGW&t=blog" target="_blank">MinGW						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=msys&t=blog" target="_blank">msys						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=编译&t=blog" target="_blank">编译						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=ffmpeg&t=blog" target="_blank">ffmpeg						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1360795"  target="_blank">FFMPEG						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/ffmpeg-devel.html" target="_blank">FFmpeg</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div data-track-view='{"mod":"popu_625","con": ",https://blog.csdn.net/leixiaohua1020/article/details/12755173,from_360"}' style="margin-top: 8px;padding: 20px;background-color: #fff;overflow: hidden;" id="adt0"></div>
+                            <script>
+                                var adWidth = $("div.blog-content-box").outerWidth() - 40;
+                                NEWS_FEED({
+                                    w: adWidth,
+                                    h : 130,
+                                    showid : "s02a31",
+                                    placeholderId: "adt0",
+                                    inject : "define",
+                                    define : {
+                                    imagePosition : "right",
+                                    imageBorderRadius : 0,
+                                    imageWidth: 231,
+                                    imageHeight: 130,
+                                    imageFill : "clip",
+                                    displayImage : true,
+                                    displayTitle : true,
+                                    titleFontSize: 20,
+                                    titleFontColor: "#333",
+                                    titleFontFamily : "Microsoft Yahei",
+                                    titleFontWeight: "bold",
+                                    titlePaddingTop : 0,
+                                    titlePaddingRight : 0,
+                                    titlePaddingBottom : 10,
+                                    titlePaddingLeft : 0,
+                                    displayDesc : true,
+                                    descFontSize: 14,
+                                    descFontColor: "#6b6b6b",
+                                    descFontFamily : "Microsoft Yahei",
+                                    paddingTop : 0,
+                                    paddingRight : 0,
+                                    paddingBottom : 0,
+                                    paddingLeft : 0,
+                                    backgroundColor: "#fff",
+                                    hoverColor: "#ca0c16"
+                                    }
+                                })
+                            </script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12755173#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/subfate/article/details/51501846" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>ffmpeg</em> 2.6.3在<em>Windows</em>系统<em>MinGW</em>的<em>编译</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/subfate/article/details/51501846" target="_blank" >
+				本文应网友要求而写，目标：在<em>Windows</em> 7操作系统中搭建<em>MinGW</em>环境，<em>编译</em><em>ffmpeg</em>。...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/subfate" title="subfate" target="_blank">
+					<img src="https://avatar.csdn.net/A/6/A/3_subfate.jpg" alt="subfate" class="avatar-pic">
+					<span class="name">subfate</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-05-25 21:43:05</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2110</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dancing_night/article/details/40828641" target="_blank" strategy="BlogCommendFromBaidu_1">
+				win7用<em>mingw</em><em>编译</em><em>ffmpeg</em>+x264总结			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dancing_night/article/details/40828641" target="_blank" >
+				这两天公司要求转码，在网上找了下，觉得			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dancing_night" title="dancing_night" target="_blank">
+					<img src="https://avatar.csdn.net/E/8/3/3_dancing_night.jpg" alt="dancing_night" class="avatar-pic">
+					<span class="name">dancing_night</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-05 19:15:24</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2925</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/caoshangpa/article/details/50947926" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>Windows</em> 7（Win7）下<em>MinGW</em>+<em>msys</em><em>编译</em><em>ffmpeg</em>，并加入H264编码支持			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/caoshangpa/article/details/50947926" target="_blank" >
+				可以去<em>ffmpeg</em>官网下载已经<em>编译</em>好的版本：https://<em>ffmpeg</em>.zeranoe.com/builds/
+    该<em>编译</em>好的版本支持H264编码和解码
+    如果需要自己<em>编译</em>，步骤如下：
+ ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/caoshangpa" title="caoshangpa" target="_blank">
+					<img src="https://avatar.csdn.net/8/E/A/3_caoshangpa.jpg" alt="caoshangpa" class="avatar-pic">
+					<span class="name">caoshangpa</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-03-21 16:56:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4626</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/professorsheep/article/details/6254467" target="_blank" strategy="BlogCommendFromBaidu_3">
+				<em>MinGw</em> 下<em>编译</em> <em>FFMPEG</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/professorsheep/article/details/6254467" target="_blank" >
+				    前段时间帮同学做一个项目，需要在<em>windows</em>下用到<em>ffmpeg</em>。<em>ffmpeg</em>是Linux下的很流行的一个开源解码器，在<em>windows</em>下<em>编译</em>，很自然的想到了<em>使用</em><em>mingw</em>+<em>msys</em>来模拟Lin...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/professorsheep" title="professorsheep" target="_blank">
+					<img src="https://avatar.csdn.net/1/A/8/3_professorsheep.jpg" alt="professorsheep" class="avatar-pic">
+					<span class="name">professorsheep</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2011-03-16 19:27:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6099</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dancing_night/article/details/44831085" target="_blank" strategy="BlogCommendFromBaidu_4">
+				win7+<em>MinGW</em><em>编译</em><em>ffmpeg</em>遇到的问题总结			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dancing_night/article/details/44831085" target="_blank" >
+				1、<em>编译</em>x264的时候老是不通过，用<em>mingw</em><em>编译</em>最新的x264，./configure 时出现“No working C compiler found”,
+原因:找不到c<em>编译</em>器。
+解决办法：首先请确...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dancing_night" title="dancing_night" target="_blank">
+					<img src="https://avatar.csdn.net/E/8/3/3_dancing_night.jpg" alt="dancing_night" class="avatar-pic">
+					<span class="name">dancing_night</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-04-02 13:38:45</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4819</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/Alger_magic/article/details/52442632" target="_blank" strategy="BlogCommendFromBaidu_5">
+				<em>Windows</em>下<em>MinGW</em><em>编译</em><em>ffmpeg</em>库			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/Alger_magic/article/details/52442632" target="_blank" >
+				主要<em>编译</em>步骤
+
+
+
+1. 安装<em>MinGW</em>，推荐<em>使用</em>官网下载安装，然后设定默认路径，continue键进入包安装界面，未安装前所有方框标记都是空的，右键选择“mark for installation”...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/Alger_magic" title="Alger_magic" target="_blank">
+					<img src="https://avatar.csdn.net/1/F/B/3_alger_magic.jpg" alt="Alger_magic" class="avatar-pic">
+					<span class="name">Alger_magic</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-09-05 18:42:46</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：703</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/najiutan/article/details/43762759" target="_blank" strategy="BlogCommendFromBaidu_6">
+				<em>mingw</em>64+<em>msys</em><em>编译</em>64位<em>ffmpeg</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/najiutan/article/details/43762759" target="_blank" >
+				折腾了一天终于把<em>ffmpeg</em>+x264<em>编译</em>过去了，总共<em>编译</em>了两个版本，一个<em>ffmpeg</em>-20140512-git-5460ab7，还有一个官网的2014年11份的版本。
+<em>mingw</em>64环境搭建
+1.首...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/najiutan" title="najiutan" target="_blank">
+					<img src="https://avatar.csdn.net/4/5/5/3_najiutan.jpg" alt="najiutan" class="avatar-pic">
+					<span class="name">najiutan</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-02-12 15:51:25</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6964</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/anbinger2013/article/details/49387377" target="_blank" strategy="BlogCommendFromBaidu_7">
+				<em>mingw</em>下<em>使用</em>vs2015<em>编译</em>器<em>编译</em><em>FFMPEG</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/anbinger2013/article/details/49387377" target="_blank" >
+				由于工作原因，需要在<em>MINGW</em>下<em>编译</em>出一个单独完整的<em>FFMPEG</em> 功能库（而不是avcodec/avformat等很多库）提供给<em>WINDOWS</em> UI<em>使用</em>。 
+折腾了好几天，下过<em>msys</em>2,ming6...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/anbinger2013" title="anbinger2013" target="_blank">
+					<img src="https://avatar.csdn.net/0/1/B/3_anbinger2013.jpg" alt="anbinger2013" class="avatar-pic">
+					<span class="name">anbinger2013</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-10-24 20:55:07</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6031</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/c3zhao1986/2988856" target="_blank" strategy="BlogCommendFromBaidu_8">
+						<em>mingw</em>32_gcc441 <em>编译</em><em>ffmpeg</em>					</a>
+				</h4>
+				<p>
+					<span class="data">2011年01月17日 </span>
+					<span class="size">11.62MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/c3zhao1986/2988856" target="_blank" strategy="BlogCommendFromBaidu_8">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dancing_night/article/details/44600143" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+				<em>windows</em> 下<em>使用</em> <em>MinGW</em> + <em>msys</em> <em>编译</em> <em>ffmpeg</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dancing_night/article/details/44600143" target="_blank" >
+				本文参考了网络上的不少文章，但由于版本环境的问题参考文章并不能直接指导<em>编译</em>，本文吸收多方经验，并在自己多次<em>编译</em>实验的基础上写成，欢迎转载，请注名出处。
+    <em>FFmpeg</em>是在Linux平台下开发的...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dancing_night" title="dancing_night" target="_blank">
+					<img src="https://avatar.csdn.net/E/8/3/3_dancing_night.jpg" alt="dancing_night" class="avatar-pic">
+					<span class="name">dancing_night</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-03-24 22:19:53</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：965</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12755173" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421472">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>1</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "windows 下使用 MinGW + msys 编译 ffmpeg";
+    var ChannelId = 16;
+    var articleId = "12755173";
+    var commentscount = 20;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12755173";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "mingw+ffmpeg";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"windows 下使用 MinGW + msys 编译 ffmpeg");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=mingw+ffmpeg"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

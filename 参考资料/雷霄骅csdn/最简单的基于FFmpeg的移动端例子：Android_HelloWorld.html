@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/47008825"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="从本文开始打算记录一系列FFmpeg在Android/IOS开发的示例程序。前面几篇文章记录FFmpeg安卓端开发的例子，后面几篇文章记录FFmpeg IOS端开发的例子。这些例子中FFmpeg相关的代码源自于《FFmpeg示例合集》中的程序。本文记录第一个程序：安卓平台下基于FFmpeg的HelloWorld程序。Android程序FFmpeg类库使用说明Android应用程序使用FFmpeg类" />
+    <meta name="keywords" content="ffmpeg,Android" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的基于FFmpeg的移动端例子：Android HelloWorld - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/47008825"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+					<h1 class="title-article">最简单的基于FFmpeg的移动端例子：Android HelloWorld</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2015年07月23日 20:09:22</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：81980</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p><span style="white-space:pre;"></span></p><p>=====================================================</p><p>最简单的基于FFmpeg的移动端例子系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47008825">最简单的基于FFmpeg的移动端例子：Android HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47010637">最简单的基于FFmpeg的移动端例子：Android 视频解码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47011021">最简单的基于FFmpeg的移动端例子：Android 视频解码器-单个库版</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056051">最简单的基于FFmpeg的移动端例子：Android 推流器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056365">最简单的基于FFmpeg的移动端例子：Android 视频转码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056733">最简单的基于FFmpeg的移动端例子附件：Android 自带播放器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47059553">最简单的基于FFmpeg的移动端例子附件：SDL Android HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47071547">最简单的基于FFmpeg的移动端例子：IOS HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072257">最简单的基于FFmpeg的移动端例子：IOS 视频解码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072519">最简单的基于FFmpeg的移动端例子：IOS 推流器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072673">最简单的基于FFmpeg的移动端例子：IOS 视频转码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072861">最简单的基于FFmpeg的移动端例子附件：IOS自带播放器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47191283">最简单的基于FFmpeg的移动端例子：Windows Phone HelloWorld</a></p><p>=====================================================</p><br /><p><span style="white-space:pre;">	</span>从本文开始打算记录一系列FFmpeg在Android/IOS开发的示例程序。前面几篇文章记录FFmpeg安卓端开发的例子，后面几篇文章记录FFmpeg IOS端开发的例子。这些例子中FFmpeg相关的代码源自于《FFmpeg示例合集》中的程序。本文记录第一个程序：安卓平台下基于FFmpeg的HelloWorld程序。该程序的源代码源自于《<a href="http://blog.csdn.net/leixiaohua1020/article/details/46889849">最简单的基于FFMPEG的Helloworld程序</a>》。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150801182420984" alt="" /><br /></p><p><br /></p><h2>Android程序FFmpeg类库使用说明</h2><br /><p>Android应用程序使用FFmpeg类库的流程图如下所示。<br /></p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150722205737840" alt="" /><br /></p><p style="text-align:left;">上图中的流程可以分为“编译FFmpeg类库”、“编写Java端代码”、“编写C语言端代码”三个步骤。<br /></p><h3>（1）编译FFmpeg类库</h3><h4>a) 下载安装NDK</h4><p>下载NDK之后直接解压缩就可以使用了。在Windows下使用的时候需要用到Cygwin。在这里我自己使用Linux编译类库。</p><h4>b) 修改FFmpeg的configure</h4>下载FFmpeg源代码之后，首先需要对源代码中的configure文件进行修改。由于编译出来的动态库文件名的版本号在.so之后（例如“libavcodec.so.5.100.1”），而android平台不能识别这样文件名，所以需要修改这种文件名。在configure文件中找到下面几行代码：<br /><pre class="plain">SLIBNAME_WITH_MAJOR='$(SLIBNAME).$(LIBMAJOR)'
+LIB_INSTALL_EXTRA_CMD='$$(RANLIB)"$(LIBDIR)/$(LIBNAME)"'
+SLIB_INSTALL_NAME='$(SLIBNAME_WITH_VERSION)'
+SLIB_INSTALL_LINKS='$(SLIBNAME_WITH_MAJOR)$(SLIBNAME)'</pre>替换为下面内容就可以了：<br /><pre class="plain">SLIBNAME_WITH_MAJOR='$(SLIBPREF)$(FULLNAME)-$(LIBMAJOR)$(SLIBSUF)'
+LIB_INSTALL_EXTRA_CMD='$$(RANLIB)"$(LIBDIR)/$(LIBNAME)"'
+SLIB_INSTALL_NAME='$(SLIBNAME_WITH_MAJOR)'
+SLIB_INSTALL_LINKS='$(SLIBNAME)'</pre><h4>c) 生成类库</h4><p>按照configure、make、make install的步骤就可以得到FFmpeg的头文件和类库文件了。其中configure的配置脚本在网上比较多。下面列举几个脚本。</p><strong>FFmpeg类库完整功能脚本</strong><br />下面这个脚本可以生成一套功能完整，体积比较大的类库。<br /><pre class="plain">cd ffmpeg
+
+make clean
+
+export NDK=/home/leixiaohua1020/cdtworkspace/android-ndk-r9d
+export PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.8/prebuilt
+export PLATFORM=$NDK/platforms/android-8/arch-arm
+export PREFIX=../simplefflib
+build_one(){
+  ./configure --target-os=linux --prefix=$PREFIX \
+--enable-cross-compile \
+--enable-runtime-cpudetect \
+--disable-asm \
+--arch=arm \
+--cc=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-gcc \
+--cross-prefix=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi- \
+--disable-stripping \
+--nm=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-nm \
+--sysroot=$PLATFORM \
+--enable-gpl --enable-shared --disable-static --enable-small \
+--disable-ffprobe --disable-ffplay --disable-ffmpeg --disable-ffserver --disable-debug \
+--extra-cflags="-fPIC -DANDROID -D__thumb__ -mthumb -Wfatal-errors -Wno-deprecated -mfloat-abi=softfp -marm -march=armv7-a" 
+}
+
+build_one
+
+make
+make install
+
+cd ..
+</pre><br /><p>该脚本中前面几个变量“NDK”、“PREBUILT”、“PLATFORM”根据NDK路径的不同需要做相应的修改。另外需要注意64位NDK和32位NDK中某些文件夹名称也有一些区别：例如32位NDK中文件夹名称为“linux-x86”而64位NDK中文件夹名称为“linux-x86_64”。</p>将上述脚本拷贝至ffmpeg源代码外面，成功执行之后，会将类库和头文件生成到脚本所在目录下的“simplefflib”文件夹中。<br /><br /><p><strong>FFmpeg类库裁剪功能后包含libx264和libfaac支持脚本</strong></p>下面这个脚本可以生成一个裁剪功能后，包含libx264和libfaac支持的类库。<br /><pre class="plain">export NDK=/home/leixiaohua1020/cdtworkspace/android-ndk-r9d
+export PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.6/prebuilt
+export PLATFORM=$NDK/platforms/android-8/arch-arm
+export PREFIX=../264fflib
+build_one(){
+  ./configure --target-os=linux --prefix=$PREFIX \
+--enable-cross-compile \
+--enable-runtime-cpudetect \
+--disable-asm \
+--arch=arm \
+--cc=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-gcc \
+--cross-prefix=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi- \
+--disable-stripping \
+--nm=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-nm \
+--sysroot=$PLATFORM \
+--enable-gpl --enable-shared --disable-static --enable-nonfree --enable-version3 --enable-small --disable-vda --disable-iconv \
+--disable-encoders --enable-libx264 --enable-libfaac --enable-encoder=libx264 --enable-encoder=libfaac \
+--disable-muxers --enable-muxer=mov --enable-muxer=ipod --enable-muxer=psp --enable-muxer=mp4 --enable-muxer=avi \
+--disable-decoders --enable-decoder=aac --enable-decoder=aac_latm --enable-decoder=h264 --enable-decoder=mpeg4 \
+--disable-demuxers --enable-demuxer=h264 --enable-demuxer=avi --enable-demuxer=mpc --enable-demuxer=mov \
+--disable-parsers --enable-parser=aac --enable-parser=ac3 --enable-parser=h264 \
+--disable-protocols --enable-protocol=file \
+--disable-bsfs --enable-bsf=aac_adtstoasc --enable-bsf=h264_mp4toannexb \
+--disable-indevs --enable-zlib \
+--disable-outdevs --disable-ffprobe --disable-ffplay --disable-ffmpeg --disable-ffserver --disable-debug \
+--extra-cflags="-I ../android-lib/include -fPIC -DANDROID -D__thumb__ -mthumb -Wfatal-errors -Wno-deprecated -mfloat-abi=softfp -marm -march=armv7-a" \
+--extra-ldflags="-L ../android-lib/lib"
+
+}
+
+build_one
+
+make
+make install
+
+cd ..
+</pre><br />其中libfaac和libx264需要单独编译生成。它们编译过的类库位于“android-lib”文件夹中。libx264的编译脚本如下所示。<br /><pre class="plain">cd x264
+export NDK=/home/leixiaohua1020/cdtworkspace/android-ndk-r9d
+export PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.6/prebuilt
+export PLATFORM=$NDK/platforms/android-8/arch-arm
+export PREFIX=../android-lib
+./configure --prefix=$PREFIX \
+--enable-static \
+--enable-pic \
+--disable-asm \
+--disable-cli \
+--host=arm-linux \
+--cross-prefix=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi- \
+--sysroot=$PLATFORM
+cd ..
+</pre><br />libfaac的编译脚本如下所示。<br /><pre class="plain">cd faac
+export NDK=/home/leixiaohua1020/cdtworkspace/android-ndk-r9d
+export PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.6/prebuilt
+export PLATFORM=$NDK/platforms/android-9/arch-arm
+CFLAGS="-fpic -DANDROID -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fno-short-enums -D__ARM_ARCH_7__ -Wno-psabi -march=armv7 -mtune=xscale -msoft-float -mthumb -Os -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -DANDROID -Wa,--noexecstack -MMD -MP "
+#CFLAGS="-fpic -DANDROID -fpic -mthumb-interwork -D__ARM_ARCH_7__ -Wno-psabi -march=armv7-a -mtune=xscale -msoft-float -mthumb -Os -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -DANDROID -Wa, -MMD -MP "
+CROSS_COMPILE=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-
+export CPPFLAGS="$CFLAGS"
+export CFLAGS="$CFLAGS"
+export CXXFLAGS="$CFLAGS"
+export CXX="${CROSS_COMPILE}g++ --sysroot=${PLATFORM}"
+export LDFLAGS="$LDFLAGS"
+export CC="${CROSS_COMPILE}gcc --sysroot=${PLATFORM}"
+export NM="${CROSS_COMPILE}nm"
+export STRIP="${CROSS_COMPILE}strip"
+export RANLIB="${CROSS_COMPILE}ranlib"
+export AR="${CROSS_COMPILE}ar"
+
+./configure \
+--without-mp4v2 \
+--host=arm-linux \
+--enable-static \
+
+make
+make install
+
+cp -rf /usr/local/include/faac.h ../android-lib/include
+cp -rf /usr/local/include/faaccfg.h ../android-lib/include
+cp -rf /usr/local/lib/libfaac.a ../android-lib/lib
+
+cd ..
+</pre><br />FFmpeg编译后生成的类库文件包含下面几个：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><em><span style="color:#660000;">libavformat-56.so<br />libavcodec-56.so<br />libavfilter-5.so<br />libavdevice-56.so<br />libavutil-54.so<br />libpostproc-53.so<br />libswresample-1.so<br />libswscale-3.so</span></em></blockquote><br /><h3>（2）编写Java端代码</h3>使用Android IDE（例如Eclipse ADT）创建一个空的Android项目。也可以直接使用NDK中的hello-jni例子，该项目位于“{NDK目录}/samples/hello-jni”中。后文将会逐步改造hello-jni，使它支持FFmpeg类库的调用。<br />修改Android项目中“src”文件夹下的Java源代码，准备调用C语言函数。使用JNI调用C语言代码有两点需要做的步骤：<br /><ul><li>声明C语言函数对应的Java函数</li><li>声明要加载的类库</li></ul>需要注意，C语言函数的声明要加上“native”关键字；加载类库的时候需要使用“System.loadLibrary()”方法。例如hello-jni例子中的Activity源代码如下所示。<br /><pre class="java">package com.example.hellojni;
+
+import android.app.Activity;
+import android.widget.TextView;
+import android.os.Bundle;
+
+
+public class HelloJni extends Activity
+{
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        /* Create a TextView and set its content.
+         * the text is retrieved by calling a native
+         * function.
+         */
+        TextView  tv = new TextView(this);
+        tv.setText( stringFromJNI() );
+        setContentView(tv);
+    }
+
+    /* A native method that is implemented by the
+     * 'hello-jni' native library, which is packaged
+     * with this application.
+     */
+    public native String  stringFromJNI();
+
+    /* This is another native method declaration that is *not*
+     * implemented by 'hello-jni'. This is simply to show that
+     * you can declare as many native methods in your Java code
+     * as you want, their implementation is searched in the
+     * currently loaded native libraries only the first time
+     * you call them.
+     *
+     * Trying to call this function will result in a
+     * java.lang.UnsatisfiedLinkError exception !
+     */
+    public native String  unimplementedStringFromJNI();
+
+    /* this is used to load the 'hello-jni' library on application
+     * startup. The library has already been unpacked into
+     * /data/data/com.example.hellojni/lib/libhello-jni.so at
+     * installation time by the package manager.
+     */
+    static {
+        System.loadLibrary("hello-jni");
+    }
+}
+</pre><br />从源代码可以看出，该Activity加载了名称为“libhello-jni.so”的类库（Java代码中不包含前面的“lib”和后面的“.so”），并声明了stringFromJNI()方法。<br />在这里，为了调用FFmpeg而经过修改后的Activity加载类库部分的源代码如下所示。<br /><pre class="java">    static {
+     System.loadLibrary("avutil-54");
+    	System.loadLibrary("avcodec-56");
+    	System.loadLibrary("avformat-56");
+    	System.loadLibrary("avdevice-56");
+    	System.loadLibrary("swresample-1");
+    	System.loadLibrary("swscale-3");
+    	System.loadLibrary("postproc-53");
+    	System.loadLibrary("avfilter-5");
+     System.loadLibrary("hello-jni");
+    }</pre><br /><h3>（3）编写C语言端代码</h3><h4>a) 获取C语言的接口函数声明</h4>根据Java对于C语言接口的定义，生成相应的接口函数声明。这一步需要用到JDK中的“javah”命令。例如对于hello-jni例子，首先切换到src文件夹下，输入如下命令：<br /><pre class="plain">javah com.example.hellojni.HelloJni</pre>就可以在当前目录下生成一个头文件“com_example_hellojni_HelloJni.h”，该头文件内容如下所示。<br /><pre class="cpp">/* DO NOT EDIT THIS FILE - it is machine generated */
+#include &lt;jni.h&gt;
+/* Header for class com_example_hellojni_HelloJni */
+
+#ifndef _Included_com_example_hellojni_HelloJni
+#define _Included_com_example_hellojni_HelloJni
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     com_example_hellojni_HelloJni
+ * Method:    stringFromJNI
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_hellojni_HelloJni_stringFromJNI
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_example_hellojni_HelloJni
+ * Method:    unimplementedStringFromJNI
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_example_hellojni_HelloJni_unimplementedStringFromJNI
+  (JNIEnv *, jobject);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+</pre><br /><p>从源代码可以看出，JNI调用的C语言函数是有固定格式的，即：</p><p style="text-align:center;"><strong><span style="color:#660000;">Java_{包名}_{包名}…_{类名}(JNIEnv *,…)</span></strong></p>对于HelloJni类中的stringFromJNI方法，其C语言版本的函数声明为：<br /><pre class="cpp">JNIEXPORT jstring JNICALL Java_com_example_hellojni_HelloJni_stringFromJNI (JNIEnv *, jobject)</pre>PS：这个头文件只是一个参考，对于JNI来说并不是必须的。也可以根据命名规则直接编写C语言函数。<br /><br /><h4>b) 编写C语言接口函数代码</h4>在Android项目根目录下新建“jni”文件夹，用于存储C语言源代码以及相关的开发资源。将编译生成的FFmpeg的类库（.so文件）和头文件（.h文件）拷贝到这个目录下，然后新建一个C语言文件，就可以开始编写相应的逻辑了。此时jni文件夹目录结构如下图所示。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150722202629216?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>C语言文件用于实现上文中通过“javah”命令生成的头文件的函数。对于hello-jni例子，其C语言文件内容如下所示。<br /><pre class="cpp">#include &lt;string.h&gt;
+#include &lt;jni.h&gt;
+
+/* This is a trivial JNI example where we use a native method
+ * to return a new VM String. See the corresponding Java source
+ * file located at:
+ *
+ *   apps/samples/hello-jni/project/src/com/example/hellojni/HelloJni.java
+ */
+jstring
+Java_com_example_hellojni_HelloJni_stringFromJNI( JNIEnv* env,
+                                                  jobject thiz )
+{
+#if defined(__arm__)
+  #if defined(__ARM_ARCH_7A__)
+    #if defined(__ARM_NEON__)
+      #define ABI "armeabi-v7a/NEON"
+    #else
+      #define ABI "armeabi-v7a"
+    #endif
+  #else
+   #define ABI "armeabi"
+  #endif
+#elif defined(__i386__)
+   #define ABI "x86"
+#elif defined(__mips__)
+   #define ABI "mips"
+#else
+   #define ABI "unknown"
+#endif
+
+    return (*env)-&gt;NewStringUTF(env, "Hello from JNI !  Compiled with ABI " ABI ".");
+}
+</pre><br />可以看出，Java_com_example_hellojni_HelloJni_stringFromJNI()根据宏定义判定了系统类型并且返回了一个字符串。在这里要注意，C语言中的char[]是不能直接对应为Java中的String类型的（即jstring）。char[]转换为String需要通过JNIEnv的NewStringUTF()函数。<br />为了调用FFmpeg而经过修改后的Java_com_example_hellojni_HelloJni_stringFromJNI()的源代码如下所示。<br /><pre class="cpp">#include &lt;string.h&gt;
+#include &lt;jni.h&gt;
+#include "libavcodec/avcodec.h"
+
+jstring
+Java_com_example_hellojni_HelloJni_stringFromJNI( JNIEnv* env,
+                                                  jobject thiz )
+{
+    char info[10000] = { 0 };
+    sprintf(info, "%s\n", avcodec_configuration());
+    return (*env)-&gt;NewStringUTF(env, info);
+}
+</pre><br />可以看出该函数调用了libavcodec的avcodec_configuration()方法，用于获取FFmpeg的配置信息。<br /><br /><h4>c) 编写Android.mk</h4>完成C语言程序的编写后，就可以开始编写Android的makefile文件Android.mk了。hello-jni例子中的Android.mk内容如下：<br /><pre class="plain">LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := hello-jni
+LOCAL_SRC_FILES := hello-jni.c
+
+include $(BUILD_SHARED_LIBRARY)
+</pre><br />编译FFmpeg示例程序的时候由于用到了libavcodec等相关的库，所以将Android.mk文件修改如下：<br /><pre class="plain">LOCAL_PATH := $(call my-dir)
+
+# FFmpeg library
+include $(CLEAR_VARS)
+LOCAL_MODULE := avcodec
+LOCAL_SRC_FILES := libavcodec-56.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avdevice
+LOCAL_SRC_FILES := libavdevice-56.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avfilter
+LOCAL_SRC_FILES := libavfilter-5.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avformat
+LOCAL_SRC_FILES := libavformat-56.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avutil
+LOCAL_SRC_FILES := libavutil-54.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := postproc
+LOCAL_SRC_FILES := libpostproc-53.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := swresample
+LOCAL_SRC_FILES := libswresample-1.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := swscale
+LOCAL_SRC_FILES := libswscale-3.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+# Program
+include $(CLEAR_VARS)
+LOCAL_MODULE := hello-jni
+LOCAL_SRC_FILES := hello-jni.c
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
+LOCAL_LDLIBS := -llog -lz
+LOCAL_SHARED_LIBRARIES := avcodec avdevice avfilter avformat avutil postproc swresample swscale
+include $(BUILD_SHARED_LIBRARY)
+</pre><br /><h4>d) 编写Application.mk（可选）</h4><p>Application.mk中的APP_ABI设定了编译后库文件支持的指令集，默认使用“armeabi”。在hello-jni例子中，APP_ABI取值为“all”。由于我们编译的FFmpeg并不在像x86这样的平台下运行，所以不需要“all”，把它修改为“armeabi”或者删除就可以了（对于hello-jni这个例子，不做这一步的话会在编译x86平台类库的时候报错，但并不影响后面的测试运行）。</p><h4>e) 运行ndk-build</h4>编写完Android的Makefile文件之后，就可以运行ndk-build编译生成可以通过JNI调用的类库了。ndk-build本身是一个脚本，位于NDK根目录下。切换到Android程序目录中，直接执行该脚本就可以了。<br />ndk-build成功后，会在根目录下的“libs/armeabi”目录中生成相关的库文件。hello-jni例子中，会生成以下库文件：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><em><span style="color:#660000;">libavformat-56.so<br />libavcodec-56.so<br />libavfilter-5.so<br />libavdevice-56.so<br />libavutil-54.so<br />libpostproc-53.so<br />libswresample-1.so<br />libswscale-3.so<br />libhello-jni.so</span></em></blockquote><p>接下来就可以在Android手机或者虚拟机上对整个Android工程进行测试了。</p><h4>f) 程序运行结果</h4>程序最终的运行结果截图如下所示。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150722203448656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>从图中可以看出，程序中打印出了FFmpeg的配置信息。<br /><h3><br /></h3><h2>FFmpeg Helloworld</h2>本文记录的FFmpeg Helloworld程序C语言的源代码来自于《最简单的基于FFMPEG的Helloworld程序》。改程序会输出FFmpeg类库下列信息：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">Protocol: FFmpeg类库支持的协议<br />AVFormat: FFmpeg类库支持的封装格式<br />AVCodec: FFmpeg类库支持的编解码器<br />AVFilter: FFmpeg类库支持的滤镜<br />Configure: FFmpeg类库的配置信息</blockquote><br /><h2>源代码</h2>项目的目录结构如图所示。Java源代码位于src目录，而C代码位于jni目录。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150722203701916?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><p>Android程序Java端代码位于src\com\leixiaohua1020\sffmpegandroidhelloworld\MainActivity.java，如下所示。</p><p></p><pre class="java">/**
+ * 最简单的基于FFmpeg的Helloworld例子-安卓
+ * Simplest FFmpeg Android Helloworld
+ * 
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ * 
+ * 
+ * 本程序是移植FFmpeg到安卓平台的最简单程序。它可以打印出FFmpeg类库的下列信息：
+ *  Protocol:  FFmpeg类库支持的协议
+ *  AVFormat:  FFmpeg类库支持的封装格式
+ *  AVCodec:   FFmpeg类库支持的编解码器
+ *  AVFilter:  FFmpeg类库支持的滤镜
+ *  Configure: FFmpeg类库的配置信息
+ * 
+ * This is the simplest program based on FFmpeg in Android. It can show following 
+ * informations about FFmpeg library:
+ *  Protocol:  Protocols supported by FFmpeg.
+ *  AVFormat:  Container format supported by FFmpeg.
+ *  AVCodec:   Encoder/Decoder supported by FFmpeg.
+ *  AVFilter:  Filters supported by FFmpeg.
+ *  Configure: configure information of FFmpeg.
+ * 
+ */
+
+
+package com.leixiaohua1020.sffmpegandroidhelloworld;
+
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        final TextView libinfoText = (TextView) findViewById(R.id.text_libinfo);
+        libinfoText.setMovementMethod(ScrollingMovementMethod.getInstance()); 
+        
+        libinfoText.setText(configurationinfo());
+        
+        Button configurationButton = (Button) this.findViewById(R.id.button_configuration);
+		Button urlprotocolButton = (Button) this.findViewById(R.id.button_urlprotocol);
+		Button avformatButton = (Button) this.findViewById(R.id.button_avformat);
+		Button avcodecButton = (Button) this.findViewById(R.id.button_avcodec);
+		Button avfilterButton = (Button) this.findViewById(R.id.button_avfilter);
+		
+		urlprotocolButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0){
+				libinfoText.setText(urlprotocolinfo());
+			}
+		});
+		
+		avformatButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0){
+				libinfoText.setText(avformatinfo());
+			}
+		});
+		
+		avcodecButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0){
+				libinfoText.setText(avcodecinfo());
+			}
+		});
+		
+		avfilterButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0){
+				libinfoText.setText(avfilterinfo());
+			}
+		});
+		
+		configurationButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0){
+				libinfoText.setText(configurationinfo());
+			}
+		});
+		
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    
+    //JNI
+    public native String urlprotocolinfo();
+    public native String avformatinfo();
+    public native String avcodecinfo();
+    public native String avfilterinfo();
+    public native String configurationinfo();
+    
+    static{
+    	System.loadLibrary("avutil-54");
+    	System.loadLibrary("swresample-1");
+    	System.loadLibrary("avcodec-56");
+    	System.loadLibrary("avformat-56");
+    	System.loadLibrary("swscale-3");
+    	System.loadLibrary("postproc-53");
+    	System.loadLibrary("avfilter-5");
+    	System.loadLibrary("avdevice-56");
+    	System.loadLibrary("sffhelloworld");
+    }
+    
+}
+</pre><br /><p></p>C语言端源代码位于jni/simplest_ffmpeg_helloworld.c，如下所示。<br /><pre class="cpp">/**
+ * 最简单的基于FFmpeg的Helloworld例子-安卓
+ * Simplest FFmpeg Android Helloworld
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ *
+ *
+ * 本程序是移植FFmpeg到安卓平台的最简单程序。它可以打印出FFmpeg类库的下列信息：
+ * Protocol:  FFmpeg类库支持的协议
+ * AVFormat:  FFmpeg类库支持的封装格式
+ * AVCodec:   FFmpeg类库支持的编解码器
+ * AVFilter:  FFmpeg类库支持的滤镜
+ * Configure: FFmpeg类库的配置信息
+ *
+ * This is the simplest program based on FFmpeg in Android. It can show following
+ * informations about FFmpeg library:
+ * Protocol:  Protocols supported by FFmpeg.
+ * AVFormat:  Container format supported by FFmpeg.
+ * AVCodec:   Encoder/Decoder supported by FFmpeg.
+ * AVFilter:  Filters supported by FFmpeg.
+ * Configure: configure information of FFmpeg.
+ */
+
+#include &lt;stdio.h&gt;
+ 
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
+#include "libavfilter/avfilter.h"
+
+//Log
+#ifdef ANDROID
+#include &lt;jni.h&gt;
+#include &lt;android/log.h&gt;
+#define LOGE(format, ...)  __android_log_print(ANDROID_LOG_ERROR, "(&gt;_&lt;)", format, ##__VA_ARGS__)
+#else
+#define LOGE(format, ...)  printf("(&gt;_&lt;) " format "\n", ##__VA_ARGS__)
+#endif
+
+
+//FIX
+struct URLProtocol;
+/**
+ * com.leixiaohua1020.sffmpegandroidhelloworld.MainActivity.urlprotocolinfo()
+ * Protocol Support Information
+ */
+JNIEXPORT jstring Java_com_leixiaohua1020_sffmpegandroidhelloworld_MainActivity_urlprotocolinfo(JNIEnv *env, jobject obj){
+	
+	char info[40000]={0};
+	av_register_all();
+
+	struct URLProtocol *pup = NULL;
+	//Input
+	struct URLProtocol **p_temp = &amp;pup;
+	avio_enum_protocols((void **)p_temp, 0);
+	while ((*p_temp) != NULL){
+		sprintf(info, "%s[In ][%10s]\n", info, avio_enum_protocols((void **)p_temp, 0));
+	}
+	pup = NULL;
+	//Output
+	avio_enum_protocols((void **)p_temp, 1);
+	while ((*p_temp) != NULL){
+		sprintf(info, "%s[Out][%10s]\n", info, avio_enum_protocols((void **)p_temp, 1));
+	}
+
+	//LOGE("%s", info);
+	return (*env)-&gt;NewStringUTF(env, info);
+}
+
+/**
+ * com.leixiaohua1020.sffmpegandroidhelloworld.MainActivity.avformatinfo()
+ * AVFormat Support Information
+ */
+JNIEXPORT jstring Java_com_leixiaohua1020_sffmpegandroidhelloworld_MainActivity_avformatinfo(JNIEnv *env, jobject obj){
+
+	char info[40000] = { 0 };
+
+	av_register_all();
+
+	AVInputFormat *if_temp = av_iformat_next(NULL);
+	AVOutputFormat *of_temp = av_oformat_next(NULL);
+	//Input
+	while(if_temp!=NULL){
+		sprintf(info, "%s[In ][%10s]\n", info, if_temp-&gt;name);
+		if_temp=if_temp-&gt;next;
+	}
+	//Output
+	while (of_temp != NULL){
+		sprintf(info, "%s[Out][%10s]\n", info, of_temp-&gt;name);
+		of_temp = of_temp-&gt;next;
+	}
+	//LOGE("%s", info);
+	return (*env)-&gt;NewStringUTF(env, info);
+}
+
+/**
+ * com.leixiaohua1020.sffmpegandroidhelloworld.MainActivity.avcodecinfo()
+ * AVCodec Support Information
+ */
+JNIEXPORT jstring Java_com_leixiaohua1020_sffmpegandroidhelloworld_MainActivity_avcodecinfo(JNIEnv *env, jobject obj)
+{
+	char info[40000] = { 0 };
+
+	av_register_all();
+
+	AVCodec *c_temp = av_codec_next(NULL);
+
+	while(c_temp!=NULL){
+		if (c_temp-&gt;decode!=NULL){
+			sprintf(info, "%s[Dec]", info);
+		}
+		else{
+			sprintf(info, "%s[Enc]", info);
+		}
+		switch (c_temp-&gt;type){
+		case AVMEDIA_TYPE_VIDEO:
+			sprintf(info, "%s[Video]", info);
+			break;
+		case AVMEDIA_TYPE_AUDIO:
+			sprintf(info, "%s[Audio]", info);
+			break;
+		default:
+			sprintf(info, "%s[Other]", info);
+			break;
+		}
+		sprintf(info, "%s[%10s]\n", info, c_temp-&gt;name);
+
+		
+		c_temp=c_temp-&gt;next;
+	}
+	//LOGE("%s", info);
+
+	return (*env)-&gt;NewStringUTF(env, info);
+}
+
+/**
+ * com.leixiaohua1020.sffmpegandroidhelloworld.MainActivity.avfilterinfo()
+ * AVFilter Support Information
+ */
+JNIEXPORT jstring Java_com_leixiaohua1020_sffmpegandroidhelloworld_MainActivity_avfilterinfo(JNIEnv *env, jobject obj)
+{
+	char info[40000] = { 0 };
+	avfilter_register_all();
+	AVFilter *f_temp = (AVFilter *)avfilter_next(NULL);
+	while (f_temp != NULL){
+		sprintf(info, "%s[%10s]\n", info, f_temp-&gt;name);
+	}
+	//LOGE("%s", info);
+
+	return (*env)-&gt;NewStringUTF(env, info);
+}
+
+/**
+ * com.leixiaohua1020.sffmpegandroidhelloworld.MainActivity.urlprotocolinfo()
+ * Protocol Support Information
+ */
+JNIEXPORT jstring Java_com_leixiaohua1020_sffmpegandroidhelloworld_MainActivity_configurationinfo(JNIEnv *env, jobject obj)
+{
+	char info[10000] = { 0 };
+	av_register_all();
+
+	sprintf(info, "%s\n", avcodec_configuration());
+
+	//LOGE("%s", info);
+	return (*env)-&gt;NewStringUTF(env, info);
+}
+</pre><br />Android.mk文件位于jni/Android.mk，如下所示。<br /><pre class="plain"># Android.mk for FFmpeg
+#
+# Lei Xiaohua 雷霄骅
+# leixiaohua1020@126.com
+# http://blog.csdn.net/leixiaohua1020
+# 
+
+LOCAL_PATH := $(call my-dir)
+
+# FFmpeg library
+include $(CLEAR_VARS)
+LOCAL_MODULE := avcodec
+LOCAL_SRC_FILES := libavcodec-56.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avdevice
+LOCAL_SRC_FILES := libavdevice-56.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avfilter
+LOCAL_SRC_FILES := libavfilter-5.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avformat
+LOCAL_SRC_FILES := libavformat-56.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := avutil
+LOCAL_SRC_FILES := libavutil-54.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := postproc
+LOCAL_SRC_FILES := libpostproc-53.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := swresample
+LOCAL_SRC_FILES := libswresample-1.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := swscale
+LOCAL_SRC_FILES := libswscale-3.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+# Program
+include $(CLEAR_VARS)
+LOCAL_MODULE := sffhelloworld
+LOCAL_SRC_FILES :=simplest_ffmpeg_helloworld.c
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
+LOCAL_LDLIBS := -llog -lz
+LOCAL_SHARED_LIBRARIES := avcodec avdevice avfilter avformat avutil postproc swresample swscale
+include $(BUILD_SHARED_LIBRARY)
+</pre><br />其它部分源代码暂不详细例举。<br /><br /><h2>运行结果</h2>App在手机上运行后的结果如下图所示。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150722204333925?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>单击不同的按钮，可以查看FFmpeg类库相关的信息。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150722204414033?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><br /><h2>下载</h2><br /><strong>simplest ffmpeg mobile<br /><br />项目主页</strong><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_mobile">https://github.com/leixiaohua1020/simplest_ffmpeg_mobile</a></p><p>开源中国：<a href="https://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mobile">https://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mobile</a></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegmobile/">https://sourceforge.net/projects/simplestffmpegmobile/</a><br /></p><p><br /></p><p>CSDN工程下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8924391">http://download.csdn.net/detail/leixiaohua1020/8924391</a></p><p><br /></p><p></p><p>本解决方案包含了使用FFmpeg在移动端处理多媒体的各种例子：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">[Android]<br />simplest_android_player: 基于安卓接口的视频播放器<br /><span style="color:#ff0000;">simplest_ffmpeg_android_helloworld: 安卓平台下基于FFmpeg的HelloWorld程序</span><br />simplest_ffmpeg_android_decoder: 安卓平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_android_decoder_onelib: 安卓平台下最简单的基于FFmpeg的视频解码器-单库版<br />simplest_ffmpeg_android_streamer: 安卓平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_android_transcoder: 安卓平台下移植的FFmpeg命令行工具<br />simplest_sdl_android_helloworld: 移植SDL到安卓平台的最简单程序<br />[IOS]<br />simplest_ios_player: 基于IOS接口的视频播放器<br />simplest_ffmpeg_ios_helloworld: IOS平台下基于FFmpeg的HelloWorld程序<br />simplest_ffmpeg_ios_decoder: IOS平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_ios_streamer: IOS平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_ios_transcoder: IOS平台下移植的ffmpeg.c命令行工具</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_sdl_ios_helloworld: 移植SDL到IOS平台的最简单程序</blockquote><p><br /></p>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=ffmpeg&t=blog" target="_blank">ffmpeg						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Android&t=blog" target="_blank">Android						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=IOS&t=blog" target="_blank">IOS						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=视频&t=blog" target="_blank">视频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=编解码&t=blog" target="_blank">编解码						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1360795"  target="_blank">FFMPEG						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/5680665"  target="_blank">Android多媒体						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/ffmpeg-devel.html" target="_blank">FFmpeg</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/47008825#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/ywl5320/article/details/75040724" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>FFmpeg</em>(3.3.2)移植<em>Android</em>平台			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/ywl5320/article/details/75040724" target="_blank" >
+				我的视频课程：《<em>FFmpeg</em>打造<em>Android</em>万能音频播放器》        Update：话不多说，先看一下后面集成SDL2后的音频播放器（SDK），可以用于FM类型的播放器使用哦~Git地址：ht...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/ywl5320" title="ywl5320" target="_blank">
+					<img src="https://avatar.csdn.net/F/7/A/3_ywl5320.jpg" alt="ywl5320" class="avatar-pic">
+					<span class="name">ywl5320</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-07-12 22:43:40</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5954</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/tanningzhong/article/details/77989686" target="_blank" strategy="BlogCommendFromBaidu_1">
+				利用 <em>FFmpeg</em> 在 <em>Android</em> 上做视频编辑			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/tanningzhong/article/details/77989686" target="_blank" >
+				众所周知，<em>Android</em> 对涉及底层硬件的 API 控制力都比较弱，从其难用的 Camera/Camera2、MediaCodec 等 API 就可见一斑。
+最近项目中有需要对视频进行编辑的需求，总...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/tanningzhong" title="tanningzhong" target="_blank">
+					<img src="https://avatar.csdn.net/2/E/4/3_tanningzhong.jpg" alt="tanningzhong" class="avatar-pic">
+					<span class="name">tanningzhong</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-09-15 11:23:02</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2678</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/chenxiaoping1993/article/details/80306928" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>FFmpeg</em>编译成<em>Android</em>动态库			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/chenxiaoping1993/article/details/80306928" target="_blank" >
+				项目需要，网上也有现成的<em>FFmpeg</em> <em>Android</em>动态库，但是本着亲力亲为的宗旨，做了不断地尝试，最终也是成功了，在此做一个笔记，以备日后查阅。
+
+附上给我帮助的资料链接： 
+王英豪大神的博客 
+雷...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/chenxiaoping1993" title="chenxiaoping1993" target="_blank">
+					<img src="https://avatar.csdn.net/C/C/7/3_chenxiaoping1993.jpg" alt="chenxiaoping1993" class="avatar-pic">
+					<span class="name">chenxiaoping1993</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-05-14 15:51:08</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：63</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/Soumns_Kris/article/details/78875317" target="_blank" strategy="BlogCommendFromBaidu_3">
+				<em>Android</em>-使用<em>ffmpeg</em>视频处理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/Soumns_Kris/article/details/78875317" target="_blank" >
+				关于<em>ffmpeg</em>使用			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/Soumns_Kris" title="Soumns_Kris" target="_blank">
+					<img src="https://avatar.csdn.net/1/C/0/3_soumns_kris.jpg" alt="Soumns_Kris" class="avatar-pic">
+					<span class="name">Soumns_Kris</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-12-22 17:19:46</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：439</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/YGL_smile/article/details/72903961" target="_blank" strategy="BlogCommendFromBaidu_5">
+				编译<em>FFmpeg</em>在<em>Android</em>上使用			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/YGL_smile/article/details/72903961" target="_blank" >
+				编译<em>Android</em>上可用的<em>FFmpeg</em>并测试。编译环境： 
+Ubuntu 16.04.1 64位 (虚拟机) 
+<em>android</em>-ndk-r9d 
+开发环境： 
+Window 10 64位 
+andro...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/YGL_smile" title="YGL_smile" target="_blank">
+					<img src="https://avatar.csdn.net/D/2/5/3_ygl_smile.jpg" alt="YGL_smile" class="avatar-pic">
+					<span class="name">YGL_smile</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-06-07 21:07:57</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：634</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/hejjunlin/article/details/52661331" target="_blank" strategy="BlogCommendFromBaidu_6">
+				手把手图文并茂教你用<em>Android</em> Studio编译<em>FFmpeg</em>库并移植			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/hejjunlin/article/details/52661331" target="_blank" >
+				之前曾写过一篇[《<em>FFmpeg</em>在Linux下安装编译过程》](http://blog.csdn.net/hejjunlin/article/details/52402759)，今天有空就用Androi...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/hejjunlin" title="hejjunlin" target="_blank">
+					<img src="https://avatar.csdn.net/9/5/0/3_hejjunlin.jpg" alt="hejjunlin" class="avatar-pic">
+					<span class="name">hejjunlin</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-09-25 17:06:21</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：15830</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+				<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/xdwyyan/8488351" target="_blank" strategy="BlogCommendFromBaidu_7">
+						<em>ffmpeg</em>-<em>android</em>					</a>
+				</h4>
+				<p>
+					<span class="data">2015年03月10日 </span>
+					<span class="size"></span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/xdwyyan/8488351" target="_blank" strategy="BlogCommendFromBaidu_7">
+					<img src="" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/yhaolpz/article/details/76408829" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>Android</em> 集成 <em>FFmpeg</em> (一) 基础知识及<em>简单</em>调用			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/yhaolpz/article/details/76408829" target="_blank" >
+				本系列第二篇：<em>Android</em> 集成 <em>FFmpeg</em> (二) 以命令方式调用 <em>FFmpeg</em>
+
+
+
+前言
+
+网上关于 <em>Android</em> 集成 <em>FFmpeg</em> 的文章很多，但大多数都只介绍了步骤，没有说明背后的原...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/yhaolpz" title="yhaolpz" target="_blank">
+					<img src="https://avatar.csdn.net/7/7/0/3_yhaolpz.jpg" alt="yhaolpz" class="avatar-pic">
+					<span class="name">yhaolpz</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-08-12 23:28:19</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：12228</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xiaoru5127/article/details/51524795" target="_blank" strategy="BlogCommendFromBaidu_9">
+				<em>FFmpeg</em>之一编译For<em>Android</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xiaoru5127/article/details/51524795" target="_blank" >
+				首先,被这部分烦的不行的可以去github里clone一些别人的成品轻松拿到适合<em>Android</em>的编译结果  说下自己的环境 
+  win10 x64 
+  VMware® Workstation 12...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xiaoru5127" title="xiaoru5127" target="_blank">
+					<img src="https://avatar.csdn.net/4/3/6/3_xiaoru5127.jpg" alt="xiaoru5127" class="avatar-pic">
+					<span class="name">xiaoru5127</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-05-28 14:28:43</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：12029</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/jaikydota163/article/details/78502106" target="_blank" strategy="BlogCommendFromBaidu_10">
+				<em>FFmpeg</em>的<em>Android</em>端调用库<em>ffmpeg</em>-<em>android</em>的<em>简单</em>使用			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/jaikydota163/article/details/78502106" target="_blank" >
+				<em>FFmpeg</em>是一套可以用来记录、转换数字音频、视频，并能将其转化为流的开源计算机程序，<em>FFmpeg</em>-<em>Android</em>使用x264，libass，fontconfig，freetype，fribidi和L...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/jaikydota163" title="jaikydota163" target="_blank">
+					<img src="https://avatar.csdn.net/D/9/0/3_jaikydota163.jpg" alt="jaikydota163" class="avatar-pic">
+					<span class="name">jaikydota163</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-11-10 17:53:20</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：913</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/47008825" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421150">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>60</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的基于FFmpeg的移动端例子：Android HelloWorld";
+    var ChannelId = 16;
+    var articleId = "47008825";
+    var commentscount = 77;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/47008825";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 0;
+    //百度搜索
+    var baiduKey = "android+ffmpeg%E6%95%99%E7%A8%8B";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的基于FFmpeg的移动端例子：Android HelloWorld");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=android+ffmpeg%E6%95%99%E7%A8%8B"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

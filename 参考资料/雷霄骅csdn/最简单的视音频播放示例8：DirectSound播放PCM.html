@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/40540147"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文记录DirectSound播放音频的技术。DirectSound是Windows下最常见的音频播放技术。目前大部分的音频播放应用都是通过DirectSound来播放的。本文记录一个使用DirectSound播放PCM的例子。注：一位仁兄已经提醒我DirectSound已经计划被XAudio2取代了。后来考证了一下发现确有此事。因此在下次更新中考虑加入XAudio2播放PCM的例子。本文仍然记录" />
+    <meta name="keywords" content="DirectSound,音频" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的视音频播放示例8：DirectSound播放PCM - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40540147"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">最简单的视音频播放示例8：DirectSound播放PCM</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2014年10月30日 00:08:36</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：23523</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================<br /></p><p>最简单的视音频播放示例系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783">最简单的视音频播放示例1：总述</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40266503">最简单的视音频播放示例2：GDI播放YUV, RGB</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40279297">最简单的视音频播放示例3：Direct3D播放YUV，RGB（通过Surface）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40301179">最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40333583">最简单的视音频播放示例5：OpenGL播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40379845">最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40525591">最简单的视音频播放示例7：SDL2播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40540147">最简单的视音频播放示例8：DirectSound播放PCM</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40544521">最简单的视音频播放示例9：SDL2播放PCM</a><br /></p><p>=====================================================</p><br /><p>本文记录DirectSound播放音频的技术。DirectSound是Windows下最常见的音频播放技术。目前大部分的音频播放应用都是通过DirectSound来播放的。本文记录一个使用DirectSound播放PCM的例子。</p>注：一位仁兄已经提醒我DirectSound已经计划被XAudio2取代了。后来考证了一下发现确有此事。因此在下次更新中考虑加入XAudio2播放PCM的例子。本文仍然记录一下DirectSound这位“元老”。<br /><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141028145216149?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p><br /></p><h2>DirectSound简介</h2>DirectSound是微软所开发DirectX的组件之一，可以在Windows 操作系统上录音，并且记录波形音效（waveform sound）。目前DirectSound 是一个成熟的API ，提供许多有用的功能，例如能够在较高的分辨率播放多声道声音。<br />DirectSound3D（DS3D）最早是1993年与 DirectX 3 一起发表的。DirectX 8以后的DirectSound和DirectSound3D的（DS3D）被合称DirectX Audio。<br /><br /><br />DirectSound有以下几种对象：<br /><table border="1" cellspacing="0" cellpadding="0" width="550" align="center"><tbody><tr><td valign="top"><p>对象</p></td>  <td valign="top"><p>数量</p></td>  <td valign="top"><p>作用</p></td>  <td valign="top" width="130"><p>主要接口</p></td> </tr><tr><td valign="top"><p>设备</p></td>  <td valign="top"><p>每个应用程序只有一个设备对象</p></td>  <td valign="top"><p>用来管理设备，创建辅助缓冲区</p></td>  <td valign="top"><p>IDirectSound8</p></td> </tr><tr><td valign="top"><p>辅助缓冲区</p></td>  <td valign="top"><p>每一个声音对应一个辅助缓冲区</p></td>  <td valign="top"><p>用来管理一个静态的或者动态的声音流，然后在主缓冲区中混音</p></td>  <td valign="top"><p>IDirectSoundBuffer8,</p>  <p>IDirectSound3DBuffer8,</p>  <p>IDirectSoundNotify8</p></td> </tr><tr><td valign="top"><p>主缓冲区</p></td>  <td valign="top"><p>一个应用程序只有一个主缓冲区</p></td>  <td valign="top"><p>将辅助缓冲区的数据进行混音，并且控制3D参数.</p></td>  <td valign="top"><p>IDirectSoundBuffer,</p>  <p>IDirectSound3DListener8</p></td> </tr></tbody></table><br /><br /><h2>DirectSound播放音频的流程</h2><p>使用DirectSound播放音频一般情况下需要如下步骤：</p>1.<span style="white-space:pre;">	</span>初始化<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)<span style="white-space:pre;">	</span>创建一个IDirectSound8接口的对象<br />2)<span style="white-space:pre;">	</span>设置协作级<br />3)<span style="white-space:pre;">	</span>创建一个主缓冲对象<br />4)<span style="white-space:pre;">	</span>创建一个副缓冲对象<br />5)<span style="white-space:pre;">	</span>创建通知对象<br />6)<span style="white-space:pre;">	</span>设置通知位置<br /><p>7)<span style="white-space:pre;">	</span>开始播放</p></blockquote>2.<span style="white-space:pre;">	</span>循环播放声音<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)<span style="white-space:pre;">	</span>数据填充至副缓冲区<br /><p>2)<span style="white-space:pre;">	</span>等待播放完成</p></blockquote>下面结合详细分析一下上文的流程。<br /><br /><br /><strong>1.<span style="white-space:pre;">	</span>初始化<br />1)<span style="white-space:pre;">	</span>创建一个IDirectSound8接口的对象</strong><br />通过DirectSoundCreate8()方法可以创建一个设备对象。这个对象通常代表缺省的播放设备。DirectSoundCreate8()函数原型如下。<br /><pre class="cpp">HRESULT DirectSoundCreate8(
+	 LPCGUID lpcGuidDevice,
+	 LPDIRECTSOUND8 * ppDS8,
+	 LPUNKNOWN pUnkOuter
+)</pre><br />参数的含义如下：<br />lpcGuidDevice：要创建的设备对象的GUID。可以指定为NULL，代表默认的播放设备。<br />ppDS8：返回的IDirectSound8对象的地址。<br />pUnkOuter：必须设为NULL。<br />例如如下代码即可创建一个IDirectSound8接口的对象<br /><pre class="cpp">IDirectSound8 *m_pDS=NULL;	
+DirectSoundCreate8(NULL,&amp;m_pDS,NULL);</pre><br /><strong>2)<span style="white-space:pre;">	</span>设置协作级</strong><br />Windows 是一个多任务环境，同一时间有多个应用程序去访问设备。通过使用协作级别，DirectSound可以确保应用程序不会在别的设备使用时去访问，每个 DirectSound应用程序都有一个协作级别，这个级别决定着访问硬件的权限。<br />在创建一个设备对象以后，必须通过用IDirectSound8的SetCooperativeLevel()设置协作权限，否则将听不到声音。SetCooperativeLevel()的原型如下<br /><pre class="cpp">HRESULT SetCooperativeLevel(
+ HWND hwnd,
+ DWORD dwLevel
+)</pre><br />参数的含义如下：<br />hwnd：应用程序窗口句柄。<br />dwLevel：支持以下几种级别。<br />DSSCL_EXCLUSIVE：与DSSCL_PRIORITY具有相同的作用。<br />DSSCL_NORMAL：正常的协调层级标志，其他程序可共享声卡设备进行播放。<br />DSSCL_PRIORITY：设置声卡设备为当前程序独占。<br />DSSCL_WRITEPRIMAR：可写主缓冲区，此时副缓冲区就不能进行播放处理，即不能将次缓冲区的数据送进混声器，再输出到主缓冲区上。这是最完全控制声音播放的方式。<br /><br /><br /><strong>3)<span style="white-space:pre;">	</span>创建一个主缓冲对象</strong><br />使用IDirectSound8的CreateSoundBuffer()可以创建一个IDirectSoundBuffer接口的主缓冲区对象。CreateSoundBuffer()的原型如下。<br /><pre class="cpp">HRESULT CreateSoundBuffer(
+ LPCDSBUFFERDESC pcDSBufferDesc,
+ LPDIRECTSOUNDBUFFER * ppDSBuffer,
+ LPUNKNOWN pUnkOuter
+)</pre><br />参数的含义如下：<br />pcDSBufferDesc：描述声音缓冲的DSBUFFERDESC结构体的地址<br />ppDSBuffer：返回的IDirectSoundBuffer接口的对象的地址。<br />pUnkOuter：必须设置为NULL。<br />其中涉及到一个描述声音缓冲的结构体DSBUFFERDESC，该结构体的定义如下：<br /><pre class="cpp">typedef struct _DSBUFFERDESC
+{
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    DWORD           dwBufferBytes;
+    DWORD           dwReserved;
+    LPWAVEFORMATEX  lpwfxFormat;
+} DSBUFFERDESC</pre><br />简单解释一下其中的变量的含义：<br />dwSize：结构体的大小。必须初始化该值。<br />dwFlags：设置声音缓存的属性。有很多选项，可以组合使用，就不一一列出了。详细的参数可以查看文档。<br />dwBufferBytes：缓冲的大小。<br />dwReserved：保留参数，暂时没有用。<br />lpwfxFormat：指向一个WAVE格式文件头的指针。<br />设置DSBUFFERDESC完毕后，就可以使用CreateSoundBuffer()创建主缓冲了。示例代码如下：<br /><pre class="cpp">	DSBUFFERDESC dsbd;
+	memset(&amp;dsbd,0,sizeof(dsbd));
+	dsbd.dwSize=sizeof(dsbd);
+	dsbd.dwFlags=DSBCAPS_GLOBALFOCUS | DSBCAPS_CTRLPOSITIONNOTIFY |DSBCAPS_GETCURRENTPOSITION2;
+	dsbd.dwBufferBytes=MAX_AUDIO_BUF*BUFFERNOTIFYSIZE; 
+	//WAVE Header
+	dsbd.lpwfxFormat=(WAVEFORMATEX*)malloc(sizeof(WAVEFORMATEX));
+	dsbd.lpwfxFormat-&gt;wFormatTag=WAVE_FORMAT_PCM;   
+	/* format type */
+	(dsbd.lpwfxFormat)-&gt;nChannels=channels;          
+	/* number of channels (i.e. mono, stereo...) */
+	(dsbd.lpwfxFormat)-&gt;nSamplesPerSec=sample_rate;     
+	/* sample rate */
+	(dsbd.lpwfxFormat)-&gt;nAvgBytesPerSec=sample_rate*(bits_per_sample/8)*channels; 
+	/* for buffer estimation */
+	(dsbd.lpwfxFormat)-&gt;nBlockAlign=(bits_per_sample/8)*channels;        
+	/* block size of data */
+	(dsbd.lpwfxFormat)-&gt;wBitsPerSample=bits_per_sample;     
+	/* number of bits per sample of mono data */
+	(dsbd.lpwfxFormat)-&gt;cbSize=0;
+
+
+	//Creates a sound buffer object to manage audio samples. 
+	HRESULT hr1;
+	if( FAILED(m_pDS-&gt;CreateSoundBuffer(&amp;dsbd,&amp;m_pDSBuffer,NULL))){   
+		return FALSE;
+	}</pre><br /><br /><strong>4)<span style="white-space:pre;">	</span>创建一个副缓冲对象</strong><br />使用IDirectSoundBuffer的QueryInterface()可以得到一个IDirectSoundBuffer8接口的对象。IDirectSoundBuffer8的GUID为IID_IDirectSoundBuffer8。示例代码如下。<br /><pre class="cpp">IDirectSoundBuffer *m_pDSBuffer=NULL;
+IDirectSoundBuffer8 *m_pDSBuffer8=NULL;
+...
+if( FAILED(m_pDSBuffer-&gt;QueryInterface(IID_IDirectSoundBuffer8,(LPVOID*)&amp;m_pDSBuffer8))){
+	return FALSE ;
+}</pre><br /><br /><strong>5)<span style="white-space:pre;">	</span>创建通知对象</strong><br />使用IDirectSoundBuffer8的QueryInterface()可以得到一个IDirectSoundNotify8接口的对象。IDirectSoundBuffer8的GUID为IID_IDirectSoundNotify。示例代码如下。<br /><pre class="cpp">IDirectSoundBuffer8 *m_pDSBuffer8=NULL;
+IDirectSoundNotify8 *m_pDSNotify=NULL;	
+…
+if(FAILED(m_pDSBuffer8-&gt;QueryInterface(IID_IDirectSoundNotify,(LPVOID*)&amp;m_pDSNotify))){
+	return FALSE ;
+}</pre><br /><br />一句话概括一下通知对象的作用：当DirectSound缓冲区中的数据播放完毕后，告知系统应该填充新的数据。<br /><br /><br /><strong>6)<span style="white-space:pre;">	</span>设置通知位置</strong><br />使用IDirectSoundNotify8的SetNotificationPositions()可以设置通知的位置。SetNotificationPositions()的原型如下。<br /><pre class="cpp">HRESULT SetNotificationPositions(
+         DWORD dwPositionNotifies,
+         LPCDSBPOSITIONNOTIFY pcPositionNotifies
+)</pre><br />参数含义如下。<br />dwPositionNotifies：DSBPOSITIONNOTIFY结构体的数量。既包含几个通知的位置。<br />pcPositionNotifies：指向DSBPOSITIONNOTIFY结构体数组的指针。<br />再这里涉及到一个结构体DSBPOSITIONNOTIFY，它描述了通知的位置。DSBPOSITIONNOTIFY的定义如下。<br /><pre class="cpp">typedef struct DSBPOSITIONNOTIFY {
+    DWORD dwOffset;
+    HANDLE hEventNotify;
+} DSBPOSITIONNOTIFY;</pre><br />它的成员的含义如下。<br />dwOffset：通知事件触发的位置（距离缓冲开始位置的偏移量）。<br />hEventNotify：触发的事件的句柄。<br /><br /><br /><strong>7)<span style="white-space:pre;">	</span>开始播放</strong><br />使用IDirectSoundBuffer8的SetCurrentPosition ()可以设置播放的位置。SetCurrentPosition ()原型如下<br /><pre class="cpp">HRESULT SetCurrentPosition(
+         DWORD dwNewPosition
+)</pre><br />其中dwNewPosition是播放点与缓冲区首个字节之间的偏移量。<br />使用IDirectSoundBuffer8的Play ()可以开始播放音频数据。Play ()原型如下。<br /><pre class="cpp">HRESULT Play(
+         DWORD dwReserved1,
+         DWORD dwPriority,
+         DWORD dwFlags
+)</pre><br />参数含义：<br />dwReserved1：保留参数，必须取0。<br />dwPriority：优先级，一般情况下取0即可。<br />dwFlags：标志位。目前常见的是DSBPLAY_LOOPING。当播放至缓冲区结尾的时候，重新从缓冲区开始处开始播放。<br /><br /><br /><strong>2.<span style="white-space:pre;">	</span>循环播放声音<br />1)<span style="white-space:pre;">	</span>数据填充至副缓冲区</strong><br />数据填充至副缓冲区之前，需要先使用Lock()锁定缓冲区。然后就可以使用fread()，memcpy()等方法将PCM音频采样数据填充至缓冲区。数据填充完毕后，使用Unlock()取消对缓冲区的锁定。<br />Lock()函数的原型如下。<br /><pre class="cpp">HRESULT Lock(
+         DWORD dwOffset,
+         DWORD dwBytes,
+         LPVOID * ppvAudioPtr1,
+         LPDWORD  pdwAudioBytes1,
+         LPVOID * ppvAudioPtr2,
+         LPDWORD pdwAudioBytes2,
+         DWORD dwFlags
+)</pre><br />参数的含义如下。<br />dwOffset：锁定的内存与缓冲区首地址之间的偏移量。<br />dwBytes：锁定的缓存的大小。<br />ppvAudioPtr1：获取到的指向缓存数据的指针。<br />pdwAudioBytes1：获取到的缓存数据的大小。<br />ppvAudioPtr2：没有用到，设置为NULL。<br />pdwAudioBytes2：没有用到，设置为0。<br />dwFlags：暂时没有研究。<br /><br /><br />UnLock()函数的原型如下。<br /><pre class="cpp">HRESULT Unlock(
+         LPVOID pvAudioPtr1,
+         DWORD dwAudioBytes1,
+         LPVOID pvAudioPtr2,
+         DWORD dwAudioBytes2
+)</pre><br />参数含义如下。<br />pvAudioPtr1：通过Lock()获取到的指向缓存数据的指针。<br />dwAudioBytes1：写入的数据量。<br />pvAudioPtr2：没有用到。<br /><p>dwAudioBytes2：没有用到。</p><p><strong>2)<span style="white-space:pre;">	</span>等待播放完成</strong></p>根据此前设置的通知机制，使用WaitForMultipleObjects()等待缓冲区中的数据播放完毕，然后进入下一个循环。<br /><br /><br /><h2>播放音频流程总结</h2><p>DirectSound播放PCM音频数据的流程如下图所示。</p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141028150152468?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><br /><br />其中涉及到的几个结构体之间的关系如下图所示。<br /> <br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028150131853?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br /><br /><br /><h2>代码</h2><p>贴上源代码。</p><pre class="cpp">/**
+ * 最简单的DirectSound播放音频的例子（DirectSound播放PCM）
+ * Simplest Audio Play DirectSound (DirectSound play PCM) 
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ *
+ * 本程序使用DirectSound播放PCM音频采样数据。
+ * 是最简单的DirectSound播放音频的教程。
+ *
+ * 函数调用步骤如下: 
+ *
+ * [初始化]
+ * DirectSoundCreate8(): 创建一个DirectSound对象。
+ * SetCooperativeLevel(): 设置协作权限，不然没有声音。
+ * IDirectSound8-&gt;CreateSoundBuffer(): 创建一个主缓冲区对象。
+ * IDirectSoundBuffer-&gt;QueryInterface(IID_IDirectSoundBuffer8..): 
+ *			创建一个副缓冲区对象，用来存储要播放的声音数据文件。
+ * IDirectSoundBuffer8-&gt;QueryInterface(IID_IDirectSoundNotify..): 
+ *			创建通知对象，通知应用程序指定播放位置已经达到。
+ * IDirectSoundNotify8-&gt;SetNotificationPositions(): 设置通知位置。
+ * IDirectSoundBuffer8-&gt;SetCurrentPosition(): 设置播放的起始点。
+ * IDirectSoundBuffer8-&gt;Play(): 开始播放。
+ *
+ * [循环播放数据]
+ * IDirectSoundBuffer8-&gt;Lock(): 锁定副缓冲区，准备写入数据。
+ * fread(): 读取数据。
+ * IDirectSoundBuffer8-&gt;Unlock(): 解锁副缓冲区。
+ * WaitForMultipleObjects(): 等待“播放位置已经达到”的通知。
+ *
+ * This software plays PCM raw audio data using DirectSound.
+ * It's the simplest tutorial about DirectSound.
+ *
+ * The process is shown as follows:
+ *
+ * [Init]
+ * DirectSoundCreate8(): Init DirectSound object.
+ * SetCooperativeLevel(): Must set, or we won't hear sound.
+ * IDirectSound8-&gt;CreateSoundBuffer(): Create primary sound buffer.
+ * IDirectSoundBuffer-&gt;QueryInterface(IID_IDirectSoundBuffer8..): 
+ *			Create secondary sound buffer.
+ * IDirectSoundBuffer8-&gt;QueryInterface(IID_IDirectSoundNotify..): 
+ *			Create Notification object.
+ * IDirectSoundNotify8-&gt;SetNotificationPositions():
+ *			Set Notification Positions.
+ * IDirectSoundBuffer8-&gt;SetCurrentPosition(): Set position to start.
+ * IDirectSoundBuffer8-&gt;Play(): Begin to play.
+ *
+ * [Loop to play data]
+ * IDirectSoundBuffer8-&gt;Lock(): Lock secondary buffer.
+ * fread(): get PCM data.
+ * IDirectSoundBuffer8-&gt;Unlock(): UnLock secondary buffer.
+ * WaitForMultipleObjects(): Wait for Notifications.
+ */
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;windows.h&gt;
+#include &lt;dsound.h&gt;
+
+
+#define MAX_AUDIO_BUF 4 
+#define BUFFERNOTIFYSIZE 192000 
+
+
+int sample_rate=44100;	//PCM sample rate
+int channels=2;			//PCM channel number
+int bits_per_sample=16;	//bits per sample
+
+BOOL main(int argc,char * argv[])
+{
+	int i;
+	FILE * fp;
+	if((fp=fopen("../NocturneNo2inEflat_44.1k_s16le.pcm","rb"))==NULL){
+		printf("cannot open this file\n");
+		return -1;
+	}
+
+	IDirectSound8 *m_pDS=NULL;					
+	IDirectSoundBuffer8 *m_pDSBuffer8=NULL;	//used to manage sound buffers.
+	IDirectSoundBuffer *m_pDSBuffer=NULL;	
+	IDirectSoundNotify8 *m_pDSNotify=NULL;		
+	DSBPOSITIONNOTIFY m_pDSPosNotify[MAX_AUDIO_BUF];
+	HANDLE m_event[MAX_AUDIO_BUF];
+
+	SetConsoleTitle(TEXT("Simplest Audio Play DirectSound"));//Console Title
+	//Init DirectSound
+	if(FAILED(DirectSoundCreate8(NULL,&amp;m_pDS,NULL)))
+		return FALSE;
+	if(FAILED(m_pDS-&gt;SetCooperativeLevel(FindWindow(NULL,TEXT("Simplest Audio Play DirectSound")),DSSCL_NORMAL)))
+		return FALSE;
+
+
+	DSBUFFERDESC dsbd;
+	memset(&amp;dsbd,0,sizeof(dsbd));
+	dsbd.dwSize=sizeof(dsbd);
+	dsbd.dwFlags=DSBCAPS_GLOBALFOCUS | DSBCAPS_CTRLPOSITIONNOTIFY |DSBCAPS_GETCURRENTPOSITION2;
+	dsbd.dwBufferBytes=MAX_AUDIO_BUF*BUFFERNOTIFYSIZE; 
+	//WAVE Header
+	dsbd.lpwfxFormat=(WAVEFORMATEX*)malloc(sizeof(WAVEFORMATEX));
+	dsbd.lpwfxFormat-&gt;wFormatTag=WAVE_FORMAT_PCM;   
+	/* format type */
+	(dsbd.lpwfxFormat)-&gt;nChannels=channels;          
+	/* number of channels (i.e. mono, stereo...) */
+	(dsbd.lpwfxFormat)-&gt;nSamplesPerSec=sample_rate;     
+	/* sample rate */
+	(dsbd.lpwfxFormat)-&gt;nAvgBytesPerSec=sample_rate*(bits_per_sample/8)*channels; 
+	/* for buffer estimation */
+	(dsbd.lpwfxFormat)-&gt;nBlockAlign=(bits_per_sample/8)*channels;        
+	/* block size of data */
+	(dsbd.lpwfxFormat)-&gt;wBitsPerSample=bits_per_sample;     
+	/* number of bits per sample of mono data */
+	(dsbd.lpwfxFormat)-&gt;cbSize=0;
+
+	//Creates a sound buffer object to manage audio samples. 
+	HRESULT hr1;
+	if( FAILED(m_pDS-&gt;CreateSoundBuffer(&amp;dsbd,&amp;m_pDSBuffer,NULL))){   
+		return FALSE;
+	}
+	if( FAILED(m_pDSBuffer-&gt;QueryInterface(IID_IDirectSoundBuffer8,(LPVOID*)&amp;m_pDSBuffer8))){
+		return FALSE ;
+	}
+	//Get IDirectSoundNotify8
+	if(FAILED(m_pDSBuffer8-&gt;QueryInterface(IID_IDirectSoundNotify,(LPVOID*)&amp;m_pDSNotify))){
+		return FALSE ;
+	}
+	for(i =0;i&lt;MAX_AUDIO_BUF;i++){
+		m_pDSPosNotify[i].dwOffset =i*BUFFERNOTIFYSIZE;
+		m_event[i]=::CreateEvent(NULL,false,false,NULL); 
+		m_pDSPosNotify[i].hEventNotify=m_event[i];
+	}
+	m_pDSNotify-&gt;SetNotificationPositions(MAX_AUDIO_BUF,m_pDSPosNotify);
+	m_pDSNotify-&gt;Release();
+
+	//Start Playing
+	BOOL isPlaying =TRUE;
+	LPVOID buf=NULL;
+	DWORD  buf_len=0;
+	DWORD res=WAIT_OBJECT_0;
+	DWORD offset=BUFFERNOTIFYSIZE;
+
+	m_pDSBuffer8-&gt;SetCurrentPosition(0);
+	m_pDSBuffer8-&gt;Play(0,0,DSBPLAY_LOOPING);
+	//Loop
+	while(isPlaying){
+		if((res &gt;=WAIT_OBJECT_0)&amp;&amp;(res &lt;=WAIT_OBJECT_0+3)){
+			m_pDSBuffer8-&gt;Lock(offset,BUFFERNOTIFYSIZE,&amp;buf,&amp;buf_len,NULL,NULL,0);
+			if(fread(buf,1,buf_len,fp)!=buf_len){
+				//File End
+				//Loop:
+				fseek(fp, 0, SEEK_SET);
+				fread(buf,1,buf_len,fp);
+				//Close:
+				//isPlaying=0;
+			}
+			m_pDSBuffer8-&gt;Unlock(buf,buf_len,NULL,0);
+			offset+=buf_len;
+			offset %= (BUFFERNOTIFYSIZE * MAX_AUDIO_BUF);
+			printf("this is %7d of buffer\n",offset);
+		}
+		res = WaitForMultipleObjects (MAX_AUDIO_BUF, m_event, FALSE, INFINITE);
+	}
+
+	return 0;
+}
+</pre><br /><br /><h2>运行结果</h2><p>代码运行之后，会弹出一个“控制台”对话框如下图所示。同时音频设备里面可以听到播放的声音。</p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141028150252937?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><br /> <br /><h2>下载</h2><p>代码位于“Simplest Media Play”中</p><br /><p>SourceForge项目地址：<a href="https://sourceforge.net/projects/simplestmediaplay/">https://sourceforge.net/projects/simplestmediaplay/</a></p><p>CSDN下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8054395">http://download.csdn.net/detail/leixiaohua1020/8054395</a></p><p><br /></p><p></p><p>注：</p><p>该项目会不定时的更新并修复一些小问题，最新的版本请参考该系列文章的总述页面：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783"> 《最简单的视音频播放示例1：总述》</a></p><br />上述工程包含了使用各种API（Direct3D，OpenGL，GDI，DirectSound，SDL2）播放多媒体例子。其中音频输入为PCM采样数据。输出至系统的声卡播放出来。视频输入为YUV/RGB像素数据。输出至显示器上的一个窗口播放出来。<br />通过本工程的代码初学者可以快速学习使用这几个API播放视频和音频的技术。<br />一共包括了如下几个子工程：<br /><span style="color:#ff0000;">simplest_audio_play_directsound: <span style="white-space:pre;">	</span>使用DirectSound播放PCM音频采样数据。</span><br />simplest_audio_play_sdl2: <span style="white-space:pre;">			</span>使用SDL2播放PCM音频采样数据。<br />simplest_video_play_direct3d: <span style="white-space:pre;">		</span>使用Direct3D的Surface播放RGB/YUV视频像素数据。<br />simplest_video_play_direct3d_texture:使用Direct3D的Texture播放RGB视频像素数据。<br />simplest_video_play_gdi: <span style="white-space:pre;">			</span>使用GDI播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl: <span style="white-space:pre;">		</span>使用OpenGL播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl_texture:<span style="white-space:pre;">	</span>使用OpenGL的Texture播放YUV视频像素数据。<br />simplest_video_play_sdl2: <span style="white-space:pre;">			</span>使用SDL2播放RGB/YUV视频像素数据。<br /><br /><br /><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/40540147		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=DirectSound&t=blog" target="_blank">DirectSound						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=音频&t=blog" target="_blank">音频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=PCM&t=blog" target="_blank">PCM						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=播放&t=blog" target="_blank">播放						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2619495"  target="_blank">DirectSound						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>                <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40540147#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/momo0853/article/details/42462005" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>PCM</em>文件<em>播放</em>器			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/momo0853/article/details/42462005" target="_blank" >
+				基于webrtc的音频模块写的一个测试demo，然后再把测试demo修改下拿来当做工具使用。在平时开发中总是需要<em>播放</em>各种各样的<em>pcm</em>文件，然后每次都需要修改demo来测试，各种麻烦，于是这个小工具就产...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/momo0853" title="momo0853" target="_blank">
+					<img src="https://avatar.csdn.net/F/2/9/3_momo0853.jpg" alt="momo0853" class="avatar-pic">
+					<span class="name">momo0853</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-01-06 17:26:34</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5877</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/baidu_zhongce/article/details/50393254" target="_blank" strategy="BlogCommendFromBaidu_1">
+				WEB端实现<em>PCM</em>裸流<em>播放</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/baidu_zhongce/article/details/50393254" target="_blank" >
+				0x00 序近日有这样一个需求，在web端<em>播放</em><em>PCM</em>裸流，即数据提供方给出的都是**.<em>pcm</em>文件，而我们需要在页面上给出该音频的<em>播放</em>控制器（至少可以支持play、pause）。...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/baidu_zhongce" title="baidu_zhongce" target="_blank">
+					<img src="https://avatar.csdn.net/D/C/8/3_baidu_zhongce.jpg" alt="baidu_zhongce" class="avatar-pic">
+					<span class="name">baidu_zhongce</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-12-24 11:19:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6203</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+					<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/zhou2002/7375941" target="_blank" strategy="BlogCommendFromBaidu_2">
+						<em>PCM</em>音频裸数据<em>播放</em>器audacity					</a>
+				</h4>
+				<p>
+					<span class="data">2014年05月20日 </span>
+					<span class="size">11.32MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/zhou2002/7375941" target="_blank" strategy="BlogCommendFromBaidu_2">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/exe.svg" alt="">
+				</a>
+			</div>
+		</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/momo0853/8333317" target="_blank" strategy="BlogCommendFromBaidu_3">
+						<em>pcm</em>文件<em>播放</em>器					</a>
+				</h4>
+				<p>
+					<span class="data">2015年01月06日 </span>
+					<span class="size">625KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/momo0853/8333317" target="_blank" strategy="BlogCommendFromBaidu_3">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/unkonw.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/mrcuck/article/details/78768820" target="_blank" strategy="BlogCommendFromBaidu_5">
+				python-<em>pcm</em>音频<em>播放</em>器			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/mrcuck/article/details/78768820" target="_blank" >
+				50行<em>pcm</em>音频<em>播放</em>器基于python、pysdl2的音频<em>播放</em>器：
+开发环境是ubuntu mate 16.04
+代码兼容python2、python3
+请安装pysdl2支持包
+sudo apt i...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/mrcuck" title="mrcuck" target="_blank">
+					<img src="https://avatar.csdn.net/1/D/8/3_mrcuck.jpg" alt="mrcuck" class="avatar-pic">
+					<span class="name">mrcuck</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-12-11 00:04:23</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：449</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/zouchinasoft/6895577" target="_blank" strategy="BlogCommendFromBaidu_6">
+						<em>PCM</em>音频裸数据<em>播放</em>器					</a>
+				</h4>
+				<p>
+					<span class="data">2014年02月03日 </span>
+					<span class="size">11.32MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/zouchinasoft/6895577" target="_blank" strategy="BlogCommendFromBaidu_6">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/exe.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+				<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/lj20040431/9819478" target="_blank" strategy="BlogCommendFromBaidu_7">
+						纯<em>PCM</em>音频+<em>PCM</em><em>播放</em>器					</a>
+				</h4>
+				<p>
+					<span class="data">2017年04月19日 </span>
+					<span class="size">55.97MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/lj20040431/9819478" target="_blank" strategy="BlogCommendFromBaidu_7">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u010527630/article/details/52600848" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>播放</em><em>PCM</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u010527630/article/details/52600848" target="_blank" >
+				众所周知，Android 的 MediaPlayer包含了Audio和video的<em>播放</em>功能，在Android的界面上，Music和Video两个应用程序都是调用 MediaPlayer实现的。Medi...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u010527630" title="u010527630" target="_blank">
+					<img src="https://avatar.csdn.net/1/2/1/3_u010527630.jpg" alt="u010527630" class="avatar-pic">
+					<span class="name">u010527630</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-09-20 21:53:31</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1043</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/caoshangpa/article/details/51224678" target="_blank" strategy="BlogCommendFromBaidu_9">
+				Qt<em>播放</em><em>PCM</em>音频（裸流）文件的两种方法			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/caoshangpa/article/details/51224678" target="_blank" >
+				        这两种方法都需要在.pro文件中加入multimedia模块。方法一是通过QAudioOutput实现的，先用QFile打开<em>PCM</em>文件，然后进行音频参数设置，最后调用QAudioOut...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/caoshangpa" title="caoshangpa" target="_blank">
+					<img src="https://avatar.csdn.net/8/E/A/3_caoshangpa.jpg" alt="caoshangpa" class="avatar-pic">
+					<span class="name">caoshangpa</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-04-23 09:30:01</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：8369</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/FrankieWang008/article/details/13288647" target="_blank" strategy="BlogCommendFromBaidu_10">
+				<em>DirectSound</em>入门基础介绍 和 环境的配置			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/FrankieWang008/article/details/13288647" target="_blank" >
+				<em>DirectSound</em>应用程序开发快速入门
+ 
+摘要：<em>DirectSound</em>编程的入门介绍，通过实例讲解了如何利用<em>DirectSound</em>最基本的功能：<em>播放</em>音频，并提供了<em>DirectSound</em><em>播放</em>音...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/FrankieWang008" title="FrankieWang008" target="_blank">
+					<img src="https://avatar.csdn.net/D/1/D/3_frankiewang008.jpg" alt="FrankieWang008" class="avatar-pic">
+					<span class="name">FrankieWang008</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-28 09:59:35</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3504</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40540147" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421244">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>10</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的视音频播放示例8：DirectSound播放PCM";
+    var ChannelId = 16;
+    var articleId = "40540147";
+    var commentscount = 15;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/40540147";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "directsound%E6%92%AD%E6%94%BEpcm";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的视音频播放示例8：DirectSound播放PCM");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=directsound%E6%92%AD%E6%94%BEpcm"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

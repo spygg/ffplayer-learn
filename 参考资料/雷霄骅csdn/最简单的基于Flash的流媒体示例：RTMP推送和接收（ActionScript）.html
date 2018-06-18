@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/43936141"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文记录一些基于Flash的流媒体处理的例子。Flash平台最常见的流媒体协议是RTMP。此前记录的一些基于C/C++的RTMP播放器/推流器，但是没有记录过基于Flash中的ActionScript的RTMP播放器/推流器。其实基于Flash的RTMP播放器/推流器才能算得上是RTMP技术中的“正规军”。RTMP本身设计出来就是用于Flash平台之间通信的，而且RTMP最大的优势——“无插件直播" />
+    <meta name="keywords" content="flash,actionscript" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的基于Flash的流媒体示例：RTMP推送和接收（ActionScript） - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/43936141"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">最简单的基于Flash的流媒体示例：RTMP推送和接收（ActionScript）</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2015年02月25日 12:40:49</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：50433</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p>=====================================================</p><p>Flash流媒体文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/43936141">最简单的基于Flash的流媒体示例：RTMP推送和接收（ActionScript）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/43936415">最简单的基于Flash的流媒体示例：网页播放器（HTTP，RTMP，HLS）</a></p><p>=====================================================<br /></p><p><br /></p><p>本文记录一些基于Flash的流媒体处理的例子。Flash平台最常见的流媒体协议是RTMP。此前记录的一些基于C/C++的RTMP播放器/推流器，但是没有记录过基于Flash中的ActionScript的RTMP播放器/推流器。其实基于Flash的RTMP播放器/推流器才能算得上是RTMP技术中的“正规军”。RTMP本身设计出来就是用于Flash平台之间通信的，而且RTMP最大的优势——“无插件直播”，也是得益于广泛安装在客户端的Flash Player。因此本文分别记录一个基于ActionScript的RTMP播放器和基于ActionScript的RTMP推流器。</p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122000003" alt="" /><br /></div><p>基于C/C++的RTMP流媒体处理的例子可以参考下面几个。</p><p><strong>发布</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42105049">最简单的基于librtmp的示例：发布H.264（H.264通过RTMP发布）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42104945">最简单的基于librtmp的示例：发布（FLV通过RTMP发布）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39803457">最简单的基于FFmpeg的推流器（以推送RTMP为例）</a></p><p><strong>接收</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42104893">最简单的基于librtmp的示例：接收（RTMP保存为FLV）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/38868499">最简单的基于FFMPEG+SDL的视频播放器 ver2 （采用SDL2.0）</a></p><p><br /></p><h2>简介</h2><p>相比于使用C/C++处理RTMP而言，使用ActionScript处理RTMP非常的简单。RTMP建立连接的方法都已经封装好了，只需要调用现成的接口函数就可以了。但是使用ActionScript处理RTMP的劣势也十分明显——可供自己开发的地方很少。由于Flash本身不开源，所以我们无法得到它的底层代码，因而也不能对编解码底层的参数进行调整。总而言之，ActionScript处理RTMP可以概括为几个字：“简单但是不灵活”。</p><h3>ActionScript播放RTMP</h3><p>ActionScript播放RTMP流媒体的流程如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122030049?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>从图中可以看出，流程可以分成两部分：播放和显示。</p><h4>播放</h4><p>播放分成3步：</p>（1）建立NetConnection<br />（2）建立NetStream<br />（3）调用NetStream的play()方法<br /><p>前2步分别建立了RTMP规范中的两个逻辑结构：NetConnection和NetStream。NetConnection代表服务器端应用程序和客户端之间基础的连通关系。NetStream代表了发送多媒体数据的通道。服务器和客户端之间只能建立一个NetConnection，但是基于该连接可以创建很多NetStream。这两个结构的结构如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122057396?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><h4>显示</h4><p>显示部分将播放的视频显示在“舞台”上。这一部分通过创建一个Video对象实现。</p><br /><h3>ActionScript推送RTMP</h3><p>ActionScript推送RTMP流媒体的流程如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122134958?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p>从图中可以看出，推送RTMP的流程和播放有些类似，最主要的不同在于推送最后调用的是NetStream的publish()方法，而播放最后调用的是NetStream的play()方法。推流分成4步：<br />（1）建立NetConnection<br />（2）建立NetStream<br />（3）绑定摄像头和麦克风<br />（4）调用NetStream的play()方法<br />推流程序开始运行后，可以通过ffplay，VLC或者Flash应用程序访问相应的RTMP URL查看流媒体。<br /><br /><h2>代码</h2><p>本文附件中包含以下2个ActionScript工程：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest as3 rtmp player，最简单的RTMP播放器，其中包含3个独立的子工程：<br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><em>simplest_as3_rtmp_player：最简单的RTMP播放器。</em></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><em>simplest_as3_local_player：最简单的本地文件播放器。</em></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><em>simplest_as3_rtmp_player_multiscreen：最简单的RTMP多屏播放器。</em></blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_as3_rtmp_streamer，最简单的RTMP推流器</blockquote>下面看一下上述几个工程的源代码。<br /><br /><br /><p><strong>simplest_as3_rtmp_player</strong></p><p>simplest_as3_rtmp_player是最简单的RTMP播放器，代码如下所示。</p><br /><pre class="plain">/**
+ * 最简单的基于ActionScript的RTMP播放器
+ * Simplest AS3 RTMP Player
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ * 
+ * 本程序使用ActionScript3语言完成，播放RTMP服务器上的流媒体
+ * 是最简单的基于ActionScript3的播放器。
+ *
+ * This software is written in Actionscript3, it plays stream
+ * on RTMP server
+ * It's the simplest RTMP player based on ActionScript3.
+ * 
+ */
+package {
+    import flash.display.Sprite;
+    import flash.net.NetConnection;
+    import flash.events.NetStatusEvent;
+    import flash.events.AsyncErrorEvent;
+    import flash.net.NetStream;
+    import flash.media.Video;
+
+
+    public class simplest_as3_rtmp_player extends Sprite
+    {
+        var nc:NetConnection;
+        var ns:NetStream;
+		var video:Video;
+
+
+        public function simplest_as3_rtmp_player()
+        {
+            nc = new NetConnection();
+            nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			nc.connect("rtmp://localhost/live");
+        }
+
+
+
+
+
+
+        private function netStatusHandler(event:NetStatusEvent):void
+        {
+			trace("event.info.level: " + event.info.level + "\n", "event.info.code: " + event.info.code);
+            switch (event.info.code)
+            {
+                case "NetConnection.Connect.Success":
+	                doVideo(nc);
+	                break;
+				case "NetConnection.Connect.Failed":
+					break;
+                case "NetConnection.Connect.Rejected":
+					break;
+	            case "NetStream.Play.Stop":
+					break;
+	            case "NetStream.Play.StreamNotFound":
+					break;
+	        }
+        }
+
+
+
+
+        // play a recorded stream on the server
+        private function doVideo(nc:NetConnection):void {
+            ns = new NetStream(nc);
+            ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+
+
+            video = new Video(640,480);
+            video.attachNetStream(ns);
+
+
+            ns.play("myCamera");
+            addChild(video);
+        }
+
+
+        // create a playlist on the server
+		/*
+        private function doPlaylist(nc:NetConnection):void {
+            ns = new NetStream(nc);
+            ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+
+
+            video = new Video();
+            video.attachNetStream(ns);
+
+
+            // Play the first 3 seconds of the video
+            ns.play( "bikes", 0, 3, true );
+			// Play from 20 seconds on
+            ns.play( "bikes", 20, -1, false);
+			// End on frame 5
+			ns.play( "bikes", 5, 0, false );
+            addChild(video);
+        }
+		*/
+    }
+}</pre><br /><br /><p><strong>simplest_as3_local_player</strong></p><p>simplest_as3_local_player用于播放本地FLV文件。ActionScript中播放本地视频（*.flv）和播放RTMP流程是一样的：先创建NetConnection，再创建NetStream。它们最大的不同在于，播放本地文件建立NetConnection的时候，是不传地址的。例如播放RTMP的时候代码如下：</p><pre class="plain">nc.connect("rtmp://localhost/live");</pre>播放本地文件的时候代码如下：<br /><pre class="plain">nc.connect(null);</pre>调用play()的时候，RTMP传递服务器上的路径，如下所示。<br /><pre class="plain">ns.play("myCamera");</pre>本地文件直接传递本地路径，如下所示。<br /><pre class="plain">ns.play("sintel.flv");</pre><br /><p><strong>simplest_as3_rtmp_player_multiscreen</strong></p><p>simplest_as3_rtmp_player_multiscreen是一个多屏播放的简单例子。实现了2x2网格播放4路视频。不再过多记录。</p><br /><p><strong>simplest_as3_rtmp_streamer</strong></p><p>simplest_as3_rtmp_player是最简单的RTMP推流器，代码如下所示。</p><br /><pre class="plain">/**
+ * 最简单的基于ActionScript的RTMP推流器
+ * Simplest AS3 RTMP Streamer
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ * 
+ * 本程序使用ActionScript3语言完成，推送本地摄像头的数据至RTMP流媒体服务器，
+ * 是最简单的基于ActionScript3的推流器。
+ *
+ * This software is written in Actionscript3, it streams camera's video to
+ * RTMP server.
+ * It's the simplest RTMP streamer based on ActionScript3.
+ * 
+ */
+
+
+
+
+package {
+    import flash.display.MovieClip;
+    import flash.net.NetConnection;
+    import flash.events.NetStatusEvent;
+    import flash.net.NetStream;
+    import flash.media.Video;
+	import flash.media.Camera;
+    import flash.media.Microphone;
+	//import flash.media.H264Profile;  
+    //import flash.media.H264VideoStreamSettings; 
+
+
+    public class simplest_as3_rtmp_streamer extends MovieClip
+    {
+		var nc:NetConnection;
+		var ns:NetStream;
+		var nsPlayer:NetStream;
+		var vid:Video;
+		var vidPlayer:Video;
+		var cam:Camera;
+		var mic:Microphone;
+		
+		var screen_w:int=320;
+		var screen_h:int=240;
+
+
+		public function simplest_as3_rtmp_streamer()
+        {
+			nc = new NetConnection();
+			nc.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+			nc.connect("rtmp://localhost/live");
+        }
+
+
+		private function onNetStatus(event:NetStatusEvent):void{
+			trace(event.info.code);
+			if(event.info.code == "NetConnection.Connect.Success"){
+				publishCamera();
+				displayPublishingVideo();
+				displayPlaybackVideo();
+			}
+		}
+
+
+		private function publishCamera() {
+			
+			//Cam
+			
+			cam = Camera.getCamera();
+
+
+			/**
+             * public function setMode(width:int, height:int, fps:Number, favorArea:Boolean = true):void  
+             *  width:int — The requested capture width, in pixels. The default value is 160.  
+             *  height:int — The requested capture height, in pixels. The default value is 120.  
+             *  fps:Number — The requested capture frame rate, in frames per second. The default value is 15.  
+             */
+			cam.setMode(640, 480, 15);  
+			
+			/**
+			 * public function setKeyFrameInterval(keyFrameInterval:int):void
+			 * The number of video frames transmitted in full (called keyframes) instead of being interpolated by the video compression algorithm.
+			 * The default value is 15, which means that every 15th frame is a keyframe. A value of 1 means that every frame is a keyframe. 
+			 * The allowed values are 1 through 300. 
+			 */
+            cam.setKeyFrameInterval(25);
+			
+			/**
+			 * public function setQuality(bandwidth:int, quality:int):void  
+             * bandwidth:int — Specifies the maximum amount of bandwidth that the current outgoing video feed can use, in bytes per second (bps).   
+             *    To specify that the video can use as much bandwidth as needed to maintain the value of quality, pass 0 for bandwidth.   
+             *    The default value is 16384.  
+             * quality:int — An integer that specifies the required level of picture quality, as determined by the amount of compression   
+             *     being applied to each video frame. Acceptable values range from 1 (lowest quality, maximum compression) to 100   
+             *    (highest quality, no compression). To specify that picture quality can vary as needed to avoid exceeding bandwidth,   
+             *    pass 0 for quality.  
+             */
+			cam.setQuality(200000, 90); 
+			
+			/**
+			 * public function setProfileLevel(profile:String, level:String):void
+			 * Set profile and level for video encoding. 
+			 * Possible values for profile are H264Profile.BASELINE and H264Profile.MAIN. Default value is H264Profile.BASELINE.
+			 * Other values are ignored and results in an error.
+			 * Supported levels are 1, 1b, 1.1, 1.2, 1.3, 2, 2.1, 2.2, 3, 3.1, 3.2, 4, 4.1, 4.2, 5, and 5.1.
+			 * Level may be increased if required by resolution and frame rate.
+			 */
+			//var h264setting:H264VideoStreamSettings = new H264VideoStreamSettings();  
+            // h264setting.setProfileLevel(H264Profile.MAIN, 4);   
+            
+			
+			//Mic
+			
+			mic = Microphone.getMicrophone();
+			
+			/*
+			 * The encoded speech quality when using the Speex codec. Possible values are from 0 to 10. The default value is 6. 
+			 * Higher numbers represent higher quality but require more bandwidth, as shown in the following table. 
+			 * The bit rate values that are listed represent net bit rates and do not include packetization overhead. 
+             * ------------------------------------------
+			 * Quality value | Required bit rate (kbps)
+			 *-------------------------------------------
+			 *      0        |       3.95 
+			 *      1        |       5.75 
+			 *      2        |       7.75 
+			 *      3        |       9.80 
+			 *      4        |       12.8 
+			 *      5        |       16.8 
+			 *      6        |       20.6 
+			 *      7        |       23.8 
+			 *      8        |       27.8 
+			 *      9        |       34.2 
+			 *      10       |       42.2 
+			 *-------------------------------------------
+			 */
+			mic.encodeQuality = 9;  
+			
+            /* The rate at which the microphone is capturing sound, in kHz. Acceptable values are 5, 8, 11, 22, and 44. The default value is 8 kHz   
+             * if your sound capture device supports this value. Otherwise, the default value is the next available capture level above 8 kHz that   
+             * your sound capture device supports, usually 11 kHz.  
+			 *
+             */
+			mic.rate = 44;  
+			
+			
+			ns = new NetStream(nc);
+			//H.264 Setting
+			//ns.videoStreamSettings = h264setting; 
+			ns.attachCamera(cam);
+			ns.attachAudio(mic);
+			ns.publish("myCamera", "live");
+		}
+
+
+		private function displayPublishingVideo():void {
+			vid = new Video(screen_w, screen_h);
+			vid.x = 10;
+			vid.y = 10;
+			vid.attachCamera(cam);
+			addChild(vid);
+		}
+
+
+		private function displayPlaybackVideo():void{
+			nsPlayer = new NetStream(nc);
+			nsPlayer.play("myCamera");
+			vidPlayer = new Video(screen_w, screen_h);
+			vidPlayer.x = screen_w + 20;
+			vidPlayer.y = 10;
+			vidPlayer.attachNetStream(nsPlayer);
+			addChild(vidPlayer);
+		}
+	}
+}</pre><br /><br /><br /><h2>结果</h2><p><br /></p>simplest as3 rtmp player运行后会自动连接RTMP URL：rtmp://localhost/live/myCamera。<br /><p>程序运行后的结果如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225153933679?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p>simplest_as3_local_player运行会播放sintel.flv文件。<br /><p>运行结果如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122359601?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p>simplest_as3_rtmp_player_multiscreen运行后会连接4个RTMP URL。<br /><p>运行结果如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122351508?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p>simplest_as3_rtmp_streamer运行结果后会推送本机的摄像头的视频和麦克风的音频到指定的RTMP URL（在这里是rtmp://localhost/live/myCamera）。左侧的视频是从摄像头读取的视频，右侧的视频是推流后从RTMP URL读取的视频（一般会有一定延时）。<br /><p>运行结果如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150225122420661?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><br /><h2>下载</h2><br /><br /><strong>Simplest flashmedia example</strong><br /><br /><br /><p>SourceForge：<a href="https://sourceforge.net/projects/simplestflashmediaexample/">https://sourceforge.net/projects/simplestflashmediaexample/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_flashmedia_example">https://github.com/leixiaohua1020/simplest_flashmedia_example</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_flashmedia_example">http://git.oschina.net/leixiaohua1020/simplest_flashmedia_example</a></p><p><br /></p><p>CSDN下载：<a href="http://download.csdn.net/detail/leixiaohua1020/8456441">http://download.csdn.net/detail/leixiaohua1020/8456441</a></p><br />本工程包含如下基于Flash技术的流媒体的例子：<br /><span style="color:#ff0000;">simplest_as3_rtmp_player:  最简单的RTMP播放器（基于ActionScript）<br />simplest_as3_rtmp_streamer: 最简单的RTMP推流器（基于ActionScript）</span><br />rtmp_sample_player_adobe:  从Adobe Flash Media Sever提取出来的测试播放器<br />rtmp_sample_player_wowza: 从Wowza服务器中提取出来的测试播放器<br />rtmp_sample_player_flowplayer: 基于FlowPlayer的RTMP/HTTP播放器（添加RTMP plugin）<br />rtmp_sample_player_videojs: 基于VideoJS的RTMP/HTTP播放器<br />rtmp_sample_player_jwplayer: 基于JWplayer的RTMP/HTTP播放器<br />hls_sample_player_flowplayer: 基于FlowPlayer的HLS播放器（添加HLS plugin）<br />hls_video_player_html5:  基于HTML5的HLS/HTTP播放器<br />activex_vlc_player:  基于VLC的ActiveX控件的播放器<br /><br /><br />注意：某些播放器直接打开html页面是不能工作的，需要把播放器放到Web服务器上。<br />（例如Apache或者Nginx）<br /><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/43936141		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=flash&t=blog" target="_blank">flash						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=actionscript&t=blog" target="_blank">actionscript						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=播放&t=blog" target="_blank">播放						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=推流&t=blog" target="_blank">推流						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=RTMP&t=blog" target="_blank">RTMP						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1653525"  target="_blank">Flash相关						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/43936141#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/aoshilang2249/article/details/44621961" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>基于</em><em>RTMP</em>协议的<em>Flash</em><em>流媒体</em>网页直播播放器			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/aoshilang2249/article/details/44621961" target="_blank" >
+				本文记录一些<em>基于</em><em>Flash</em>技术的网页播放器。<em>基于</em><em>Flash</em>的网页播放器相比于其他网页播放器来说最大的优势就是“免插件安装”了，这一点可以很大的提高用户的体验质量。
+
+
+主要是几种常用的网页播放器：
+r...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/aoshilang2249" title="aoshilang2249" target="_blank">
+					<img src="https://avatar.csdn.net/5/F/C/3_aoshilang2249.jpg" alt="aoshilang2249" class="avatar-pic">
+					<span class="name">aoshilang2249</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-03-25 15:10:26</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：7770</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/43936415" target="_blank" strategy="BlogCommendFromBaidu_1">
+				最<em>简单</em>的<em>基于</em><em>Flash</em>的<em>流媒体</em><em>示例</em>：网页播放器（HTTP，<em>RTMP</em>，HLS）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/43936415" target="_blank" >
+				本文继续上一篇文章，记录一些<em>基于</em><em>Flash</em>的<em>流媒体</em>处理的例子。本文记录一些<em>基于</em><em>Flash</em>技术的网页播放器。<em>基于</em><em>Flash</em>的网页播放器相比于其他网页播放器来说最大的优势就是“免插件安装”了，这一点可以很...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-02-25 14:04:39</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：158276</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+					<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/xiao88xin/7604501" target="_blank" strategy="BlogCommendFromBaidu_2">
+						<em>RTMP</em>-<em>flash</em>播放器(支持点播与直播)					</a>
+				</h4>
+				<p>
+					<span class="data">2014年07月07日 </span>
+					<span class="size">5.78MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/xiao88xin/7604501" target="_blank" strategy="BlogCommendFromBaidu_2">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xiaocainiao320/article/details/41281663" target="_blank" strategy="BlogCommendFromBaidu_3">
+				跨平台<em>Flash</em>(<em>RTMP</em>)播放器的实现（一）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xiaocainiao320/article/details/41281663" target="_blank" >
+				<em>简单</em>记录下
+有这样一个需求			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xiaocainiao320" title="xiaocainiao320" target="_blank">
+					<img src="https://avatar.csdn.net/5/5/7/3_xiaocainiao320.jpg" alt="xiaocainiao320" class="avatar-pic">
+					<span class="name">xiaocainiao320</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-19 14:34:10</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1448</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/junehappylove/article/details/72638068" target="_blank" strategy="BlogCommendFromBaidu_4">
+				<em>RTMP</em>网页视频抓取			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/junehappylove/article/details/72638068" target="_blank" >
+				方法
+下载 <em>RTMP</em>Explorer 
+http://www.videohelp.com/tools/<em>RTMP</em>Explorer （或者 http://all-streaming-media.com/r...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/junehappylove" title="junehappylove" target="_blank">
+					<img src="https://avatar.csdn.net/4/3/9/3_junehappylove.jpg" alt="junehappylove" class="avatar-pic">
+					<span class="name">junehappylove</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-23 11:21:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4667</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/charleslei/article/details/46553619" target="_blank" strategy="BlogCommendFromBaidu_5">
+				丢弃<em>RTMP</em>协议的<em>FLASH</em>视频直播方案所踩过的坑			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/charleslei/article/details/46553619" target="_blank" >
+				http://blog.csdn.net/yuanrxdu/article/details/23593035
+
+
+
+
+很久没有写博客了，最近一直在忙<em>FLASH</em>直播相关的事情，终于完成了阶段性工作。先描...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/charleslei" title="charleslei" target="_blank">
+					<img src="https://avatar.csdn.net/7/5/F/3_charleslei.jpg" alt="charleslei" class="avatar-pic">
+					<span class="name">charleslei</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-06-18 22:52:22</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5694</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+				<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/zjzfb/5838809" target="_blank" strategy="BlogCommendFromBaidu_6">
+						<em>Rtmp</em> <em>Flash</em>播放器					</a>
+				</h4>
+				<p>
+					<span class="data">2013年07月30日 </span>
+					<span class="size">556KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/zjzfb/5838809" target="_blank" strategy="BlogCommendFromBaidu_6">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xiejiashu/article/details/73648003" target="_blank" strategy="BlogCommendFromBaidu_7">
+				将海康大华等网络摄像机RTSP流进行网页<em>Flash</em> <em>rtmp</em>和H5 hls直播的技术方案			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xiejiashu/article/details/73648003" target="_blank" >
+				前言再小的技术点也会有他的市场！ 
+一直以来，都有一些不被看好，认为是成本太高，无法大规模展开的软件和产品形态，就好比每一座城市都会有他的著名小吃一样，即使是慕名而来的人源源不断，受众群体也总是有限，...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xiejiashu" title="xiejiashu" target="_blank">
+					<img src="https://avatar.csdn.net/0/A/4/3_xiejiashu.jpg" alt="xiejiashu" class="avatar-pic">
+					<span class="name">xiejiashu</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-06-24 09:03:04</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：14071</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/aoshilang2249/8532123" target="_blank" strategy="BlogCommendFromBaidu_8">
+						<em>基于</em><em>RTMP</em>协议的<em>Flash</em><em>流媒体</em>网页播放器					</a>
+				</h4>
+				<p>
+					<span class="data">2015年03月25日 </span>
+					<span class="size">967KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/aoshilang2249/8532123" target="_blank" strategy="BlogCommendFromBaidu_8">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zhiboshequ/article/details/54408960" target="_blank" strategy="BlogCommendFromBaidu_9">
+				搭建RTMFP服务器以实现P2P直播			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhiboshequ/article/details/54408960" target="_blank" >
+				点此查看原文
+
+本文使用了过时的 <em>Flash</em>技术来实现，请尽量关注并使用最新的 HTML5 DASH + WebRTC技术来实现具体应用。
+
+首先在一台 Linux 服务器上下载 AMS ，点...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zhiboshequ" title="zhiboshequ" target="_blank">
+					<img src="https://avatar.csdn.net/B/2/E/3_zhiboshequ.jpg" alt="zhiboshequ" class="avatar-pic">
+					<span class="name">zhiboshequ</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-01-13 15:20:43</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3222</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/43936141" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421208">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>12</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的基于Flash的流媒体示例：RTMP推送和接收（ActionScript）";
+    var ChannelId = 16;
+    var articleId = "43936141";
+    var commentscount = 32;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/43936141";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "adobe+flash+%E6%8E%A8%E6%B5%81";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的基于Flash的流媒体示例：RTMP推送和接收（ActionScript）");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=adobe+flash+%E6%8E%A8%E6%B5%81"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

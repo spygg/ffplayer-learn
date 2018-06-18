@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/40876089"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="上一篇文章分析了SDL的创建纹理函数SDL_CreateTexture()。这篇文章继续分析SDL的源代码。本文分析SDL更新纹理数据函数SDL_UpdateTexture()。" />
+    <meta name="keywords" content="SDL,OpenGL" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>SDL2源代码分析5：更新纹理（SDL_UpdateTexture()） - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40876089"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">SDL2源代码分析5：更新纹理（SDL_UpdateTexture()）</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2014年11月07日 01:02:07</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：11601</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================<br /></p><p>SDL源代码分析系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40680907">SDL2源代码分析1：初始化（SDL_Init()）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40701203">SDL2源代码分析2：窗口（SDL_Window）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40723085">SDL2源代码分析3：渲染器（SDL_Renderer）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40743061">SDL2源代码分析4：纹理（SDL_Texture）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40876089">SDL2源代码分析5：更新纹理（SDL_UpdateTexture()）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40895593">SDL2源代码分析6：复制到渲染器（SDL_RenderCopy()）</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40895797">SDL2源代码分析7：显示（SDL_RenderPresent()）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/41207787">SDL2源代码分析8：视频显示总结</a><br /></p><p>=====================================================</p><br /><p>上一篇文章分析了SDL的创建纹理函数SDL_CreateTexture()。这篇文章继续分析SDL的源代码。本文分析SDL更新纹理数据函数SDL_UpdateTexture()。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141107005153859" alt="" /><br /></p><br />SDL播放视频的代码流程如下所示。<br /><strong>初始化: </strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">SDL_Init(): 初始化SDL。 <br />SDL_CreateWindow(): 创建窗口（Window）。 <br />SDL_CreateRenderer(): 基于窗口创建渲染器（Render）。 <br />SDL_CreateTexture(): 创建纹理（Texture）。 </blockquote><strong>循环渲染数据: </strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">SDL_UpdateTexture(): 设置纹理的数据。 <br />SDL_RenderCopy(): 纹理复制给渲染器。 <br />SDL_RenderPresent(): 显示。</blockquote>上篇文章分析了该流程中的第4个函数SDL_CreateTexture()。本文继续分析该流程中的第5个函数SDL_UpdateTexture()。<br /><br /><h2>SDL_UpdateTexture()</h2><h3>函数简介</h3>SDL使用SDL_UpdateTexture()设置纹理的像素数据。SDL_UpdateTexture()的原型如下。<br /><pre class="cpp">int SDLCALL SDL_UpdateTexture(SDL_Texture * texture,
+                                          const SDL_Rect * rect,
+                                              const void *pixels, int pitch);</pre><br /><p>参数的含义如下。</p><p>texture：目标纹理。</p><p>rect：更新像素的矩形区域。设置为NULL的时候更新整个区域。</p><p>pixels：像素数据。</p><p>pitch：一行像素数据的字节数。</p><p>成功的话返回0，失败的话返回-1。</p><br /><h3>函数调用关系图</h3><div>SDL_UpdateTexture()关键函数的调用关系可以用下图表示。</div><div style="text-align:center;"><a href="http://my.csdn.net/leixiaohua1020/album/detail/1793769"><img src="https://img-blog.csdn.net/20141107005436942?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></a><br /></div><p>上面的图片不太清晰，更清晰的图片上传到了相册里面：</p><p><a href="http://my.csdn.net/leixiaohua1020/album/detail/1793769">http://my.csdn.net/leixiaohua1020/album/detail/1793769</a><br /></p>把相册里面的图片保存下来就可以得到清晰的图片。<br /><br /><h3>源代码分析</h3><p>SDL_UpdateTexture()的源代码位于render\SDL_render.c中。如下所示。</p><p></p><pre class="cpp">int SDL_UpdateTexture(SDL_Texture * texture, const SDL_Rect * rect,
+                  const void *pixels, int pitch)
+{
+    SDL_Renderer *renderer;
+    SDL_Rect full_rect;
+
+
+    CHECK_TEXTURE_MAGIC(texture, -1);
+
+
+    if (!pixels) {
+        return SDL_InvalidParamError("pixels");
+    }
+    if (!pitch) {
+        return SDL_InvalidParamError("pitch");
+    }
+
+
+    if (!rect) {
+        full_rect.x = 0;
+        full_rect.y = 0;
+        full_rect.w = texture-&gt;w;
+        full_rect.h = texture-&gt;h;
+        rect = &amp;full_rect;
+    }
+
+
+    if (texture-&gt;yuv) {
+        return SDL_UpdateTextureYUV(texture, rect, pixels, pitch);
+    } else if (texture-&gt;native) {
+        return SDL_UpdateTextureNative(texture, rect, pixels, pitch);
+    } else {
+        renderer = texture-&gt;renderer;
+        return renderer-&gt;UpdateTexture(renderer, texture, rect, pixels, pitch);
+    }
+}</pre><br /><p></p>从源代码中可以看出，SDL_UpdateTexture()的大致流程如下。<br />1.<span style="white-space:pre;">	</span><strong>检查输入参数的合理性。</strong>例如像素格式是否支持，宽和高是否小于等于0等等。<br />2.<span style="white-space:pre;">	</span><strong>如果是一些特殊的格式，进行一定的处理：</strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">a)<span style="white-space:pre;">	</span>如果输入的像素数据是YUV格式的，则会调用SDL_UpdateTextureYUV()进行处理。<br />b)<span style="white-space:pre;">	</span>如果输入的像素数据的像素格式不是渲染器支持的格式，则会调用SDL_UpdateTextureNative()进行处理。</blockquote>3.<span style="white-space:pre;">	</span><strong>调用SDL_Render的UpdateTexture()方法更新纹理。</strong>这一步是整个函数的核心。<br />下面我们详细看一下几种不同的渲染器的UpdateTexture ()的方法。<br /><br /><h4>1.<span style="white-space:pre;">	</span>Direct3D</h4>Direct3D 渲染器中对应UpdateTexture ()的函数是D3D_UpdateTexture()，它的源代码如下所示（位于render\direct3d\SDL_render_d3d.c）。<br /><pre class="cpp">static int
+D3D_UpdateTexture(SDL_Renderer * renderer, SDL_Texture * texture,
+                  const SDL_Rect * rect, const void *pixels, int pitch)
+{
+    D3D_TextureData *data = (D3D_TextureData *) texture-&gt;driverdata;
+    SDL_bool full_texture = SDL_FALSE;
+
+
+#ifdef USE_DYNAMIC_TEXTURE
+    if (texture-&gt;access == SDL_TEXTUREACCESS_STREAMING &amp;&amp;
+        rect-&gt;x == 0 &amp;&amp; rect-&gt;y == 0 &amp;&amp;
+        rect-&gt;w == texture-&gt;w &amp;&amp; rect-&gt;h == texture-&gt;h) {
+        full_texture = SDL_TRUE;
+    }
+#endif
+
+
+    if (!data) {
+        SDL_SetError("Texture is not currently available");
+        return -1;
+    }
+
+
+    if (D3D_UpdateTextureInternal(data-&gt;texture, texture-&gt;format, full_texture, rect-&gt;x, rect-&gt;y, rect-&gt;w, rect-&gt;h, pixels, pitch) &lt; 0) {
+        return -1;
+    }
+
+
+    if (data-&gt;yuv) {
+        /* Skip to the correct offset into the next texture */
+        pixels = (const void*)((const Uint8*)pixels + rect-&gt;h * pitch);
+
+
+        if (D3D_UpdateTextureInternal(texture-&gt;format == SDL_PIXELFORMAT_YV12 ? data-&gt;vtexture : data-&gt;utexture, texture-&gt;format, full_texture, rect-&gt;x / 2, rect-&gt;y / 2, rect-&gt;w / 2, rect-&gt;h / 2, pixels, pitch / 2) &lt; 0) {
+            return -1;
+        }
+
+
+        /* Skip to the correct offset into the next texture */
+        pixels = (const void*)((const Uint8*)pixels + (rect-&gt;h * pitch)/4);
+        if (D3D_UpdateTextureInternal(texture-&gt;format == SDL_PIXELFORMAT_YV12 ? data-&gt;utexture : data-&gt;vtexture, texture-&gt;format, full_texture, rect-&gt;x / 2, rect-&gt;y / 2, rect-&gt;w / 2, rect-&gt;h / 2, pixels, pitch / 2) &lt; 0) {
+            return -1;
+        }
+    }
+    return 0;
+}</pre><p><br /></p><p>从代码中可以看出，该函数调用了D3D_UpdateTextureInternal()函数。在这里需要注意，如果输入像素格式是YUV，就会使用3个纹理，对于多出的那2个纹理会单独进行处理。调用的函数D3D_UpdateTextureInternal()代码如下。</p><pre class="cpp">static int D3D_UpdateTextureInternal(IDirect3DTexture9 *texture, Uint32 format, SDL_bool full_texture, int x, int y, int w, int h, const void *pixels, int pitch)
+{
+    RECT d3drect;
+    D3DLOCKED_RECT locked;
+    const Uint8 *src;
+    Uint8 *dst;
+    int row, length;
+    HRESULT result;
+
+
+    if (full_texture) {
+        result = IDirect3DTexture9_LockRect(texture, 0, &amp;locked, NULL, D3DLOCK_DISCARD);
+    } else {
+        d3drect.left = x;
+        d3drect.right = x + w;
+        d3drect.top = y;
+        d3drect.bottom = y + h;
+        result = IDirect3DTexture9_LockRect(texture, 0, &amp;locked, &amp;d3drect, 0);
+    }
+
+
+    if (FAILED(result)) {
+        return D3D_SetError("LockRect()", result);
+    }
+
+
+    src = (const Uint8 *)pixels;
+    dst = locked.pBits;
+    length = w * SDL_BYTESPERPIXEL(format);
+    if (length == pitch &amp;&amp; length == locked.Pitch) {
+        SDL_memcpy(dst, src, length*h);
+    } else {
+        if (length &gt; pitch) {
+            length = pitch;
+        }
+        if (length &gt; locked.Pitch) {
+            length = locked.Pitch;
+        }
+        for (row = 0; row &lt; h; ++row) {
+            SDL_memcpy(dst, src, length);
+            src += pitch;
+            dst += locked.Pitch;
+        }
+    }
+    IDirect3DTexture9_UnlockRect(texture, 0);
+
+
+    return 0;
+}</pre><br /><br />从代码中可以看出，该函数首先调用IDirect3DTexture9_LockRect()锁定纹理，然后使用SDL_memcpy()将新的像素数据拷贝至纹理（SDL_memcpy()实际上就是memcpy()）， 最后使用IDirect3DTexture9_UnlockRect()解锁纹理。<h4>2.<span style="white-space:pre;">	</span>OpenGL</h4>OpenGL渲染器中对应UpdateTexture()的函数是GL_UpdateTexture()，它的源代码如下所示（位于render\opengl\SDL_render_gl.c）。<br /><pre class="cpp">static int GL_UpdateTexture(SDL_Renderer * renderer, SDL_Texture * texture,
+                 const SDL_Rect * rect, const void *pixels, int pitch)
+{
+    GL_RenderData *renderdata = (GL_RenderData *) renderer-&gt;driverdata;
+    GL_TextureData *data = (GL_TextureData *) texture-&gt;driverdata;
+
+
+    GL_ActivateRenderer(renderer);
+
+
+    renderdata-&gt;glEnable(data-&gt;type);
+    renderdata-&gt;glBindTexture(data-&gt;type, data-&gt;texture);
+    renderdata-&gt;glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    renderdata-&gt;glPixelStorei(GL_UNPACK_ROW_LENGTH,
+                              (pitch / SDL_BYTESPERPIXEL(texture-&gt;format)));
+    renderdata-&gt;glTexSubImage2D(data-&gt;type, 0, rect-&gt;x, rect-&gt;y, rect-&gt;w,
+                                rect-&gt;h, data-&gt;format, data-&gt;formattype,
+                                pixels);
+    if (data-&gt;yuv) {
+        renderdata-&gt;glPixelStorei(GL_UNPACK_ROW_LENGTH, (pitch / 2));
+
+
+        /* Skip to the correct offset into the next texture */
+        pixels = (const void*)((const Uint8*)pixels + rect-&gt;h * pitch);
+        if (texture-&gt;format == SDL_PIXELFORMAT_YV12) {
+            renderdata-&gt;glBindTexture(data-&gt;type, data-&gt;vtexture);
+        } else {
+            renderdata-&gt;glBindTexture(data-&gt;type, data-&gt;utexture);
+        }
+        renderdata-&gt;glTexSubImage2D(data-&gt;type, 0, rect-&gt;x/2, rect-&gt;y/2,
+                                    rect-&gt;w/2, rect-&gt;h/2,
+                                    data-&gt;format, data-&gt;formattype, pixels);
+
+
+        /* Skip to the correct offset into the next texture */
+        pixels = (const void*)((const Uint8*)pixels + (rect-&gt;h * pitch)/4);
+        if (texture-&gt;format == SDL_PIXELFORMAT_YV12) {
+            renderdata-&gt;glBindTexture(data-&gt;type, data-&gt;utexture);
+        } else {
+            renderdata-&gt;glBindTexture(data-&gt;type, data-&gt;vtexture);
+        }
+        renderdata-&gt;glTexSubImage2D(data-&gt;type, 0, rect-&gt;x/2, rect-&gt;y/2,
+                                    rect-&gt;w/2, rect-&gt;h/2,
+                                    data-&gt;format, data-&gt;formattype, pixels);
+    }
+    renderdata-&gt;glDisable(data-&gt;type);
+
+
+    return GL_CheckError("glTexSubImage2D()", renderer);
+}</pre><br />从代码中可以看出，该函数调用了OpenGL的API函数glBindTexture ()，glTexSubImage2D()等更新了一个纹理。<br />在这里有一点需要注意，如果输入像素格式是YUV，就会使用3个纹理，对于多出的那2个纹理会单独进行处理。<h4>3.<span style="white-space:pre;">	</span>Software</h4>Software渲染器中对应UpdateTexture()的函数是SW_UpdateTexture()，它的源代码如下所示（位于render\software\SDL_render_sw.c）。<br /><pre class="cpp">static int SW_UpdateTexture(SDL_Renderer * renderer, SDL_Texture * texture,
+                 const SDL_Rect * rect, const void *pixels, int pitch)
+{
+    SDL_Surface *surface = (SDL_Surface *) texture-&gt;driverdata;
+    Uint8 *src, *dst;
+    int row;
+    size_t length;
+
+
+    if(SDL_MUSTLOCK(surface))
+        SDL_LockSurface(surface);
+    src = (Uint8 *) pixels;
+    dst = (Uint8 *) surface-&gt;pixels +
+                        rect-&gt;y * surface-&gt;pitch +
+                        rect-&gt;x * surface-&gt;format-&gt;BytesPerPixel;
+    length = rect-&gt;w * surface-&gt;format-&gt;BytesPerPixel;
+    for (row = 0; row &lt; rect-&gt;h; ++row) {
+        SDL_memcpy(dst, src, length);
+        src += pitch;
+        dst += surface-&gt;pitch;
+    }
+    if(SDL_MUSTLOCK(surface))
+        SDL_UnlockSurface(surface);
+    return 0;
+}</pre><br />该函数的源代码还没有详细分析。其中最关键的函数要数SDL_memcpy()了，正是这个函数更新了纹理的像素数据。但是Software渲染器纹理修改的时候是否需要Lock()和Unlock()呢？这一点一直也没太搞清。<br /><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/40876089		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=SDL&t=blog" target="_blank">SDL						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=OpenGL&t=blog" target="_blank">OpenGL						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Direct3D&t=blog" target="_blank">Direct3D						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=纹理&t=blog" target="_blank">纹理						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=函数调用&t=blog" target="_blank">函数调用						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2619497"  target="_blank">SDL						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/osmedia.html" target="_blank">开源多媒体项目源代码分析</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40876089#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/40895593" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>SDL2</em><em>源代码分析</em>6：复制到渲染器（SDL_RenderCopy()）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/40895593" target="_blank" >
+				上一篇文章分析了SDL<em>更新</em><em>纹理</em>像素数据的函数<em>SDL_UpdateTexture</em>()。这篇文章继续分析SDL的源代码。本文分析SDL<em>纹理</em>复制到渲染目标的函数SDL_RenderCopy()。...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-08 00:54:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：8420</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/40743061" target="_blank" strategy="BlogCommendFromBaidu_1">
+				<em>SDL2</em><em>源代码分析</em>4：<em>纹理</em>（SDL_Texture）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/40743061" target="_blank" >
+				上一篇文章分析了SDL中创建渲染器的函数SDL_CreateRenderer()。这篇文章继续分析SDL的源代码。本文分析SDL的<em>纹理</em>（SDL_Texture）。...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-05 12:35:17</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：12291</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/gz_chen/article/details/72639146" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>SDL2</em>显示YUV图像			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/gz_chen/article/details/72639146" target="_blank" >
+				<em>SDL2</em>显示YUV图像简单例子			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/gz_chen" title="gz_chen" target="_blank">
+					<img src="https://avatar.csdn.net/A/F/9/3_gz_chen.jpg" alt="gz_chen" class="avatar-pic">
+					<span class="name">gz_chen</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-23 13:59:23</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：610</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/finewind/article/details/41515443" target="_blank" strategy="BlogCommendFromBaidu_3">
+				SDL学习笔记7--用SDL显示图像数据			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/finewind/article/details/41515443" target="_blank" >
+				这篇文章实际和学习笔记3和4差不多，未来需要深入理解window, render, texture, surface等概念。
+#include &quot;SDL.h&quot;
+
+struct
+{
+    Uint3...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/finewind" title="finewind" target="_blank">
+					<img src="https://avatar.csdn.net/2/2/C/3_finewind.jpg" alt="finewind" class="avatar-pic">
+					<span class="name">finewind</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-26 14:25:39</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2075</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/korekara88730/article/details/78363806" target="_blank" strategy="BlogCommendFromBaidu_4">
+				SDL_Texture 对象的使用方法			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/korekara88730/article/details/78363806" target="_blank" >
+				前两篇博客，说明了如何获取 bmp,png 图像数据内容,然后在SDL 中逐像素绘制出来.
+
+bmp格式由于比较简单，采用的是自己读文件，把图像数据拷贝出来的形式;
+png格式比较复杂，用 li...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/korekara88730" title="korekara88730" target="_blank">
+					<img src="https://avatar.csdn.net/A/8/8/3_korekara88730.jpg" alt="korekara88730" class="avatar-pic">
+					<span class="name">korekara88730</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-10-27 13:13:51</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：204</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/ashqal/article/details/17640179" target="_blank" strategy="BlogCommendFromBaidu_5">
+				【ffmpeg学习】利用<em>SDL2</em>.0显示ffmpeg解码出来的数据			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/ashqal/article/details/17640179" target="_blank" >
+				http://dranger.com/ffmpeg/tutorial02.html
+
+按照里面的代码学习时发现作者使用的SDL1.2已过时，在SDL官网下了<em>SDL2</em>.0版本，
+发现tutoria...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/ashqal" title="ashqal" target="_blank">
+					<img src="https://avatar.csdn.net/7/F/4/3_ashqal.jpg" alt="ashqal" class="avatar-pic">
+					<span class="name">ashqal</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-12-28 22:24:11</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：11465</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/38868499" target="_blank" strategy="BlogCommendFromBaidu_6">
+				最简单的基于FFMPEG+SDL的视频播放器 ver2 （采用<em>SDL2</em>.0）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/38868499" target="_blank" >
+				之前做过一个FFMPEG+SDL的简单播放器：《100行代码实现最简单的基于FFMPEG+SDL的视频播放器》。最近有不少人反映SDL已经升级到2.0版本了，甚至官网的Wiki上都只有<em>SDL2</em>.0的文...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-08-31 01:20:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：78965</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/WificamSDK7/article/details/48679431" target="_blank" strategy="BlogCommendFromBaidu_7">
+				使用<em>SDL2</em>.0进行YUV显示			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/WificamSDK7/article/details/48679431" target="_blank" >
+				本文描述如何从ffmpeg decode出来的YUV frame到<em>SDL2</em>.0显示，重点在如何将ffmpeg decode的yuv format转换到<em>SDL2</em>.0可以显示的format，以及SDL如何...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/WificamSDK7" title="WificamSDK7" target="_blank">
+					<img src="https://avatar.csdn.net/2/A/8/3_wificamsdk7.jpg" alt="WificamSDK7" class="avatar-pic">
+					<span class="name">WificamSDK7</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-09-23 14:01:38</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2021</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/deyangliu/article/details/41793987" target="_blank" strategy="BlogCommendFromBaidu_8">
+				ffplay on <em>SDL2</em> 之二			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/deyangliu/article/details/41793987" target="_blank" >
+				本阶段完成把ffplay移植到<em>sdl2</em>, PC上基本测试：图片，视频OK。
+api 1.2
+SDL_Surface *screen;
+ screen = SDL_SetVideoMode(w, ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/deyangliu" title="deyangliu" target="_blank">
+					<img src="https://avatar.csdn.net/E/3/0/3_deyangliu.jpg" alt="deyangliu" class="avatar-pic">
+					<span class="name">deyangliu</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-12-07 23:26:26</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3007</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/victo2012/article/details/51866305" target="_blank" strategy="BlogCommendFromBaidu_9">
+				<em>SDL2</em>像素操作			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/victo2012/article/details/51866305" target="_blank" >
+				<em>SDL2</em>像素操作经过几天的研究,摸索出<em>SDL2</em>像素操作的方式
+操作surface中的像素
+操作texture中的像素
+<em>SDL2</em>中,surface是直接放在内存中的,没有硬件加速.而surface放在显...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/victo2012" title="victo2012" target="_blank">
+					<img src="https://avatar.csdn.net/B/F/3/3_victo2012.jpg" alt="victo2012" class="avatar-pic">
+					<span class="name">victo2012</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-07-09 13:13:17</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1537</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40876089" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421238">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>4</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "SDL2源代码分析5：更新纹理（SDL_UpdateTexture()）";
+    var ChannelId = 16;
+    var articleId = "40876089";
+    var commentscount = 4;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/40876089";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "sdl_locktexture+%E5%AD%98%E5%82%A8%E5%BD%A2%E5%BC%8F";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"SDL2源代码分析5：更新纹理（SDL_UpdateTexture()）");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=sdl_locktexture+%E5%AD%98%E5%82%A8%E5%BD%A2%E5%BC%8F"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12451561"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="我们来看一下MediaInfo中的Inform()函数的内部调用过程
+首先Inform()函数封装了MediaInfo_Internal类中的Inform()函数
+//返回文件信息
+String MediaInfo::Inform(size_t)
+{
+	//封装了一层
+    return Internal-&gt;Inform();
+}
+
+查看一下MediaInfo_Internal" />
+    <meta name="keywords" content="源代码,MediaInfo" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>MediaInfo源代码分析 4：Inform()函数 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12451561"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">MediaInfo源代码分析 4：Inform()函数</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月08日 21:40:09</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：3996</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p><span style="color:#990000;"></span></p><p><span style="color:rgb(153,0,0);">=====================================================<br /></span></p><p><span style="color:rgb(153,0,0);">MediaInfo源代码分析系列文章列表：</span></p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12016231" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 1：整体结构</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12449277" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 2：API函数</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12449803" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 3：Open()函数</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12451561" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 4：Inform()函数</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12452991" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 5：JPEG解析代码分析</a><br /><p><span style="color:#990000;">=====================================================</span></p><br /><p>我们来看一下MediaInfo中的Inform()函数的内部调用过程</p><p>首先Inform()函数封装了MediaInfo_Internal类中的Inform()函数</p><pre class="cpp">//返回文件信息
+String MediaInfo::Inform(size_t)
+{
+	//封装了一层
+    return Internal-&gt;Inform();
+}</pre><p><br />查看一下MediaInfo_Internal类中的Inform()函数的源代码：</p><pre class="cpp">// 获取信息
+Ztring MediaInfo_Internal::Inform()
+{
+    CS.Enter();
+    if (Info &amp;&amp; Info-&gt;Status[File__Analyze::IsUpdated])
+        Info-&gt;Open_Buffer_Update();
+    CS.Leave();
+
+    if (MediaInfoLib::Config.Inform_Get()==__T("MPEG-7"))
+        return Export_Mpeg7().Transform(*this);
+    if (MediaInfoLib::Config.Inform_Get()==__T("PBCore") || MediaInfoLib::Config.Inform_Get()==__T("PBCore_1.2"))
+        return Export_PBCore().Transform(*this);
+    if (MediaInfoLib::Config.Inform_Get()==__T("reVTMD"))
+        return __T("reVTMD is disabled due to its non-free licensing."); //return Export_reVTMD().Transform(*this);
+	//获取相应的信息
+    if (!(
+        MediaInfoLib::Config.Inform_Get(__T("General")).empty()
+     &amp;&amp; MediaInfoLib::Config.Inform_Get(__T("Video")).empty()
+     &amp;&amp; MediaInfoLib::Config.Inform_Get(__T("Audio")).empty()
+     &amp;&amp; MediaInfoLib::Config.Inform_Get(__T("Text")).empty()
+     &amp;&amp; MediaInfoLib::Config.Inform_Get(__T("Chapters")).empty()
+     &amp;&amp; MediaInfoLib::Config.Inform_Get(__T("Image")).empty()
+     &amp;&amp; MediaInfoLib::Config.Inform_Get(__T("Menu")).empty()
+     ))
+    {
+		//获取各种信息
+		//Retour即为返回的字符串
+        Ztring Retour;
+        Retour+=MediaInfoLib::Config.Inform_Get(__T("File_Begin"));
+        Retour+=MediaInfoLib::Config.Inform_Get(__T("General_Begin"));
+        Retour+=Inform(Stream_General, 0, false);
+        Retour+=MediaInfoLib::Config.Inform_Get(__T("General_End"));
+        if (Count_Get(Stream_Video))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Video_Begin"));
+        for (size_t I1=0; I1&lt;Count_Get(Stream_Video); I1++)
+        {
+            Retour+=Inform(Stream_Video, I1, false);
+            if (I1!=Count_Get(Stream_Video)-1)
+                Retour+=MediaInfoLib::Config.Inform_Get(__T("Video_Middle"));
+        }
+        if (Count_Get(Stream_Video))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Video_End"));
+        if (Count_Get(Stream_Audio))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Audio_Begin"));
+        for (size_t I1=0; I1&lt;Count_Get(Stream_Audio); I1++)
+        {
+            Retour+=Inform(Stream_Audio, I1, false);
+            if (I1!=Count_Get(Stream_Audio)-1)
+                Retour+=MediaInfoLib::Config.Inform_Get(__T("Audio_Middle"));
+        }
+        if (Count_Get(Stream_Audio))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Audio_End"));
+        if (Count_Get(Stream_Text))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Text_Begin"));
+        for (size_t I1=0; I1&lt;Count_Get(Stream_Text); I1++)
+        {
+            Retour+=Inform(Stream_Text, I1, false);
+            if (I1!=Count_Get(Stream_Text)-1)
+                Retour+=MediaInfoLib::Config.Inform_Get(__T("Text_Middle"));
+        }
+        if (Count_Get(Stream_Text))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Text_End"));
+        if (Count_Get(Stream_Other))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Chapters_Begin"));
+        for (size_t I1=0; I1&lt;Count_Get(Stream_Other); I1++)
+        {
+            Retour+=Inform(Stream_Other, I1, false);
+            if (I1!=Count_Get(Stream_Other)-1)
+                Retour+=MediaInfoLib::Config.Inform_Get(__T("Chapters_Middle"));
+        }
+        if (Count_Get(Stream_Other))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Chapters_End"));
+        if (Count_Get(Stream_Image))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Image_Begin"));
+        for (size_t I1=0; I1&lt;Count_Get(Stream_Image); I1++)
+        {
+            Retour+=Inform(Stream_Image, I1, false);
+            if (I1!=Count_Get(Stream_Image)-1)
+                Retour+=MediaInfoLib::Config.Inform_Get(__T("Image_Middle"));
+        }
+        if (Count_Get(Stream_Image))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Image_End"));
+        if (Count_Get(Stream_Menu))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Menu_Begin"));
+        for (size_t I1=0; I1&lt;Count_Get(Stream_Menu); I1++)
+        {
+            Retour+=Inform(Stream_Menu, I1, false);
+            if (I1!=Count_Get(Stream_Menu)-1)
+                Retour+=MediaInfoLib::Config.Inform_Get(__T("Menu_Middle"));
+        }
+        if (Count_Get(Stream_Menu))
+            Retour+=MediaInfoLib::Config.Inform_Get(__T("Menu_End"));
+        Retour+=MediaInfoLib::Config.Inform_Get(__T("File_End"));
+		//可以在此加入视频质量检测-----------------------------------------
+
+		//字符串替换？各种换行符统统改为“\n”-----------------------------
+        Retour.FindAndReplace(__T("\\r\\n"), __T("\n"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("\\r"), __T("\n"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("\n"), MediaInfoLib::Config.LineSeparator_Get(), 0, Ztring_Recursive);
+
+        //Special characters
+        Retour.FindAndReplace(__T("|SC1|"), __T("\\"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC2|"), __T("["), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC3|"), __T("]"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC4|"), __T(","), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC5|"), __T(";"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC6|"), __T("("), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC7|"), __T(")"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC8|"), __T(")"), 0, Ztring_Recursive);
+        Retour.FindAndReplace(__T("|SC9|"), __T("),"), 0, Ztring_Recursive);
+
+        return Retour;
+    }
+
+    //Informations
+    Ztring Retour;
+    bool HTML=false;
+    bool XML=false;
+    bool CSV=false;
+	//获取配置信息（输出格式）
+    if (MediaInfoLib::Config.Inform_Get()==__T("HTML"))
+        HTML=true;
+    if (MediaInfoLib::Config.Inform_Get()==__T("XML"))
+        XML=true;
+    if (MediaInfoLib::Config.Inform_Get()==__T("CSV"))
+        CSV=true;
+
+    if (HTML) Retour+=__T("&lt;html&gt;\n\n&lt;head&gt;\n&lt;META http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /&gt;&lt;/head&gt;\n&lt;body&gt;\n");
+    if (XML)  Retour+=__T("&lt;File&gt;\n");
+
+    for (size_t StreamKind=(size_t)Stream_General; StreamKind&lt;Stream_Max; StreamKind++)
+    {
+        //Pour chaque type de flux
+        for (size_t StreamPos=0; StreamPos&lt;(size_t)Count_Get((stream_t)StreamKind); StreamPos++)
+        {
+            //Pour chaque stream
+			//输出为HTML
+            if (HTML) Retour+=__T("&lt;table width=\"100%\" border=\"0\" cellpadding=\"1\" cellspacing=\"2\" style=\"border:1px solid Navy\"&gt;\n&lt;tr&gt;\n    &lt;td width=\"150\"&gt;&lt;h2&gt;");
+            //输出为XML
+			if (XML) Retour+=__T("&lt;track type=\"");
+            Ztring A=Get((stream_t)StreamKind, StreamPos, __T("StreamKind/String"));
+            Ztring B=Get((stream_t)StreamKind, StreamPos, __T("StreamKindPos"));
+            if (!XML &amp;&amp; !B.empty())
+            {
+                if (CSV)
+                    A+=__T(",");
+                else
+                    A+=MediaInfoLib::Config.Language_Get(__T("  Config_Text_NumberTag"));
+                A+=B;
+            }
+            Retour+=A;
+            if (XML)
+            {
+                Retour+=__T("\"");
+                if (!B.empty())
+                {
+                    Retour+=__T(" streamid=\"");
+                    Retour+=B;
+                    Retour+=__T("\"");
+                }
+            }
+			//输出为HTML
+            if (HTML) Retour+=__T("&lt;/h2&gt;&lt;/td&gt;\n  &lt;/tr&gt;");
+			//输出为XML
+            if (XML) Retour+=__T("&gt;");
+            Retour+=MediaInfoLib::Config.LineSeparator_Get();
+            Retour+=Inform((stream_t)StreamKind, StreamPos, false);
+            Retour.FindAndReplace(__T("\\"), __T("|SC1|"), 0, Ztring_Recursive);
+            if (HTML) Retour+=__T("&lt;/table&gt;\n&lt;br /&gt;");
+            if (XML) Retour+=__T("&lt;/track&gt;\n");
+            Retour+=MediaInfoLib::Config.LineSeparator_Get();
+        }
+    }
+	//输出为HTML
+    if (HTML) Retour+=__T("\n&lt;/body&gt;\n&lt;/html&gt;\n");
+	//输出为XML
+    if (XML)  Retour+=__T("&lt;/File&gt;\n");
+	//字符串替换？
+    Retour.FindAndReplace(__T("\\r\\n"), __T("\n"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("\\r"), __T("\n"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("\\n"), __T("\n"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("\r\n"), __T("\n"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("\r"), __T("\n"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("\n"), MediaInfoLib::Config.LineSeparator_Get(), 0, Ztring_Recursive);
+
+    //Special characters
+    Retour.FindAndReplace(__T("|SC1|"), __T("\\"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC2|"), __T("["), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC3|"), __T("]"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC4|"), __T(","), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC5|"), __T(";"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC6|"), __T("("), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC7|"), __T(")"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC8|"), __T(")"), 0, Ztring_Recursive);
+    Retour.FindAndReplace(__T("|SC9|"), __T("),"), 0, Ztring_Recursive);
+    return Retour;
+}</pre><p><br />函数比较复杂，从代码中我们可以看出，Inform()的实质还是使用Get()一个一个取出所有的属性值。</p><p>当指定输出为XML或者是HTML的时候，在输出的字符串上加上相应的标签（例如，输出为HTML的时候，字符串每一行上加上“&lt;/tr&gt;&lt;tr&gt;”，首尾加上“&lt;table&gt;&lt;/table&gt;”）</p>具体每一块代码的含义已经写在注释中了。            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/12451561		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=源代码&t=blog" target="_blank">源代码						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=MediaInfo&t=blog" target="_blank">MediaInfo						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Inform&t=blog" target="_blank">Inform						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1645587"  target="_blank">MediaInfo						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/osmedia.html" target="_blank">开源多媒体项目源代码分析</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12451561#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zzulp/article/details/8444685" target="_blank" strategy="BlogCommendFromQuerySearch_0">
+				<em>MediaInfo</em>编程指南			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zzulp/article/details/8444685" target="_blank" >
+				近期需要写一个对媒体文件的解析类，用到了<em>MediaInfo</em>这个工具，但是在命令行下进行使用的话，需要做比较多的文本过滤工作，于是想到了基于其SDK进行开发，下面列出学习的一些总结。
+        ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zzulp" title="zzulp" target="_blank">
+					<img src="https://avatar.csdn.net/2/E/6/3_zzulp.jpg" alt="zzulp" class="avatar-pic">
+					<span class="name">zzulp</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2012-12-27 23:43:10</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4743</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u010477528/article/details/43021403" target="_blank" strategy="BlogCommendFromQuerySearch_1">
+				视频学习笔记之 <em>MediaInfo</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u010477528/article/details/43021403" target="_blank" >
+				解码一直用的 FFmpeg，最近想在解码之前读取帧数，发现FFmpeg只能采用遍历的方式获得帧数。
+网上查了一下，<em>MediaInfo</em> 貌似是一款不错的库。
+下载 <em>MediaInfo</em> 库文件，解压得...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u010477528" title="u010477528" target="_blank">
+					<img src="https://avatar.csdn.net/A/C/7/3_u010477528.jpg" alt="u010477528" class="avatar-pic">
+					<span class="name">u010477528</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-01-22 16:30:31</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：899</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/yugong2009/article/details/5875998" target="_blank" strategy="BlogCommendFromQuerySearch_2">
+				linux 中<em>mediainfo</em>源码编译安装及移植			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/yugong2009/article/details/5875998" target="_blank" >
+				<em>Mediainfo</em> 源码 linux    编译  CLI 			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/yugong2009" title="yugong2009" target="_blank">
+					<img src="https://avatar.csdn.net/A/9/4/3_yugong2009.jpg" alt="yugong2009" class="avatar-pic">
+					<span class="name">yugong2009</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2010-09-10 15:56:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5826</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/heng615975867/article/details/22926129" target="_blank" strategy="BlogCommendFromQuerySearch_3">
+				<em>MediaInfo</em><em>源代码分析</em> ：API<em>函数</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/heng615975867/article/details/22926129" target="_blank" >
+				注：此前已经写了一系列分析<em>MediaInfo</em>源代码的文章，列表如下：
+
+<em>MediaInfo</em><em>源代码分析</em> 1：整体结构
+<em>MediaInfo</em><em>源代码分析</em> 2：API<em>函数</em>
+<em>MediaInfo</em><em>源代码分析</em> ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/heng615975867" title="heng615975867" target="_blank">
+					<img src="https://avatar.csdn.net/6/7/E/3_heng615975867.jpg" alt="heng615975867" class="avatar-pic">
+					<span class="name">heng615975867</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-04-04 12:19:17</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2306</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12449277" target="_blank" strategy="BlogCommendFromQuerySearch_4">
+				<em>MediaInfo</em><em>源代码分析</em> 2：API<em>函数</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12449277" target="_blank" >
+				本文主要分析<em>MediaInfo</em>的API<em>函数</em>。它的API<em>函数</em>位于<em>MediaInfo</em>.h文件中的一个叫做<em>MediaInfo</em>的类中。
+该类如下所示，部分重要的方法已经加上了注释：
+//<em>MediaInfo</em>类
+...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-08 19:58:33</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6264</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12449803" target="_blank" strategy="BlogCommendFromQuerySearch_5">
+				<em>MediaInfo</em><em>源代码分析</em> 3：Open()<em>函数</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12449803" target="_blank" >
+				我们来看一下<em>MediaInfo</em>中的Open()<em>函数</em>的内部调用过程
+首先open<em>函数</em>封装了<em>MediaInfo</em>_Internal类中的open()<em>函数</em>
+//打开文件
+size_t <em>MediaInfo</em>::O...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-08 20:27:26</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5420</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/11902195" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+				C++中使用<em>MediaInfo</em>库获取视频信息			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/11902195" target="_blank" >
+				<em>MediaInfo</em> 用来分析视频和音频文件的编码和内容信息,是一款是自由软件 (免费使用、免费获得源代码）。
+我在项目软件中集成了它的DLL，发现真的是非常好用！
+下面简单记录一下它的使用方法。
+（系...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-09-22 16:58:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：11989</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/sunshine1314/article/details/2548036" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+				【开源工程】<em>MediaInfo</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/sunshine1314/article/details/2548036" target="_blank" >
+				<em>MediaInfo</em>Peter Lee 2008-06-14  一、简介<em>MediaInfo</em> 用来分析视频和音频文件的编码和内容信息。<em>MediaInfo</em>可以获得多媒体文件的哪些信息?内容信息：标题，作者，...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/sunshine1314" title="sunshine1314" target="_blank">
+					<img src="https://avatar.csdn.net/F/B/0/3_sunshine1314.jpg" alt="sunshine1314" class="avatar-pic">
+					<span class="name">sunshine1314</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2008-06-14 23:54:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：11336</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/longlong530/article/details/43266343" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+				推荐两个小工具<em>MediaInfo</em>  和 netpersec			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/longlong530/article/details/43266343" target="_blank" >
+				流媒体服开发的时候常用的两个工具，
+
+1. <em>MediaInfo</em> 
+   
+下载路径：（http://w.x.baidu.com/alading/anquan_soft_down_all/11027）
+...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/longlong530" title="longlong530" target="_blank">
+					<img src="https://avatar.csdn.net/6/4/2/3_longlong530.jpg" alt="longlong530" class="avatar-pic">
+					<span class="name">longlong530</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-01-29 09:19:43</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1406</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/ILOVEYOULEEHUIJIE/article/details/72654923" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+				用<em>MediaInfo</em> 获取 视频文件的信息			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/ILOVEYOULEEHUIJIE/article/details/72654923" target="_blank" >
+				用<em>MediaInfo</em> 获取视频文件的具体参数信息。			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/ILOVEYOULEEHUIJIE" title="ILOVEYOULEEHUIJIE" target="_blank">
+					<img src="https://avatar.csdn.net/A/9/2/3_iloveyouleehuijie.jpg" alt="ILOVEYOULEEHUIJIE" class="avatar-pic">
+					<span class="name">ILOVEYOULEEHUIJIE</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-23 19:09:58</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1472</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12451561" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421545">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852474</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>0</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "MediaInfo源代码分析 4：Inform()函数";
+    var ChannelId = 16;
+    var articleId = "12451561";
+    var commentscount = 0;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12451561";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"MediaInfo源代码分析 4：Inform()函数");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

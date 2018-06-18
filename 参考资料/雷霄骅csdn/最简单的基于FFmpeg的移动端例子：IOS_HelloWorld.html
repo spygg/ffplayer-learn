@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/47071547"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文记录IOS平台下基于FFmpeg的HelloWorld程序。该示例C语言的源代码来自于《最简单的基于FFMPEG的Helloworld程序》。相关的概念就不再重复记录了。IOS程序使用FFmpeg类库的说明IOS应用程序使用FFmpeg类库的流程如下所示。1.	编译FFmpeg类库编译IOS的FFmpeg类库需要支持5种架构：armv7、armv7s、arm64、i386、x86_64。其中前" />
+    <meta name="keywords" content="FFmpeg,IOS" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的基于FFmpeg的移动端例子：IOS HelloWorld - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/47071547"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+					<h1 class="title-article">最简单的基于FFmpeg的移动端例子：IOS HelloWorld</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2015年07月27日 20:18:17</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：29808</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================</p><p>最简单的基于FFmpeg的移动端例子系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47008825">最简单的基于FFmpeg的移动端例子：Android HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47010637">最简单的基于FFmpeg的移动端例子：Android 视频解码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47011021">最简单的基于FFmpeg的移动端例子：Android 视频解码器-单个库版</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056051">最简单的基于FFmpeg的移动端例子：Android 推流器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056365">最简单的基于FFmpeg的移动端例子：Android 视频转码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056733">最简单的基于FFmpeg的移动端例子附件：Android 自带播放器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47059553">最简单的基于FFmpeg的移动端例子附件：SDL Android HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47071547">最简单的基于FFmpeg的移动端例子：IOS HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072257">最简单的基于FFmpeg的移动端例子：IOS 视频解码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072519">最简单的基于FFmpeg的移动端例子：IOS 推流器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072673">最简单的基于FFmpeg的移动端例子：IOS 视频转码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072861">最简单的基于FFmpeg的移动端例子附件：IOS自带播放器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47191283">最简单的基于FFmpeg的移动端例子：Windows Phone HelloWorld</a></p><p>=====================================================</p><br /><p>本文记录IOS平台下基于FFmpeg的HelloWorld程序。该示例C语言的源代码来自于《<a href="http://blog.csdn.net/leixiaohua1020/article/details/46889849">最简单的基于FFMPEG的Helloworld程序</a>》。相关的概念就不再重复记录了。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150801182605734" alt="" /><br /></p><p><br /></p><h2>IOS程序使用FFmpeg类库的说明</h2><p>IOS应用程序使用FFmpeg类库的流程如下所示。</p><h3>1.<span style="white-space:pre;">	</span>编译FFmpeg类库</h3>编译IOS的FFmpeg类库需要支持5种架构：armv7、armv7s、arm64、i386、x86_64。其中前面3个是给真机使用的，后面2个是给模拟器使用的。本文记录的FFmpeg类库还支持第三方类库libx264和libfaac，所以在编译之前还要先编译libx264和libfaac的源代码。总体说来，IOS下的类库需要编译成两个版本：thin和fat。每种架构对应一个thin版本的类库，将这些不同架构thin版本的类库合成起来之后，就形成了fat版本的类库。下面简单记录一下编译步骤。编译过程中IOS SDK版本为8.3，FFmpeg版本为2.7.1，faac和x264分别使用了最新版本的源代码。<br /><br /><h4>(1) 第三方库libx264的编译</h4><p>这一步用于生成支持armv7、armv7s、arm64、i386、x86_64几种架构的fat版本的libx264.a。下面这个脚本可以首先编译生成上面5种架构的thin版本的libx264.a，分成5个文件夹存储于thin-x264文件夹中；然后将这些类库合并成为1个fat版本的libx264.a，存储于fat-x264文件夹中。</p><strong>build_x264.sh</strong><br /><p></p><pre class="plain">#!/bin/sh
+# LXH,MXY
+#
+# directories
+SOURCE="x264"
+FAT="fat-x264"
+
+SCRATCH="scratch-x264"
+# must be an absolute path
+THIN=`pwd`/"thin-x264"
+
+#This is decided by your SDK version.
+SDK_VERSION="8.3"
+
+cd ./x264
+
+#============== simulator ===============
+PLATFORM="iPhoneSimulator"
+
+#i386
+ARCHS="i386"
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer/Platforms/${PLATFORM}.platform/Developer
+export SDKROOT=$DEVROOT/SDKs/${PLATFORM}${SDK_VERSION}.sdk
+export CC=$DEVROOT/usr/bin/gcc
+export LD=$DEVROOT/usr/bin/ld
+export CXX=$DEVROOT/usr/bin/g++
+export LIBTOOL=$DEVROOT/usr/bin/libtool
+export HOST=i386-apple-darwin
+
+COMMONFLAGS="-pipe -gdwarf-2 -no-cpp-precomp -isysroot ${SDKROOT} -fPIC"
+export LDFLAGS="${COMMONFLAGS} -fPIC"
+export CFLAGS="${COMMONFLAGS} -fvisibility=hidden"
+
+
+for ARCH in $ARCHS; do
+
+echo "Building $ARCH ......"
+
+make clean
+./configure \
+--host=i386-apple-darwin \
+--sysroot=$SDKROOT \
+--prefix="$THIN/$ARCH" \
+--extra-cflags="-arch $ARCH -miphoneos-version-min=6.0" \
+--extra-ldflags="-L$SDKROOT/usr/lib/system -arch $ARCH -miphoneos-version-min=6.0" \
+--enable-pic \
+--enable-static \
+--disable-asm \
+make &amp;&amp; make install &amp;&amp; make clean
+
+echo "Installed: $DEST/$ARCH"
+done
+
+#x86_64
+
+ARCHS="x86_64"
+
+unset DEVROOT
+unset SDKROOT
+unset CC
+unset LD
+unset CXX
+unset LIBTOOL
+unset HOST
+unset LDFLAGS
+unset CFLAGS
+
+make clean
+for ARCH in $ARCHS; do
+
+echo "Building $ARCH ......"
+
+./configure \
+--prefix="$THIN/$ARCH" \
+--enable-pic \
+--enable-static \
+--disable-asm \
+make &amp;&amp; make install &amp;&amp; make clean
+
+echo "Installed: $DEST/$ARCH"
+done
+
+#================ iphone ==================
+
+export PLATFORM="iPhoneOS"
+
+ARCHS="arm64 armv7 armv7s "
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer
+export SDKROOT=$DEVROOT/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDK_VERSION}.sdk
+#DEVPATH=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS${SDK_VERSION}.sdk
+export CC=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+export AS=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/as
+COMMONFLAGS="-pipe -gdwarf-2 -no-cpp-precomp -isysroot ${SDKROOT} -marm -fPIC"
+export LDFLAGS="${COMMONFLAGS} -fPIC"
+export CFLAGS="${COMMONFLAGS} -fvisibility=hidden"
+export CXXFLAGS="${COMMONFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden"
+
+
+for ARCH in $ARCHS; do
+
+echo "Building $ARCH ......"
+
+./configure \
+--host=arm-apple-darwin \
+--sysroot=$DEVPATH \
+--prefix="$THIN/$ARCH" \
+--extra-cflags="-arch $ARCH" \
+--extra-ldflags="-L$DEVPATH/usr/lib/system -arch $ARCH" \
+--enable-pic \
+--enable-static \
+--disable-asm
+
+make &amp;&amp; make install &amp;&amp; make clean
+
+echo "Installed: $DEST/$ARCH"
+
+done
+
+cd ..
+
+#================ fat lib ===================
+
+ARCHS="armv7 armv7s i386 x86_64 arm64"
+
+echo "building fat binaries..."
+mkdir -p $FAT/lib
+set - $ARCHS
+CWD=`pwd`
+cd $THIN/$1/lib
+for LIB in *.a
+do
+cd $CWD
+lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB
+done
+
+cd $CWD
+cp -rf $THIN/$1/include $FAT
+</pre><p><br /></p><h4>(2) 第三方库libfaac的编译</h4>这一步用于生成支持armv7、armv7s、arm64、i386、x86_64几种架构的fat版本的libfaac.a。下面这个脚本可以首先编译生成上面5种架构的thin版本的libfaac.a，分成5个文件夹存储于fat-faac中；然后将这些类库合并成为1个fat版本的libfaac.a，存储于fat-faac中。<br /><br /><strong>build_faac.sh</strong><br /><pre class="plain">#!/bin/sh
+cd ./faac
+make distclean
+cd ..
+
+CONFIGURE_FLAGS="--enable-static --with-pic"
+
+ARCHS="arm64 armv7s x86_64 i386 armv7"
+
+# directories
+SOURCE="faac"
+FAT="fat-faac"
+
+SCRATCH="scratch-faac"
+# must be an absolute path
+THIN=`pwd`/"thin-faac"
+
+COMPILE="y"
+LIPO="y"
+
+if [ "$*" ]
+then
+if [ "$*" = "lipo" ]
+then
+# skip compile
+COMPILE=
+else
+ARCHS="$*"
+if [ $# -eq 1 ]
+then
+# skip lipo
+LIPO=
+fi
+fi
+fi
+
+if [ "$COMPILE" ]
+then
+CWD=`pwd`
+for ARCH in $ARCHS
+do
+echo "building $ARCH..."
+mkdir -p "$SCRATCH/$ARCH"
+cd "$SCRATCH/$ARCH"
+
+if [ "$ARCH" = "i386" -o "$ARCH" = "x86_64" ]
+then
+PLATFORM="iPhoneSimulator"
+CPU=
+if [ "$ARCH" = "x86_64" ]
+then
+SIMULATOR="-mios-simulator-version-min=7.0"
+HOST=
+else
+SIMULATOR="-mios-simulator-version-min=5.0"
+HOST="--host=i386-apple-darwin"
+fi
+else
+PLATFORM="iPhoneOS"
+if [ $ARCH = "armv7s" ]
+then
+CPU="--cpu=swift"
+else
+CPU=
+fi
+SIMULATOR=
+HOST="--host=arm-apple-darwin"
+fi
+
+XCRUN_SDK=`echo $PLATFORM | tr '[:upper:]' '[:lower:]'`
+CC="xcrun -sdk $XCRUN_SDK clang -Wno-error=unused-command-line-argument-hard-error-in-future"
+AS="/usr/local/bin/gas-preprocessor.pl $CC"
+CFLAGS="-arch $ARCH $SIMULATOR"
+CXXFLAGS="$CFLAGS"
+LDFLAGS="$CFLAGS"
+
+CC=$CC CFLAGS=$CXXFLAGS LDFLAGS=$LDFLAGS CPPFLAGS=$CXXFLAGS CXX=$CC CXXFLAGS=$CXXFLAGS  $CWD/$SOURCE/configure \
+$CONFIGURE_FLAGS \
+$HOST \
+--prefix="$THIN/$ARCH" \
+--disable-shared \
+--without-mp4v2
+
+make clean &amp;&amp; make &amp;&amp; make install-strip
+cd $CWD
+done
+fi
+
+#================ fat lib ===================
+
+echo "building fat binaries..."
+mkdir -p $FAT/lib
+set - $ARCHS
+CWD=`pwd`
+cd $THIN/$1/lib
+for LIB in *.a
+do
+cd $CWD
+lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB
+done
+
+cd $CWD
+cp -rf $THIN/$1/include $FAT
+</pre><br /><h4>(3) 编译armv7版本FFmpeg类库</h4><p>这一步用于生成支持armv7架构的thin版本的FFmpeg类库，存储于thin-ffmpeg/armv7文件夹中。脚本如下所示。</p><strong>build_ffmpeg_demo_armv7.sh</strong><br /><p></p><pre class="plain">#!/bin/sh
+# LXH,MXY modified
+
+cd ffmpeg
+
+PLATFORM="iPhoneOS"
+INSTALL="thin-ffmpeg"
+SDK_VERSION="8.3"
+
+# libx264
+export X264ROOT=../thin-x264/armv7
+export X264LIB=$X264ROOT/lib
+export X264INCLUDE=$X264ROOT/include
+# libfaac
+export FAACROOT=../thin-faac/armv7
+export FAACLIB=$FAACROOT/lib
+export FAACINCLUDE=$FAACROOT/include
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer
+
+export SDKROOT=$DEVROOT/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDK_VERSION}.sdk
+export CC=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+export AS=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/as
+
+COMMONFLAGS="-pipe -gdwarf-2 -no-cpp-precomp -isysroot ${SDKROOT} -marm -fPIC"
+export LDFLAGS="${COMMONFLAGS} -fPIC"
+export CFLAGS="${COMMONFLAGS} -fvisibility=hidden"
+export CXXFLAGS="${COMMONFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden"
+
+
+echo "Building armv7..."
+
+make clean
+./configure \
+    --cpu=cortex-a9 \
+    --extra-cflags='-I$X264INCLUDE -I$FAACINCLUDE -arch armv7 -miphoneos-version-min=5.0 -mthumb' \
+    --extra-ldflags='-L$X264LIB -L$FAACLIB -arch armv7 -miphoneos-version-min=5.0' \
+    --enable-cross-compile \
+    --arch=arm --disable-iconv\
+    --target-os=darwin \
+    --cc=${CC} --disable-asm\
+    --sysroot=${SDKROOT} \
+    --prefix=../${INSTALL}/armv7 \
+--enable-gpl --enable-nonfree --enable-version3 --disable-bzlib --enable-small --disable-vda \
+--disable-encoders --enable-libx264 --enable-libfaac --enable-encoder=libx264 --enable-encoder=libfaac \
+--disable-muxers --enable-muxer=flv --enable-muxer=mov --enable-muxer=ipod --enable-muxer=mpegts --enable-muxer=psp --enable-muxer=mp4 --enable-muxer=avi \
+--disable-decoders --enable-decoder=aac --enable-decoder=aac_latm --enable-decoder=h264 --enable-decoder=mpeg4 \
+--disable-demuxers --enable-demuxer=flv --enable-demuxer=h264 --enable-demuxer=mpegts --enable-demuxer=avi --enable-demuxer=mpc --enable-demuxer=mov \
+--disable-parsers --enable-parser=aac --enable-parser=ac3 --enable-parser=h264 \
+--disable-protocols --enable-protocol=file --enable-protocol=rtmp --enable-protocol=rtp --enable-protocol=udp \
+--disable-bsfs --enable-bsf=aac_adtstoasc --enable-bsf=h264_mp4toannexb \
+--disable-devices --disable-debug --disable-ffmpeg --disable-ffprobe --disable-ffplay --disable-ffserver --disable-debug
+
+make
+make install
+
+cd ..
+</pre><br /><p></p><h4>(4) 编译armv7s版本FFmpeg类库</h4><p>这一步用于生成支持armv7s架构的thin版本的FFmpeg类库，存储于thin-ffmpeg/armv7s文件夹中。脚本如下所示。</p><strong>build_ffmpeg_demo_armv7s.sh</strong><br /><pre class="plain">#!/bin/sh
+# LXH,MXY modified
+
+cd ffmpeg
+
+PLATFORM="iPhoneOS"
+INSTALL="thin-ffmpeg"
+SDK_VERSION="8.3"
+
+# libx264
+export X264ROOT=../thin-x264/armv7s
+export X264LIB=$X264ROOT/lib
+export X264INCLUDE=$X264ROOT/include
+# libfaac
+export FAACROOT=../thin-faac/armv7s
+export FAACLIB=$FAACROOT/lib
+export FAACINCLUDE=$FAACROOT/include
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer
+
+export SDKROOT=$DEVROOT/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDK_VERSION}.sdk
+export CC=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+export AS=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/as
+
+COMMONFLAGS="-pipe -gdwarf-2 -no-cpp-precomp -isysroot ${SDKROOT} -marm -fPIC"
+export LDFLAGS="${COMMONFLAGS} -fPIC"
+export CFLAGS="${COMMONFLAGS} -fvisibility=hidden"
+export CXXFLAGS="${COMMONFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden"
+
+
+echo "Building armv7s..."
+
+make clean
+./configure \
+    --cpu=cortex-a9 \
+    --extra-cflags='-I$X264INCLUDE -I$FAACINCLUDE -arch armv7s -miphoneos-version-min=5.0 -mthumb' \
+    --extra-ldflags='-L$X264LIB -L$FAACLIB -arch armv7s -miphoneos-version-min=5.0' \
+    --enable-cross-compile \
+    --arch=arm --disable-iconv\
+    --target-os=darwin \
+    --cc=${CC} --disable-asm \
+    --sysroot=${SDKROOT} \
+    --prefix=../${INSTALL}/armv7s \
+--enable-gpl --enable-nonfree --enable-version3 --disable-bzlib --enable-small --disable-vda \
+ --disable-encoders --enable-libx264 --enable-libfaac --enable-encoder=libx264 --enable-encoder=libfaac \
+ --disable-muxers --enable-muxer=flv --enable-muxer=mov --enable-muxer=ipod --enable-muxer=mpegts --enable-muxer=psp --enable-muxer=mp4 --enable-muxer=avi \
+ --disable-decoders --enable-decoder=aac --enable-decoder=aac_latm --enable-decoder=h264 --enable-decoder=mpeg4 \
+ --disable-demuxers --enable-demuxer=flv --enable-demuxer=h264 --enable-demuxer=avi --enable-demuxer=mpegts --enable-demuxer=mpc --enable-demuxer=mov \
+ --disable-parsers --enable-parser=aac --enable-parser=ac3 --enable-parser=h264 \
+ --disable-protocols --enable-protocol=file --enable-protocol=rtmp --enable-protocol=rtp --enable-protocol=udp \
+ --disable-bsfs --enable-bsf=aac_adtstoasc --enable-bsf=h264_mp4toannexb \
+ --disable-devices --disable-debug --disable-ffmpeg --disable-ffprobe --disable-ffplay --disable-ffserver --disable-debug
+
+make
+make install
+
+cd ..
+</pre><br /><h4>(5) 编译arm64版本FFmpeg类库</h4><p>这一步用于生成支持arm64架构的thin版本的FFmpeg类库，存储于thin-ffmpeg/arm64文件夹中。脚本如下所示。</p><strong>build_ffmpeg_demo_arm64.sh</strong><br /><pre class="plain">#!/bin/sh
+# LXH,MXY modified
+	
+cd ffmpeg
+
+PLATFORM="iPhoneOS"
+INSTALL="thin-ffmpeg"
+SDK_VERSION="8.3"
+
+# libx264
+export X264ROOT=../thin-x264/arm64
+export X264LIB=$X264ROOT/lib
+export X264INCLUDE=$X264ROOT/include
+# libfaac
+export FAACROOT=../thin-faac/arm64
+export FAACLIB=$FAACROOT/lib
+export FAACINCLUDE=$FAACROOT/include
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer
+
+export SDKROOT=$DEVROOT/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDK_VERSION}.sdk
+export CC=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+export AS=$DEVROOT/Toolchains/XcodeDefault.xctoolchain/usr/bin/as
+
+COMMONFLAGS="-pipe -gdwarf-2 -no-cpp-precomp -isysroot ${SDKROOT} -marm -fPIC"
+export LDFLAGS="${COMMONFLAGS} -fPIC"
+export CFLAGS="${COMMONFLAGS} -fvisibility=hidden"
+export CXXFLAGS="${COMMONFLAGS} -fvisibility=hidden -fvisibility-inlines-hidden"
+
+
+echo "Building arm64..."
+
+make clean
+./configure \
+    --extra-cflags='-I$X264INCLUDE -I$FAACINCLUDE -arch arm64 -miphoneos-version-min=5.0 -mthumb' \
+    --extra-ldflags='-L$X264LIB -L$FAACLIB -arch arm64 -miphoneos-version-min=5.0' \
+    --enable-cross-compile \
+    --arch=arm --disable-iconv \
+    --target-os=darwin \
+    --cc=${CC} --disable-asm \
+    --sysroot=${SDKROOT} \
+    --prefix=../${INSTALL}/arm64 \
+--enable-gpl --enable-nonfree --enable-version3 --disable-bzlib --enable-small --disable-vda \
+--disable-encoders --enable-libx264 --enable-libfaac --enable-encoder=libx264 --enable-encoder=libfaac \
+--disable-muxers --enable-muxer=flv --enable-muxer=mov --enable-muxer=ipod --enable-muxer=mpegts --enable-muxer=psp --enable-muxer=mp4 --enable-muxer=avi \
+--disable-decoders --enable-decoder=aac --enable-decoder=aac_latm --enable-decoder=h264 --enable-decoder=mpeg4 \
+--disable-demuxers --enable-demuxer=flv --enable-demuxer=h264 --enable-demuxer=avi --enable-demuxer=mpegts --enable-demuxer=mpc --enable-demuxer=mov \
+--disable-parsers --enable-parser=aac --enable-parser=ac3 --enable-parser=h264 \
+--disable-protocols --enable-protocol=file --enable-protocol=rtmp --enable-protocol=rtp --enable-protocol=udp \
+--disable-bsfs --enable-bsf=aac_adtstoasc --enable-bsf=h264_mp4toannexb \
+--disable-devices --disable-debug --disable-ffmpeg --disable-ffprobe --disable-ffplay --disable-ffserver --disable-debug
+
+make
+make install
+
+cd ..
+</pre><br /><h4>(6) 编译i386版本FFmpeg类库</h4><p>这一步用于生成支持i386架构的thin版本的FFmpeg类库，存储于thin-ffmpeg/i386文件夹中。脚本如下所示。</p><strong>build_ffmpeg_demo_i386.sh</strong><br /><pre class="plain">#!/bin/sh
+# LXH,MXY modified
+
+cd ffmpeg
+
+PLATFORM="iPhoneSimulator"
+INSTALL="thin-ffmpeg"
+SDK_VERSION="8.3"
+
+# libx264
+export X264ROOT=../thin-x264/i386
+export X264LIB=$X264ROOT/lib
+export X264INCLUDE=$X264ROOT/include
+# libfaac
+export FAACROOT=../thin-faac/i386
+export FAACLIB=$FAACROOT/lib
+export FAACINCLUDE=$FAACROOT/include
+
+export DEVROOT=/Applications/Xcode.app/Contents/Developer/Platforms/${PLATFORM}.platform/Developer
+export SDKROOT=$DEVROOT/SDKs/${PLATFORM}${SDK_VERSION}.sdk
+export CC=$DEVROOT/usr/bin/gcc
+export LD=$DEVROOT/usr/bin/ld
+
+export CXX=$DEVROOT/usr/bin/g++
+
+export LIBTOOL=$DEVROOT/usr/bin/libtool
+
+COMMONFLAGS="-pipe -gdwarf-2 -no-cpp-precomp -isysroot ${SDKROOT} -fPIC"
+export LDFLAGS="${COMMONFLAGS} -fPIC"
+export CFLAGS="${COMMONFLAGS} -fvisibility=hidden"
+
+
+echo "Building i386..."
+make clean
+./configure \
+    --cpu=i386 \
+    --extra-cflags='-I$X264INCLUDE -I$FAACINCLUDE -arch i386 -miphoneos-version-min=5.0' \
+    --extra-ldflags='-L$X264LIB -L$FAACLIB -arch i386 -miphoneos-version-min=5.0' \
+    --enable-cross-compile \
+    --arch=i386 --disable-iconv \
+    --target-os=darwin \
+    --cc=${CC} \
+    --sysroot=${SDKROOT} \
+--prefix=../${INSTALL}/i386 \
+--enable-gpl --enable-nonfree --enable-version3 --disable-bzlib --enable-small --disable-vda \
+--disable-encoders --enable-libx264 --enable-libfaac --enable-encoder=libx264 --enable-encoder=libfaac \
+--disable-muxers --enable-muxer=flv --enable-muxer=mov --enable-muxer=mpegts --enable-muxer=ipod --enable-muxer=psp --enable-muxer=mp4 --enable-muxer=avi \
+--disable-decoders --enable-decoder=aac --enable-decoder=aac_latm --enable-decoder=h264 --enable-decoder=mpeg4 \
+--disable-demuxers --enable-demuxer=flv --enable-demuxer=h264 --enable-demuxer=mpegts --enable-demuxer=avi --enable-demuxer=mpc --enable-demuxer=mov \
+--disable-parsers --enable-parser=aac --enable-parser=ac3 --enable-parser=h264 \
+--disable-protocols --enable-protocol=file --enable-protocol=rtmp --enable-protocol=rtp --enable-protocol=udp \
+--disable-bsfs --enable-bsf=aac_adtstoasc --enable-bsf=h264_mp4toannexb \
+--disable-devices --disable-debug --disable-ffmpeg --disable-ffprobe --disable-ffplay --disable-ffserver --disable-debug
+
+make
+make install
+
+cd ..
+</pre><br /><h4>(7) 编译x86_64版本FFmpeg类库</h4><p>这一步用于生成支持x86_64架构的thin版本的FFmpeg类库，存储于thin-ffmpeg/x86_64文件夹中。脚本如下所示。</p><strong>build_ffmpeg_demo_x86_64.sh</strong><br /><pre class="plain">#!/bin/sh
+# LXH,MXY modified
+
+cd ./ffmpeg
+
+INSTALL="thin-ffmpeg"
+
+# libx264
+export X264ROOT=../thin-x264/x86_64
+export X264LIB=$X264ROOT/lib
+export X264INCLUDE=$X264ROOT/include
+# libfaac
+export FAACROOT=../thin-faac/x86_64
+export FAACLIB=$FAACROOT/lib
+export FAACINCLUDE=$FAACROOT/include
+
+unset DEVROOT
+unset SDKROOT
+unset CC
+unset LD
+unset CXX
+unset LIBTOOL
+unset HOST
+unset LDFLAGS
+unset CFLAGS
+
+echo "Building x86_64..."
+
+make clean
+./configure \
+    --extra-cflags='-I$X264INCLUDE -I$FAACINCLUDE' \
+    --extra-ldflags='-L$X264LIB -L$FAACLIB' \
+    --disable-iconv \
+    --disable-asm \
+--prefix=../${INSTALL}/x86_64 \
+--enable-gpl --enable-nonfree --enable-version3 --disable-bzlib --enable-small --disable-vda \
+--disable-encoders --enable-libx264 --enable-libfaac --enable-encoder=libx264 --enable-encoder=mpeg2video --enable-encoder=libfaac \
+--disable-muxers --enable-muxer=flv --enable-muxer=mov --enable-muxer=ipod --enable-muxer=mpegts --enable-muxer=psp --enable-muxer=mp4 --enable-muxer=avi \
+--disable-decoders --enable-decoder=aac --enable-decoder=mpeg2video --enable-decoder=aac_latm --enable-decoder=h264 --enable-decoder=mpeg4 \
+--disable-demuxers --enable-demuxer=flv --enable-demuxer=h264 --enable-demuxer=avi --enable-demuxer=mpegts --enable-demuxer=mpc --enable-demuxer=mov \
+--disable-parsers --enable-parser=aac --enable-parser=ac3 --enable-parser=h264 \
+--disable-protocols --enable-protocol=file --enable-protocol=rtmp --enable-protocol=rtp --enable-protocol=udp \
+--enable-bsf=aac_adtstoasc --enable-bsf=h264_mp4toannexb \
+--disable-devices --disable-debug --disable-ffmpeg --disable-ffprobe --disable-ffplay --disable-ffserver --disable-debug
+
+make
+make install
+cd ..
+</pre><br /><h4>(8) 打包类库</h4><p>这一步用于将上述步骤中生成的5个版本的FFmpeg打包生成fat版本的FFmpeg类库。这一步骤执行完毕后，将thin-ffmpeg中几个thin版本的类库合并为一个fat版本的类库，并存储于fat-ffmpeg文件夹中。脚本如下所示。</p><strong>build_ffmpeg_fat.sh</strong><br /><pre class="plain">#!/bin/sh
+
+
+# directories
+THIN=`pwd`/"thin-ffmpeg"
+FAT=`pwd`/"fat-ffmpeg"
+CWD=`pwd`
+# must be an absolute path
+
+
+ARCHS="armv7s i386 armv7 arm64 x86_64"
+
+
+echo "building fat binaries..."
+
+mkdir -p $FAT/lib
+set - $ARCHS
+cd thin-ffmpeg/$1/lib
+for LIB in *.a
+do
+cd $CWD
+lipo -create `find $THIN -name $LIB` -output $FAT/lib/$LIB
+done
+
+cd $CWD
+cp -rf $THIN/$1/include $FAT
+</pre><br />生成完fat版本的类库后，可以在命令行使用lipo命令查看类库的架构，如下所示。<br /><pre class="plain">lipo -info libavcodec.a</pre><br /><h3>2.<span style="white-space:pre;">	</span>编写IOS程序</h3><p>编写包含FFmpeg类库支持的IOS程序分成两步：配置Xcode环境，编写C语言代码。</p><h4>(1) 配置Xcode环境</h4><p>下面以Xcode的IOS中的Single View Application为例，记录一下配置步骤：</p><p>(a)<span style="white-space:pre;">	</span>拷贝头文件所在的include文件夹和fat版本的FFmpeg类库（包括libavformat.a， libavcodec.a， libavutil.a， libavdevice.a， libavfilter.a， libpostproc.a， libswresample.a， libswscale.a；以及第三方fat版本类库libx264.a， libfaac.a）至项目文件夹。并将它们添加至项目中。</p>(b)<span style="white-space:pre;">	</span>项目属性-&gt;Build Settings中配置以下3个选项。<br />Linking-&gt;Other Linker Flags中添加下面内容：<br /><pre class="plain">-lavformat
+-lavcodec
+-lavutil
+-lavdevice
+-lavfilter
+-lpostproc
+-lswresample
+-lswscale
+-lx264
+-lfaac</pre>Search Paths-&gt;Header Search Paths添加下面内容<br /><pre class="plain">$(PROJECT_DIR)/include</pre>Search Paths-&gt;Library Search Paths添加下面内容<br /><pre class="plain">$(PROJECT_DIR)</pre>其它的一些配置。这些配置随着FFmpeg版本的不同而有略微的不同（在某些情况下也可能不需要配置）。我目前使用的2.7.1版本的FFmpeg需要配置下面的选项。<br />项目属性-&gt;General-&gt;Linked Frameworks and Libraries中添加两个类库：AVFoundation.framework和libz.dylib。<br /><br /><h4>(2) 编写C语言代码</h4>做好上面配置后，就可以在项目中编写代码测试一下FFmpeg是否正确配置了。由于IOS使用的Objective-C是兼容C语言的，所以可以直接写C语言代码调用FFmpeg。可以在ViewController.m中的viewDidLoad()函数中添加一行printf()代码打印FFmpeg类库的版本信息，如下所示。<br /><pre class="objc">#import "ViewController.h"
+#include &lt;libavcodec/avcodec.h&gt;
+
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+    printf("%s",avcodec_configuration());
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+@end
+</pre><br />如果类库编译无误，启动IOS程序的时候会在控制台打印版本信息。<br /><h3><br /></h3><br /><h2>源代码</h2>项目的目录结构如图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150726212805864" alt="" /><br /></div>C代码位于ViewController.m文件中，内容如下所示。<br /><pre class="objc">/**
+ * 最简单的基于FFmpeg的HelloWorld程序 － IOS
+ * Simplest FFmpeg Helloworld － IOS
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ *
+ * 本程序可以获得FFmpeg类库相关的信息。
+ * This software can get information about FFmpeg libraries.
+ *
+ */
+
+#import "ViewController.h"
+#include &lt;libavcodec/avcodec.h&gt;
+#include &lt;libavformat/avformat.h&gt;
+#include &lt;libavfilter/avfilter.h&gt;
+
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+    
+    av_register_all();
+    char info[10000] = { 0 };
+    printf("%s\n", avcodec_configuration());
+    sprintf(info, "%s\n", avcodec_configuration());
+    NSString * info_ns = [NSString stringWithFormat:@"%s", info];
+    self.content.text=info_ns;
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)clickProtocolButton:(id)sender {
+    //Alert
+    /*
+    UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"Title" message:@"This is content" delegate:nil cancelButtonTitle:@"Close" otherButtonTitles:nil];
+    [alter show];
+     */
+    char info[40000]={0};
+    av_register_all();
+    
+    struct URLProtocol *pup = NULL;
+    //Input
+    struct URLProtocol **p_temp = &amp;pup;
+    avio_enum_protocols((void **)p_temp, 0);
+    while ((*p_temp) != NULL){
+        sprintf(info, "%s[In ][%10s]\n", info, avio_enum_protocols((void **)p_temp, 0));
+    }
+    pup = NULL;
+    //Output
+    avio_enum_protocols((void **)p_temp, 1);
+    while ((*p_temp) != NULL){
+        sprintf(info, "%s[Out][%10s]\n", info, avio_enum_protocols((void **)p_temp, 1));
+    }
+    //printf("%s", info);
+    NSString * info_ns = [NSString stringWithFormat:@"%s", info];
+    self.content.text=info_ns;
+}
+
+- (IBAction)clickAVFormatButton:(id)sender {
+    char info[40000] = { 0 };
+    
+    av_register_all();
+    
+    AVInputFormat *if_temp = av_iformat_next(NULL);
+    AVOutputFormat *of_temp = av_oformat_next(NULL);
+    //Input
+    while(if_temp!=NULL){
+        sprintf(info, "%s[In ]%10s\n", info, if_temp-&gt;name);
+        if_temp=if_temp-&gt;next;
+    }
+    //Output
+    while (of_temp != NULL){
+        sprintf(info, "%s[Out]%10s\n", info, of_temp-&gt;name);
+        of_temp = of_temp-&gt;next;
+    }
+    //printf("%s", info);
+    NSString * info_ns = [NSString stringWithFormat:@"%s", info];
+    self.content.text=info_ns;
+}
+
+
+- (IBAction)clickAVCodecButton:(id)sender {
+    
+    char info[40000] = { 0 };
+    
+    av_register_all();
+    
+    AVCodec *c_temp = av_codec_next(NULL);
+    
+    while(c_temp!=NULL){
+        if (c_temp-&gt;decode!=NULL){
+            sprintf(info, "%s[Dec]", info);
+        }
+        else{
+            sprintf(info, "%s[Enc]", info);
+        }
+        switch (c_temp-&gt;type){
+            case AVMEDIA_TYPE_VIDEO:
+                sprintf(info, "%s[Video]", info);
+                break;
+            case AVMEDIA_TYPE_AUDIO:
+                sprintf(info, "%s[Audio]", info);
+                break;
+            default:
+                sprintf(info, "%s[Other]", info);
+                break;
+        }
+        sprintf(info, "%s%10s\n", info, c_temp-&gt;name);
+        
+        
+        c_temp=c_temp-&gt;next;
+    }
+    //printf("%s", info);
+    NSString * info_ns = [NSString stringWithFormat:@"%s", info];
+    self.content.text=info_ns;
+}
+
+- (IBAction)clickAVFilterButton:(id)sender {
+    char info[40000] = { 0 };
+    avfilter_register_all();
+    AVFilter *f_temp = (AVFilter *)avfilter_next(NULL);
+    while (f_temp != NULL){
+        sprintf(info, "%s[%10s]\n", info, f_temp-&gt;name);
+    }
+    //printf("%s", info);
+    NSString * info_ns = [NSString stringWithFormat:@"%s", info];
+    self.content.text=info_ns;
+}
+
+- (IBAction)clickConfigurationButton:(id)sender {
+    char info[10000] = { 0 };
+    av_register_all();
+    
+    sprintf(info, "%s\n", avcodec_configuration());
+    
+    //printf("%s", info);
+    //self.content.text=@"Lei Xiaohua";
+    NSString * info_ns = [NSString stringWithFormat:@"%s", info];
+    self.content.text=info_ns;
+}
+
+
+@end
+</pre><br /><h2>运行结果</h2>App在手机上运行后的结果如下图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150726212715269" alt="" /><br /></div>单击不同的按钮，可以得到类库不同方面的信息。单击“Protocol”按钮内容如下所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150726212728045" alt="" /><br /></div>单击“AVFormat”按钮内容如下所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150726212855691" alt="" /> </div>单击“AVCodec”按钮内容如下所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150726212930214" alt="" /> </div>单击“Configure”按钮即为程序开始运行时候的内容。<br /><br /><br /><h2>下载</h2><br /><strong>simplest ffmpeg mobile</strong><br /><br /><p><strong>项目主页</strong></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_mobile">https://github.com/leixiaohua1020/simplest_ffmpeg_mobile</a></p><p>开源中国：<a href="https://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mobile">https://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mobile</a></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegmobile/">https://sourceforge.net/projects/simplestffmpegmobile/</a><br /></p><p><br /></p>CSDN工程下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8924391">http://download.csdn.net/detail/leixiaohua1020/8924391</a><br /><br />本解决方案包含了使用FFmpeg在移动端处理多媒体的各种例子：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">[Android]<br />simplest_android_player: 基于安卓接口的视频播放器<br />simplest_ffmpeg_android_helloworld: 安卓平台下基于FFmpeg的HelloWorld程序<br />simplest_ffmpeg_android_decoder: 安卓平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_android_decoder_onelib: 安卓平台下最简单的基于FFmpeg的视频解码器-单库版<br />simplest_ffmpeg_android_streamer: 安卓平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_android_transcoder: 安卓平台下移植的FFmpeg命令行工具<br />simplest_sdl_android_helloworld: 移植SDL到安卓平台的最简单程序<br />[IOS]<br />simplest_ios_player: 基于IOS接口的视频播放器<br /><span style="color:#ff0000;">simplest_ffmpeg_ios_helloworld: IOS平台下基于FFmpeg的HelloWorld程序</span><br />simplest_ffmpeg_ios_decoder: IOS平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_ios_streamer: IOS平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_ios_transcoder: IOS平台下移植的ffmpeg.c命令行工具<br />simplest_sdl_ios_helloworld: 移植SDL到IOS平台的最简单程序</blockquote><p><br /></p><p><br /></p>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=FFmpeg&t=blog" target="_blank">FFmpeg						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=IOS&t=blog" target="_blank">IOS						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=编译&t=blog" target="_blank">编译						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=arm&t=blog" target="_blank">arm						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1360795"  target="_blank">FFMPEG						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/5680667"  target="_blank">IOS多媒体						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/ffmpeg-devel.html" target="_blank">FFmpeg</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/47071547#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/elesos/article/details/52186443" target="_blank" strategy="BlogCommendFromBaidu_0">
+				编译<em>FFmpeg</em> for <em>iOS</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/elesos/article/details/52186443" target="_blank" >
+				2项依赖：
+
+
+gas-preprocessor（见附录：gas-preprocessor简介）
+yasm 1.2.0
+
+
+如果要集成x264和fdk_aac，需要先编译x264和fdk...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/elesos" title="elesos" target="_blank">
+					<img src="https://avatar.csdn.net/5/5/E/3_elesos.jpg" alt="elesos" class="avatar-pic">
+					<span class="name">elesos</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-08-11 20:50:19</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2051</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/humiaor/article/details/67633189" target="_blank" strategy="BlogCommendFromBaidu_1">
+				<em>iOS</em>平台使用<em>FFmpeg</em>解码H.264视频流			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/humiaor/article/details/67633189" target="_blank" >
+				对于视频文件和rtsp之类的主流视频传输协议，<em>ffmpeg</em>提供avformat_open_input接口，直接将文件路径或URL传入即可打开。读取视频数据、解码器初始参数设置等，都可以通过调用API来...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/humiaor" title="humiaor" target="_blank">
+					<img src="https://avatar.csdn.net/5/1/C/3_humiaor.jpg" alt="humiaor" class="avatar-pic">
+					<span class="name">humiaor</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-03-28 10:48:56</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1008</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/wanglei0918/article/details/74012099" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>iOS</em>: <em>FFmpeg</em>的使用一			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/wanglei0918/article/details/74012099" target="_blank" >
+				现状：现在视频直播非常的火，所以在视频直播开发中，使用的对视频进行遍解码的框架显得尤为重要了，其实，这种框架蛮多的，这次主要介绍一下<em>FFmpeg</em>视频播放器的集成和使用，<em>FFmpeg</em>是视频编解码的利器。...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/wanglei0918" title="wanglei0918" target="_blank">
+					<img src="https://avatar.csdn.net/F/6/C/3_wanglei0918.jpg" alt="wanglei0918" class="avatar-pic">
+					<span class="name">wanglei0918</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-06-30 20:44:39</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：811</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/baitxaps/8657935" target="_blank" strategy="BlogCommendFromBaidu_3">
+						<em>FFmpeg</em> for <em>iOS</em>					</a>
+				</h4>
+				<p>
+					<span class="data">2015年05月03日 </span>
+					<span class="size">53.76MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/baitxaps/8657935" target="_blank" strategy="BlogCommendFromBaidu_3">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/qinwh2008/7355765" target="_blank" strategy="BlogCommendFromBaidu_4">
+						<em>ffmpeg</em> for <em>IOS</em> 最新xcode亲测可用 附使用方法					</a>
+				</h4>
+				<p>
+					<span class="data">2014年05月16日 </span>
+					<span class="size">29.11MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/qinwh2008/7355765" target="_blank" strategy="BlogCommendFromBaidu_4">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xuexixiaoshizhe/article/details/45014337" target="_blank" strategy="BlogCommendFromBaidu_5">
+				<em>iOS</em>－－<em>FFmpeg</em>篇（一）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xuexixiaoshizhe/article/details/45014337" target="_blank" >
+				最近公司需要做一个flv播放器，而且只要播放声音即可。刚开始找到了Vitamio，发现用它来播放flv确实不怎么样，而且没有<em>iOS</em>的源码，感觉很不让人放心。于是开始了编译<em>FFmpeg</em>的历程。话说Git...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xuexixiaoshizhe" title="xuexixiaoshizhe" target="_blank">
+					<img src="https://avatar.csdn.net/1/F/2/3_xuexixiaoshizhe.jpg" alt="xuexixiaoshizhe" class="avatar-pic">
+					<span class="name">xuexixiaoshizhe</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-04-12 21:35:52</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1747</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/lkeplei/article/details/46801045" target="_blank" strategy="BlogCommendFromBaidu_6">
+				<em>iOS</em>下使用<em>FFMPEG</em>的一些总结			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/lkeplei/article/details/46801045" target="_blank" >
+				<em>ffmpeg</em>是一个多平台多媒体处理工具，处理视频和音频的功能非常强大。目前在网上搜到的<em>iOS</em>上使用<em>FFMPEG</em>的资料都比较陈旧，而<em>FFMPEG</em>更新迭代比较快； 且网上的讲解不够详细，对于初次接触FFM...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/lkeplei" title="lkeplei" target="_blank">
+					<img src="https://avatar.csdn.net/8/F/0/3_lkeplei.jpg" alt="lkeplei" class="avatar-pic">
+					<span class="name">lkeplei</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-07-08 11:17:50</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1834</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/phxiang/article/details/54865056" target="_blank" strategy="BlogCommendFromBaidu_7">
+				<em>FFmpeg</em>的初识			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/phxiang/article/details/54865056" target="_blank" >
+				前言：一直以来，都想下决定写博文，但是都因为懒惰没下手，这次被我老大强制要求我每周更新一篇博文，觉得也是一个契机。所以也就借这次机会开始试试。 
+音视频的编解码，一直给我的感觉是太难。<em>FFmpeg</em>作为...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/phxiang" title="phxiang" target="_blank">
+					<img src="https://avatar.csdn.net/B/7/8/3_phxiang.jpg" alt="phxiang" class="avatar-pic">
+					<span class="name">phxiang</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-02-04 18:37:51</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：825</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dongyafeiying/article/details/8331283" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>iOS</em>上使用<em>ffmpeg</em>播放视频			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dongyafeiying/article/details/8331283" target="_blank" >
+				关于在<em>iOS</em>上使用<em>ffmpeg</em>播放视频，我调查的结果如下：
+
+国外靠谱的有这几个：
+1、Mooncatventures group https://github.com/mooncatventu...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dongyafeiying" title="dongyafeiying" target="_blank">
+					<img src="https://avatar.csdn.net/D/A/7/3_dongyafeiying.jpg" alt="dongyafeiying" class="avatar-pic">
+					<span class="name">dongyafeiying</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2012-12-19 13:06:32</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1666</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/humiaor/article/details/79511304" target="_blank" strategy="BlogCommendFromBaidu_9">
+				<em>FFMPEG</em> - <em>iOS</em>  API 详解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/humiaor/article/details/79511304" target="_blank" >
+				认识<em>FFmpeg</em><em>FFMPEG</em>堪称自由软件中最完备的一套多媒体支持库，它几乎实现了所有当下常见的数据封装格式、多媒体传输协议以及音视频编解码器。因此，对于从事多媒体技术开发的工程师来说，深入研究FFMP...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/humiaor" title="humiaor" target="_blank">
+					<img src="https://avatar.csdn.net/5/1/C/3_humiaor.jpg" alt="humiaor" class="avatar-pic">
+					<span class="name">humiaor</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-03-10 20:31:38</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：134</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/47071547" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421142">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>16</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的基于FFmpeg的移动端例子：IOS HelloWorld";
+    var ChannelId = 16;
+    var articleId = "47071547";
+    var commentscount = 22;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/47071547";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 0;
+    //百度搜索
+    var baiduKey = "%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E5%9F%BA%E4%BA%8Effmpeg%E7%9A%84%E7%A7%BB%E5%8A%A8%E7%AB%AF%E4%BE%8B%E5%AD%90";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的基于FFmpeg的移动端例子：IOS HelloWorld");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E5%9F%BA%E4%BA%8Effmpeg%E7%9A%84%E7%A7%BB%E5%8A%A8%E7%AB%AF%E4%BE%8B%E5%AD%90"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

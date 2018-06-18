@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/50534316"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="上一篇文章记录了RGB/YUV视频像素数据的处理方法，本文继续上一篇文章的内容，记录PCM音频采样数据的处理方法。音频采样数据在视频播放器的解码流程中的位置如下图所示。本文分别介绍如下几个PCM音频采样数据处理函数： 	分离PCM16LE双声道音频采样数据的左声道和右声道 	将PCM16LE双声道音频采样数据中左声道的音量降一半 	将PCM16LE双声道音频采样数据的声音速度提高一倍 	将PCM1" />
+    <meta name="keywords" content="PCM,音频" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>视音频数据处理入门：PCM音频采样数据处理 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/50534316"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+					<h1 class="title-article">视音频数据处理入门：PCM音频采样数据处理</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2016年01月29日 23:32:13</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：71465</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p><span style="white-space:pre;"></span></p><p>=====================================================</p><p>视音频数据处理入门系列文章：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50534150">视音频数据处理入门：RGB、YUV像素数据处理</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50534316">视音频数据处理入门：PCM音频采样数据处理</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50534369">视音频数据处理入门：H.264视频码流解析</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50535042">视音频数据处理入门：AAC音频码流解析</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50535082">视音频数据处理入门：FLV封装格式解析</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50535230">视音频数据处理入门：UDP-RTP协议解析</a></p><p>=====================================================</p><br /><p><span style="white-space:pre;">	</span>上一篇文章记录了RGB/YUV视频像素数据的处理方法，本文继续上一篇文章的内容，记录PCM音频采样数据的处理方法。音频采样数据在视频播放器的解码流程中的位置如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160117235313221" alt="" /><br /></p>本文分别介绍如下几个PCM音频采样数据处理函数：<br /> <span style="white-space:pre;">	</span>分离PCM16LE双声道音频采样数据的左声道和右声道<br /> <span style="white-space:pre;">	</span>将PCM16LE双声道音频采样数据中左声道的音量降一半<br /> <span style="white-space:pre;">	</span>将PCM16LE双声道音频采样数据的声音速度提高一倍<br /> <span style="white-space:pre;">	</span>将PCM16LE双声道音频采样数据转换为PCM8音频采样数据<br /> <span style="white-space:pre;">	</span>从PCM16LE单声道音频采样数据中截取一部分数据<br /> <span style="white-space:pre;">	</span>将PCM16LE双声道音频采样数据转换为WAVE格式音频数据<br /><p><span style="font-family:'FangSong_GB2312';">注：PCM音频数据可以使用音频编辑软件导入查看。例如收费的专业音频编辑软件<a href="http://www.adobe.com/products/audition.html">Adobe Audition</a>，或者免费开源的音频编辑软件<a href="http://audacityteam.org/">Audacity</a>。</span></p><p><br /></p><h2>函数列表</h2><br /><h3>（1）分离PCM16LE双声道音频采样数据的左声道和右声道</h3>本程序中的函数可以将PCM16LE双声道数据中左声道和右声道的数据分离成两个文件。函数的代码如下所示。<br /><pre class="cpp">/**
+ * Split Left and Right channel of 16LE PCM file.
+ * @param url  Location of PCM file.
+ *
+ */
+int simplest_pcm16le_split(char *url){
+	FILE *fp=fopen(url,"rb+");
+	FILE *fp1=fopen("output_l.pcm","wb+");
+	FILE *fp2=fopen("output_r.pcm","wb+");
+
+	unsigned char *sample=(unsigned char *)malloc(4);
+
+	while(!feof(fp)){
+		fread(sample,1,4,fp);
+		//L
+		fwrite(sample,1,2,fp1);
+		//R
+		fwrite(sample+2,1,2,fp2);
+	}
+
+	free(sample);
+	fclose(fp);
+	fclose(fp1);
+	fclose(fp2);
+	return 0;
+}
+</pre><br />调用上面函数的方法如下所示。<br /><pre class="cpp">simplest_pcm16le_split("NocturneNo2inEflat_44.1k_s16le.pcm");</pre><br /><p>从代码可以看出，PCM16LE双声道数据中左声道和右声道的采样值是间隔存储的。每个采样值占用2Byte空间。代码运行后，会把NocturneNo2inEflat_44.1k_s16le.pcm的PCM16LE格式的数据分离为两个单声道数据：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">output_l.pcm：左声道数据。<p>output_r.pcm：右声道数据。</p></blockquote><span style="font-family:'FangSong_GB2312';">注：本文中声音样值的采样频率一律是44100Hz，采样格式一律为16LE。“16”代表采样位数是16bit。由于1Byte=8bit，所以一个声道的一个采样值占用2Byte。“LE”代表Little Endian，代表2 Byte采样值的存储方式为高位存在高地址中。</span><br /><br /><p>下图为输入的双声道PCM数据的波形图。上面的波形图是左声道的图形，下面的波形图是右声道的波形。图中的横坐标是时间，总长度为22秒；纵坐标是取样值，取值范围从-32768到32767。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160117235701134" alt="" /><br /></p><p>下图为分离后左声道数据output_l.pcm的音频波形图。</p><p style="text-align:center;"> <img src="https://img-blog.csdn.net/20160117235715074" alt="" /></p><p>下图为分离后右声道数据output_r.pcm的音频波形图。</p><p style="text-align:center;"> <img src="https://img-blog.csdn.net/20160117235727770" alt="" /></p><h3>（2）将PCM16LE双声道音频采样数据中左声道的音量降一半</h3>本程序中的函数可以将PCM16LE双声道数据中左声道的音量降低一半。函数的代码如下所示。<br /><pre class="cpp">/**
+ * Halve volume of Left channel of 16LE PCM file
+ * @param url  Location of PCM file.
+ */
+int simplest_pcm16le_halfvolumeleft(char *url){
+	FILE *fp=fopen(url,"rb+");
+	FILE *fp1=fopen("output_halfleft.pcm","wb+");
+
+	int cnt=0;
+
+	unsigned char *sample=(unsigned char *)malloc(4);
+
+	while(!feof(fp)){
+		short *samplenum=NULL;
+		fread(sample,1,4,fp);
+
+		samplenum=(short *)sample;
+		*samplenum=*samplenum/2;
+		//L
+		fwrite(sample,1,2,fp1);
+		//R
+		fwrite(sample+2,1,2,fp1);
+
+		cnt++;
+	}
+	printf("Sample Cnt:%d\n",cnt);
+
+	free(sample);
+	fclose(fp);
+	fclose(fp1);
+	return 0;
+}
+</pre><br />调用上面函数的方法如下所示。<br /><pre class="cpp">simplest_pcm16le_halfvolumeleft("NocturneNo2inEflat_44.1k_s16le.pcm");</pre><br /><p>从源代码可以看出，本程序在读出左声道的2 Byte的取样值之后，将其当成了C语言中的一个short类型的变量。将该数值除以2之后写回到了PCM文件中。下图为输入PCM双声道音频采样数据的波形图。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000021219" alt="" /><br /></p><p>下图为输出的左声道经过处理后的波形图。可以看出左声道的波形幅度降低了一半。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000051676" alt="" /><br /></p><br /><h3>（3）将PCM16LE双声道音频采样数据的声音速度提高一倍</h3>本程序中的函数可以通过抽象的方式将PCM16LE双声道数据的速度提高一倍。函数的代码如下所示。<br /><pre class="cpp">/**
+ * Re-sample to double the speed of 16LE PCM file
+ * @param url  Location of PCM file.
+ */
+int simplest_pcm16le_doublespeed(char *url){
+	FILE *fp=fopen(url,"rb+");
+	FILE *fp1=fopen("output_doublespeed.pcm","wb+");
+
+	int cnt=0;
+
+	unsigned char *sample=(unsigned char *)malloc(4);
+
+	while(!feof(fp)){
+
+		fread(sample,1,4,fp);
+
+		if(cnt%2!=0){
+			//L
+			fwrite(sample,1,2,fp1);
+			//R
+			fwrite(sample+2,1,2,fp1);
+		}
+		cnt++;
+	}
+	printf("Sample Cnt:%d\n",cnt);
+
+	free(sample);
+	fclose(fp);
+	fclose(fp1);
+	return 0;
+}
+</pre><br />调用上面函数的方法如下所示。<br /><pre class="cpp">simplest_pcm16le_doublespeed("NocturneNo2inEflat_44.1k_s16le.pcm");</pre><br /><p>从源代码可以看出，本程序只采样了每个声道奇数点的样值。处理完成后，原本22秒左右的音频变成了11秒左右。音频的播放速度提高了2倍，音频的音调也变高了很多。下图为输入PCM双声道音频采样数据的波形图。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000214030" alt="" /><br /></p><p>下图为输出的PCM双声道音频采样数据的波形图。通过时间轴可以看出音频变短了很多。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000237272" alt="" /><br /></p><br /><h3>（4）将PCM16LE双声道音频采样数据转换为PCM8音频采样数据</h3><p>本程序中的函数可以通过计算的方式将PCM16LE双声道数据16bit的采样位数转换为8bit。函数的代码如下所示。</p><p></p><pre class="cpp">/**
+ * Convert PCM-16 data to PCM-8 data.
+ * @param url  Location of PCM file.
+ */
+int simplest_pcm16le_to_pcm8(char *url){
+	FILE *fp=fopen(url,"rb+");
+	FILE *fp1=fopen("output_8.pcm","wb+");
+
+	int cnt=0;
+
+	unsigned char *sample=(unsigned char *)malloc(4);
+
+	while(!feof(fp)){
+
+		short *samplenum16=NULL;
+		char samplenum8=0;
+		unsigned char samplenum8_u=0;
+		fread(sample,1,4,fp);
+		//(-32768-32767)
+		samplenum16=(short *)sample;
+		samplenum8=(*samplenum16)&gt;&gt;8;
+		//(0-255)
+		samplenum8_u=samplenum8+128;
+		//L
+		fwrite(&amp;samplenum8_u,1,1,fp1);
+
+		samplenum16=(short *)(sample+2);
+		samplenum8=(*samplenum16)&gt;&gt;8;
+		samplenum8_u=samplenum8+128;
+		//R
+		fwrite(&amp;samplenum8_u,1,1,fp1);
+		cnt++;
+	}
+	printf("Sample Cnt:%d\n",cnt);
+
+	free(sample);
+	fclose(fp);
+	fclose(fp1);
+	return 0;
+}
+</pre><br /><p></p>调用上面函数的方法如下所示。<br /><pre class="cpp">simplest_pcm16le_to_pcm8("NocturneNo2inEflat_44.1k_s16le.pcm");</pre><br /><p>PCM16LE格式的采样数据的取值范围是-32768到32767，而PCM8格式的采样数据的取值范围是0到255。所以PCM16LE转换到PCM8需要经过两个步骤：第一步是将-32768到32767的16bit有符号数值转换为-128到127的8bit有符号数值，第二步是将-128到127的8bit有符号数值转换为0到255的8bit无符号数值。在本程序中，16bit采样数据是通过short类型变量存储的，而8bit采样数据是通过unsigned char类型存储的。下图为输入的16bit的PCM双声道音频采样数据的波形图。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000354979" alt="" /><br /></p>下图为输出的8bit的PCM双声道音频采样数据的波形图。注意观察图中纵坐标的取值范围已经变为0至255。如果仔细聆听声音的话，会发现8bit PCM的音质明显不如16 bit PCM的音质。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20160118000339516" alt="" /></div><br /><h3>（5）将从PCM16LE单声道音频采样数据中截取一部分数据</h3>本程序中的函数可以从PCM16LE单声道数据中截取一段数据，并输出截取数据的样值。函数的代码如下所示。<br /><pre class="cpp">/**
+ * Cut a 16LE PCM single channel file.
+ * @param url        Location of PCM file.
+ * @param start_num  start point
+ * @param dur_num    how much point to cut
+ */
+int simplest_pcm16le_cut_singlechannel(char *url,int start_num,int dur_num){
+	FILE *fp=fopen(url,"rb+");
+	FILE *fp1=fopen("output_cut.pcm","wb+");
+	FILE *fp_stat=fopen("output_cut.txt","wb+");
+
+	unsigned char *sample=(unsigned char *)malloc(2);
+
+	int cnt=0;
+	while(!feof(fp)){
+		fread(sample,1,2,fp);
+		if(cnt&gt;start_num&amp;&amp;cnt&lt;=(start_num+dur_num)){
+			fwrite(sample,1,2,fp1);
+
+			short samplenum=sample[1];
+			samplenum=samplenum*256;
+			samplenum=samplenum+sample[0];
+
+			fprintf(fp_stat,"%6d,",samplenum);
+			if(cnt%10==0)
+				fprintf(fp_stat,"\n",samplenum);
+		}
+		cnt++;
+	}
+
+	free(sample);
+	fclose(fp);
+	fclose(fp1);
+	fclose(fp_stat);
+	return 0;
+}
+</pre><br />调用上面函数的方法如下所示。<br /><pre class="cpp">simplest_pcm16le_cut_singlechannel("drum.pcm",2360,120);</pre><br /><p>本程序可以从PCM数据中选取一段采样值保存下来，并且输出这些采样值的数值。上述代码运行后，会把单声道PCM16LE格式的“drum.pcm”中从2360点开始的120点的数据保存成output_cut.pcm文件。下图为“drum.pcm”的波形图，该音频采样频率为44100KHz，长度为0.5秒，一共包含约22050个采样点。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000517972" alt="" /><br /></p><p>下图为截取出来的output_cut.pcm文件中的数据。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118000532877" alt="" /><br /></p>下面列出了上述数据的采样值。<br /><pre class="plain">  4460,  5192,  5956,  6680,  7199,  6706,  5727,  4481,  3261,  1993,
+  1264,   747,   767,   752,  1248,  1975,  2473,  2955,  2952,  2447,
+   974, -1267, -4000, -6965,-10210,-13414,-16639,-19363,-21329,-22541,
+-23028,-22545,-21055,-19067,-16829,-14859,-12596, -9900, -6684, -3475,
+  -983,  1733,  3978,  5734,  6720,  6978,  6993,  7223,  7225,  7440,
+  7688,  8431,  8944,  9468,  9947, 10688, 11194, 11946, 12449, 12446,
+ 12456, 11974, 11454, 10952, 10167,  9425,  8153,  6941,  5436,  3716,
+  1952,   236, -1254, -2463, -3493, -4223, -4695, -4927, -5190, -4941,
+ -4188, -2956, -1490,   -40,   705,   932,   446,  -776, -2512, -3994,
+ -5723, -7201, -8687,-10157,-11134,-11661,-11642,-11168,-10155, -9142,
+ -7888, -7146, -6186, -5694, -4971, -4715, -4498, -4471, -4468, -4452,
+ -4452, -3940, -2980, -1984,  -752,   257,  1021,  1264,  1032,    31,</pre><br /><h3>（6）将PCM16LE双声道音频采样数据转换为WAVE格式音频数据</h3>WAVE格式音频（扩展名为“.wav”）是Windows系统中最常见的一种音频。该格式的实质就是在PCM文件的前面加了一个文件头。本程序的函数就可以通过在PCM文件前面加一个WAVE文件头从而封装为WAVE格式音频。函数的代码如下所示。<br /><pre class="cpp">/**
+ * Convert PCM16LE raw data to WAVE format
+ * @param pcmpath      Input PCM file.
+ * @param channels     Channel number of PCM file.
+ * @param sample_rate  Sample rate of PCM file.
+ * @param wavepath     Output WAVE file.
+ */
+int simplest_pcm16le_to_wave(const char *pcmpath,int channels,int sample_rate,const char *wavepath)
+{
+
+	typedef struct WAVE_HEADER{  
+		char         fccID[4];        
+		unsigned   long    dwSize;            
+		char         fccType[4];    
+	}WAVE_HEADER;  
+
+	typedef struct WAVE_FMT{  
+		char         fccID[4];        
+		unsigned   long       dwSize;            
+		unsigned   short     wFormatTag;    
+		unsigned   short     wChannels;  
+		unsigned   long       dwSamplesPerSec;  
+		unsigned   long       dwAvgBytesPerSec;  
+		unsigned   short     wBlockAlign;  
+		unsigned   short     uiBitsPerSample;  
+	}WAVE_FMT;  
+
+	typedef struct WAVE_DATA{  
+		char       fccID[4];          
+		unsigned long dwSize;              
+	}WAVE_DATA;  
+
+
+	if(channels==0||sample_rate==0){
+    channels = 2;
+    sample_rate = 44100;
+	}
+	int bits = 16;
+
+    WAVE_HEADER   pcmHEADER;  
+    WAVE_FMT   pcmFMT;  
+    WAVE_DATA   pcmDATA;  
+ 
+    unsigned   short   m_pcmData;
+    FILE   *fp,*fpout;  
+
+	fp=fopen(pcmpath, "rb");
+    if(fp == NULL) {  
+        printf("open pcm file error\n");
+        return -1;  
+    }
+	fpout=fopen(wavepath,   "wb+");
+    if(fpout == NULL) {    
+        printf("create wav file error\n");  
+        return -1; 
+    }        
+	//WAVE_HEADER
+    memcpy(pcmHEADER.fccID,"RIFF",strlen("RIFF"));                    
+    memcpy(pcmHEADER.fccType,"WAVE",strlen("WAVE"));  
+    fseek(fpout,sizeof(WAVE_HEADER),1); 
+	//WAVE_FMT
+    pcmFMT.dwSamplesPerSec=sample_rate;  
+    pcmFMT.dwAvgBytesPerSec=pcmFMT.dwSamplesPerSec*sizeof(m_pcmData);  
+    pcmFMT.uiBitsPerSample=bits;
+    memcpy(pcmFMT.fccID,"fmt ",strlen("fmt "));  
+    pcmFMT.dwSize=16;  
+    pcmFMT.wBlockAlign=2;  
+    pcmFMT.wChannels=channels;  
+    pcmFMT.wFormatTag=1;  
+ 
+    fwrite(&amp;pcmFMT,sizeof(WAVE_FMT),1,fpout); 
+
+    //WAVE_DATA;
+    memcpy(pcmDATA.fccID,"data",strlen("data"));  
+    pcmDATA.dwSize=0;
+    fseek(fpout,sizeof(WAVE_DATA),SEEK_CUR);
+
+    fread(&amp;m_pcmData,sizeof(unsigned short),1,fp);
+    while(!feof(fp)){  
+        pcmDATA.dwSize+=2;
+        fwrite(&amp;m_pcmData,sizeof(unsigned short),1,fpout);
+        fread(&amp;m_pcmData,sizeof(unsigned short),1,fp);
+    }  
+
+    pcmHEADER.dwSize=44+pcmDATA.dwSize;
+
+    rewind(fpout);
+    fwrite(&amp;pcmHEADER,sizeof(WAVE_HEADER),1,fpout);
+    fseek(fpout,sizeof(WAVE_FMT),SEEK_CUR);
+    fwrite(&amp;pcmDATA,sizeof(WAVE_DATA),1,fpout);
+	
+	fclose(fp);
+    fclose(fpout);
+
+    return 0;
+}
+</pre><br />调用上面函数的方法如下所示。<br /><pre class="cpp">simplest_pcm16le_to_wave("NocturneNo2inEflat_44.1k_s16le.pcm",2,44100,"output_nocturne.wav");</pre><br />WAVE文件是一种RIFF格式的文件。其基本块名称是“WAVE”，其中包含了两个子块“fmt”和“data”。从编程的角度简单说来就是由WAVE_HEADER、WAVE_FMT、WAVE_DATA、采样数据共4个部分组成。它的结构如下所示。<br /><div style="text-align:center;"><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="200"><tbody><tr><td valign="top"><p align="center">WAVE_HEADER</p></td> </tr><tr><td valign="top"><p align="center">WAVE_FMT</p></td> </tr><tr><td valign="top"><p align="center">WAVE_DATA</p></td> </tr><tr><td valign="top"><p align="center">PCM数据</p></td> </tr></tbody></table></div></div><br />其中前3部分的结构如下所示。在写入WAVE文件头的时候给其中的每个字段赋上合适的值就可以了。但是有一点需要注意：WAVE_HEADER和WAVE_DATA中包含了一个文件长度信息的dwSize字段，该字段的值必须在写入完音频采样数据之后才能获得。因此这两个结构体最后才写入WAVE文件中。<br /><pre class="cpp">	typedef struct WAVE_HEADER{
+		char fccID[4];
+		unsigned long dwSize;
+		char fccType[4];
+	}WAVE_HEADER;
+
+	typedef struct WAVE_FMT{
+		char  fccID[4];
+		unsigned long dwSize;
+		unsigned short wFormatTag;
+		unsigned short wChannels;
+		unsigned long dwSamplesPerSec;
+		unsigned long dwAvgBytesPerSec;
+		unsigned short wBlockAlign;
+		unsigned short uiBitsPerSample;
+	}WAVE_FMT;
+
+	typedef struct WAVE_DATA{
+		char       fccID[4];
+		unsigned long dwSize;
+	}WAVE_DATA;
+</pre><br />本程序的函数执行完成后，就可将NocturneNo2inEflat_44.1k_s16le.pcm文件封装成output_nocturne.wav文件。<br /><br /><br /><h2>下载</h2><br /><strong>Simplest mediadata test</strong><br /><br /><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplest-mediadata-test/">https://sourceforge.net/projects/simplest-mediadata-test/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_mediadata_test">https://github.com/leixiaohua1020/simplest_mediadata_test</a></p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_mediadata_test">http://git.oschina.net/leixiaohua1020/simplest_mediadata_test</a><br /><p><br /></p>CSDN下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/9422409">http://download.csdn.net/detail/leixiaohua1020/9422409</a><br /><p><br /></p>本项目包含如下几种视音频数据解析示例：<br /> (1)像素数据处理程序。包含RGB和YUV像素格式处理的函数。<br /> (2)音频采样数据处理程序。包含PCM音频采样格式处理的函数。<br /> (3)H.264码流分析程序。可以分离并解析NALU。<br /> (4)AAC码流分析程序。可以分离并解析ADTS帧。<br /> (5)FLV封装格式分析程序。可以将FLV中的MP3音频码流分离出来。<br /><p> (6)UDP-RTP协议分析程序。可以将分析UDP/RTP/MPEG-TS数据包。</p><p><br /></p><p><strong><span style="color:#990000;">雷霄骅 (Lei Xiaohua)<br />leixiaohua1020@126.com<br />http://blog.csdn.net/leixiaohua1020</span></strong><br /></p><p><br /></p><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=PCM&t=blog" target="_blank">PCM						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=音频&t=blog" target="_blank">音频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=声道&t=blog" target="_blank">声道						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=WAV&t=blog" target="_blank">WAV						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div data-track-view='{"mod":"popu_625","con": ",https://blog.csdn.net/leixiaohua1020/article/details/50534316,from_360"}' style="margin-top: 8px;padding: 20px;background-color: #fff;overflow: hidden;" id="adt0"></div>
+                            <script>
+                                var adWidth = $("div.blog-content-box").outerWidth() - 40;
+                                NEWS_FEED({
+                                    w: adWidth,
+                                    h : 130,
+                                    showid : "s02a31",
+                                    placeholderId: "adt0",
+                                    inject : "define",
+                                    define : {
+                                    imagePosition : "right",
+                                    imageBorderRadius : 0,
+                                    imageWidth: 231,
+                                    imageHeight: 130,
+                                    imageFill : "clip",
+                                    displayImage : true,
+                                    displayTitle : true,
+                                    titleFontSize: 20,
+                                    titleFontColor: "#333",
+                                    titleFontFamily : "Microsoft Yahei",
+                                    titleFontWeight: "bold",
+                                    titlePaddingTop : 0,
+                                    titlePaddingRight : 0,
+                                    titlePaddingBottom : 10,
+                                    titlePaddingLeft : 0,
+                                    displayDesc : true,
+                                    descFontSize: 14,
+                                    descFontColor: "#6b6b6b",
+                                    descFontFamily : "Microsoft Yahei",
+                                    paddingTop : 0,
+                                    paddingRight : 0,
+                                    paddingBottom : 0,
+                                    paddingLeft : 0,
+                                    backgroundColor: "#fff",
+                                    hoverColor: "#ca0c16"
+                                    }
+                                })
+                            </script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/50534316#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/encoder1234/article/details/54313308" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>PCM</em>数据格式			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/encoder1234/article/details/54313308" target="_blank" >
+				1. 8 Bit 单声道： 
+
+1. 8 Bit 单声道：
+
+
+
+采样1
+采样2
+
+
+数据1
+数据2
+
+
+
+2. 8 Bit 双声道
+
+
+
+采样1
+
+采样2...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/encoder1234" title="encoder1234" target="_blank">
+					<img src="https://avatar.csdn.net/F/4/9/3_encoder1234.jpg" alt="encoder1234" class="avatar-pic">
+					<span class="name">encoder1234</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-01-10 14:02:59</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2638</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/baidu_32469997/article/details/70017321" target="_blank" strategy="BlogCommendFromBaidu_2">
+				yuv、<em>pcm</em>数据的介绍和获取			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/baidu_32469997/article/details/70017321" target="_blank" >
+				最简单的iOS 推流代码，视频捕获，软编码(faac，x264)，硬编码（aac，h264），美颜，flv编码，rtmp协议，陆续更新代码解析，你想学的知识这里都有，愿意懂直播技术的同学快来看！！源代...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/baidu_32469997" title="baidu_32469997" target="_blank">
+					<img src="https://avatar.csdn.net/0/1/A/3_baidu_32469997.jpg" alt="baidu_32469997" class="avatar-pic">
+					<span class="name">baidu_32469997</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-04-10 19:52:13</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1298</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qqqren/article/details/53322753" target="_blank" strategy="BlogCommendFromBaidu_4">
+				声卡 <em>PCM</em>数据格式			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qqqren/article/details/53322753" target="_blank" >
+				The waveOutSetVolume function sets the volume
+ level of the specified waveform-audio output device....			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qqqren" title="qqqren" target="_blank">
+					<img src="https://avatar.csdn.net/C/6/C/3_qqqren.jpg" alt="qqqren" class="avatar-pic">
+					<span class="name">qqqren</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-11-24 17:23:44</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：448</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/rinuslucky/article/details/1326512" target="_blank" strategy="BlogCommendFromBaidu_5">
+				什么是<em>PCM</em>？它和.wav文件是什么关系？			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/rinuslucky/article/details/1326512" target="_blank" >
+				<em>PCM</em>（Pulse Code Modulation----脉码调制录音)。所谓<em>PCM</em>录音就是将声音等模拟信号变成符号化的脉冲列，再予以记录。<em>PCM</em>信号是由[1]、[0]等符号构成的数字信号，而未经过任...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/rinuslucky" title="rinuslucky" target="_blank">
+					<img src="https://avatar.csdn.net/1/1/1/3_rinuslucky.jpg" alt="rinuslucky" class="avatar-pic">
+					<span class="name">rinuslucky</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2006-10-08 22:15:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：35844</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/yue7603835/article/details/42029647" target="_blank" strategy="BlogCommendFromBaidu_6">
+				音频格式<em>PCM</em>数据简介			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/yue7603835/article/details/42029647" target="_blank" >
+				1. 音频简介
+
+
+ 
+
+     经常见到这样的描述: 44100HZ 16bit stereo 或者 22050HZ 8bit mono 等等.
+
+     44100HZ 16bi...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/yue7603835" title="yue7603835" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/8/3_yue7603835.jpg" alt="yue7603835" class="avatar-pic">
+					<span class="name">yue7603835</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-12-19 16:59:49</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4709</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/lwsas1/article/details/54091214" target="_blank" strategy="BlogCommendFromBaidu_7">
+				关于<em>PCM</em>音频数据的相关转换算法			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/lwsas1/article/details/54091214" target="_blank" >
+				原文地址：https://www.codeproject.com/articles/501521/how-to-convert-between-most-audio-formats-in-net
+没...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/lwsas1" title="lwsas1" target="_blank">
+					<img src="https://avatar.csdn.net/E/A/3/3_lwsas1.jpg" alt="lwsas1" class="avatar-pic">
+					<span class="name">lwsas1</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-01-05 11:28:06</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3872</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/disadministrator/article/details/43734335" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>PCM</em>、FLTP、S16资料了解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/disadministrator/article/details/43734335" target="_blank" >
+				ffmpeg <em>PCM</em>_S16LE和<em>PCM</em>_S16BE怎么转换：
+
+只要交换每个sample的高8bit和低8bit就可以了
+
+
+AV_SAMPLE_FMT_FLTP转为AV_SAMPLE_F...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/disadministrator" title="disadministrator" target="_blank">
+					<img src="https://avatar.csdn.net/2/2/0/3_disadministrator.jpg" alt="disadministrator" class="avatar-pic">
+					<span class="name">disadministrator</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-02-11 15:10:54</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3494</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/Chris_Magic/article/details/16825801" target="_blank" strategy="BlogCommendFromBaidu_9">
+				如何自己生成<em>PCM</em> 文件			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/Chris_Magic/article/details/16825801" target="_blank" >
+				好久没有更新这个blog了，这几天在做混音的东东，本来打算从网上找<em>pcm</em>文件，苦于一直没有找到合适的，干脆直接使用ffmpeg 生成。
+使用命令
+
+
+./ffmpeg -re -i zhizu...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/Chris_Magic" title="Chris_Magic" target="_blank">
+					<img src="https://avatar.csdn.net/D/E/1/3_chris_magic.jpg" alt="Chris_Magic" class="avatar-pic">
+					<span class="name">Chris_Magic</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-11-19 15:46:34</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2996</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/garefield/article/details/45113363" target="_blank" strategy="BlogCommendFromBaidu_10">
+				ffmpeg添加MP4的<em>pcm</em>音频支持			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/garefield/article/details/45113363" target="_blank" >
+				ffmpeg中对MP4的打包处理是在movenc.c中，在实际打包过程中发现除了mov类型外，其它类型如vob等均无法生成音频的声道信息，经过分析发现在mov_write_audio_tag函数的最后...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/garefield" title="garefield" target="_blank">
+					<img src="https://avatar.csdn.net/6/8/D/3_garefield.jpg" alt="garefield" class="avatar-pic">
+					<span class="name">garefield</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-04-18 14:54:01</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5652</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/firstime_tzjz/article/details/7427440" target="_blank" strategy="BlogCommendFromBaidu_11">
+				FFMPEG用法用例			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/firstime_tzjz/article/details/7427440" target="_blank" >
+				将 aif 文件转换为 16 位有符号数，小端存储模式，8000 Hz 采样率：
+ffmpeg -i test.aif -f s16le -ar 8000 test.<em>pcm</em>
+
+
+将 44.1KHz 双...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/firstime_tzjz" title="firstime_tzjz" target="_blank">
+					<img src="https://avatar.csdn.net/3/0/B/3_firstime_tzjz.jpg" alt="firstime_tzjz" class="avatar-pic">
+					<span class="name">firstime_tzjz</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2012-04-05 10:24:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：9021</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/50534316" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421125">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>26</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "视音频数据处理入门：PCM音频采样数据处理";
+    var ChannelId = 16;
+    var articleId = "50534316";
+    var commentscount = 37;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/50534316";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 0;
+    //百度搜索
+    var baiduKey = "pcm+s16le";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"视音频数据处理入门：PCM音频采样数据处理");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=pcm+s16le"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

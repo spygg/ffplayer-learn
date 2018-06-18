@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12954145"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="之前分析了RTMPDump解析RTMP的URL的源代码，在这里简单分析一下其AMF编码方面的源码。
+AMF编码广泛用于Adobe公司的Flash以及Flex系统中。由于RTMP协议也是Adobe公司的，所以它也使用AMF进行通信。具体AMF是怎么使用的在这里就不做详细讨论了。RTMPDump如果想实现RTMP协议的流媒体的下载保存，就必须可以编码和解码AMF格式的数据。
+amf.c是RTMPD" />
+    <meta name="keywords" content="RTMPdump,rtmp" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>RTMPdump（libRTMP） 源代码分析 3： AMF编码 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12954145"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">RTMPdump（libRTMP） 源代码分析 3： AMF编码</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月22日 21:18:47</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：12194</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================</p><p>RTMPdump(libRTMP) 源代码分析系列文章：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12952977"><span style="color:rgb(51,102,255);">RTMPdump 源代码分析 1： main()函数</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12953833"><span style="color:#3366ff;">RTMPDump (libRTMP) 源代码分析2：解析RTMP地址——RTMP_ParseURL()</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12954145"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析3： AMF编码</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12954329"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析4： 连接第一步——握手 (HandShake)</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12957291"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析5： 建立一个流媒体连接  (NetConnection部分)</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12957877"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析6： 建立一个流媒体连接  (NetStream部分 1)</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12958617"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析7： 建立一个流媒体连接  (NetStream部分 2)</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12958747"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析8： 发送消息 (Message)</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12971635"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析9： 接收消息 (Message)  (接收视音频数据)</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12972399"><span style="color:#3366ff;">RTMPdump (libRTMP) 源代码分析10： 处理各种消息 (Message)</span></a></p><p>=====================================================</p><p><br /></p><h2>函数调用结构图</h2><p>RTMPDump (libRTMP)的整体的函数调用结构图如下图所示。</p><p style="text-align:center;"><a href="http://img.my.csdn.net/uploads/201602/10/1455087168_7199.png"><img src="https://img-blog.csdn.net/20160219185241684" alt="" /><br /></a></p><p style="text-align:center;"><a href="http://img.my.csdn.net/uploads/201602/10/1455087168_7199.png">单击查看大图</a></p><p></p><p></p><p></p><p></p><h2>详细分析</h2><p>之前分析了RTMPDump（libRTMP）解析RTMP的URL的源代码，在这里简单分析一下其AMF编码方面的源码。</p><p>AMF编码广泛用于Adobe公司的Flash以及Flex系统中。由于RTMP协议也是Adobe公司的，所以它也使用AMF进行通信。具体AMF是怎么使用的在这里就不做详细讨论了。RTMPDump如果想实现RTMP协议的流媒体的下载保存，就必须可以编码和解码AMF格式的数据。</p><p>amf.c是RTMPDump解析RTMP协议的函数存放的地方，在这里贴上其源代码。先不做详细解释了，以后有机会再补充。</p><p></p><pre class="cpp">#include "stdafx.h"
+/*	本文件主要包含了对AMF对象的操作
+ *-------------------------------------
+ *AMF数据类型：
+ *Type		Byte code
+ *Number	0x00
+ *Boolean	0x01
+ *String	0x02
+ *Object	0x03
+ *MovieClip	0x04
+ *Null		0x05
+ *Undefined	0x06
+ *Reference	0x07
+ *MixedArray	0x08
+ *EndOfObject	0x09
+ *Array			0x0a
+ *Date			0x0b
+ *LongString	0x0c
+ *Unsupported	0x0d
+ *Recordset		0x0e
+ *XML			0x0f
+ *TypedObject (Class instance)	0x10
+ *AMF3 data	0×11
+ *--------------------------------------
+ *应用举例：
+ *0.Number这里指的是double类型，数据用8字节表示，比如十六进制00 40 10 00 00 00 00 00 00就表示的是一个double数4.0
+ *1.Boolean对应的是.net中的bool类型，数据使用1字节表示，和C语言差不多，使用00表示false，使用01表示true。比如十六进制01 01就表示true。
+ *2.String相当于.net中的string类型，String所占用的空间有1个类型标识字节和2个表示字符串UTF8长度的字节加上字符串UTF8格式的内容组成。
+ *  比如十六进制03 00 08 73 68 61 6E 67 67 75 61表示的就是字符串，该字符串长8字节，字符串内容为73 68 61 6E 67 67 75 61，对应的就是“shanggua”。
+ *3.Object在对应的就是Hashtable，内容由UTF8字符串作为Key，其他AMF类型作为Value，该对象由3个字节：00 00 09来表示结束。
+ *5.Null就是空对象，该对象只占用一个字节，那就是Null对象标识0x05。
+ *6.Undefined 也是只占用一个字节0x06。
+ *8.MixedArray相当于Hashtable，与3不同的是该对象定义了Hashtable的大小。
+ */
+
+
+
+#include &lt;string.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include "rtmp_sys.h"
+#include "amf.h"
+#include "log.h"
+#include "bytes.h"
+
+static const AMFObjectProperty AMFProp_Invalid = { {0, 0}, AMF_INVALID };
+static const AVal AV_empty = { 0, 0 };
+
+//大端Big-Endian
+//低地址存放最高有效位（MSB），既高位字节排放在内存的低地址端，低位字节排放在内存的高地址端。
+//符合人脑逻辑，与计算机逻辑不同
+//网络字节序 Network Order:TCP/IP各层协议将字节序定义为Big-Endian，因此TCP/IP协议中使
+//用的字节序通常称之为网络字节序。
+//主机序 Host Orader:它遵循Little-Endian规则。所以当两台主机之间要通过TCP/IP协议进行通
+//信的时候就需要调用相应的函数进行主机序（Little-Endian）和网络序（Big-Endian）的转换。
+
+
+/*AMF数据采用 Big-Endian（大端模式），主机采用Little-Endian（小端模式） */
+
+unsigned short
+AMF_DecodeInt16(const char *data)
+{
+  unsigned char *c = (unsigned char *) data;
+  unsigned short val;
+  val = (c[0] &lt;&lt; 8) | c[1];//转换
+  return val;
+}
+
+unsigned int
+AMF_DecodeInt24(const char *data)
+{
+  unsigned char *c = (unsigned char *) data;
+  unsigned int val;
+  val = (c[0] &lt;&lt; 16) | (c[1] &lt;&lt; 8) | c[2];
+  return val;
+}
+
+unsigned int
+AMF_DecodeInt32(const char *data)
+{
+  unsigned char *c = (unsigned char *)data;
+  unsigned int val;
+  val = (c[0] &lt;&lt; 24) | (c[1] &lt;&lt; 16) | (c[2] &lt;&lt; 8) | c[3];
+  return val;
+}
+
+void
+AMF_DecodeString(const char *data, AVal *bv)
+{
+  bv-&gt;av_len = AMF_DecodeInt16(data);
+  bv-&gt;av_val = (bv-&gt;av_len &gt; 0) ? (char *)data + 2 : NULL;
+}
+
+void
+AMF_DecodeLongString(const char *data, AVal *bv)
+{
+  bv-&gt;av_len = AMF_DecodeInt32(data);
+  bv-&gt;av_val = (bv-&gt;av_len &gt; 0) ? (char *)data + 4 : NULL;
+}
+
+double
+AMF_DecodeNumber(const char *data)
+{
+  double dVal;
+#if __FLOAT_WORD_ORDER == __BYTE_ORDER
+#if __BYTE_ORDER == __BIG_ENDIAN
+  memcpy(&amp;dVal, data, 8);
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+  unsigned char *ci, *co;
+  ci = (unsigned char *)data;
+  co = (unsigned char *)&amp;dVal;
+  co[0] = ci[7];
+  co[1] = ci[6];
+  co[2] = ci[5];
+  co[3] = ci[4];
+  co[4] = ci[3];
+  co[5] = ci[2];
+  co[6] = ci[1];
+  co[7] = ci[0];
+#endif
+#else
+#if __BYTE_ORDER == __LITTLE_ENDIAN	/* __FLOAT_WORD_ORER == __BIG_ENDIAN */
+  unsigned char *ci, *co;
+  ci = (unsigned char *)data;
+  co = (unsigned char *)&amp;dVal;
+  co[0] = ci[3];
+  co[1] = ci[2];
+  co[2] = ci[1];
+  co[3] = ci[0];
+  co[4] = ci[7];
+  co[5] = ci[6];
+  co[6] = ci[5];
+  co[7] = ci[4];
+#else /* __BYTE_ORDER == __BIG_ENDIAN &amp;&amp; __FLOAT_WORD_ORER == __LITTLE_ENDIAN */
+  unsigned char *ci, *co;
+  ci = (unsigned char *)data;
+  co = (unsigned char *)&amp;dVal;
+  co[0] = ci[4];
+  co[1] = ci[5];
+  co[2] = ci[6];
+  co[3] = ci[7];
+  co[4] = ci[0];
+  co[5] = ci[1];
+  co[6] = ci[2];
+  co[7] = ci[3];
+#endif
+#endif
+  return dVal;
+}
+
+int
+AMF_DecodeBoolean(const char *data)
+{
+  return *data != 0;
+}
+
+char *
+AMF_EncodeInt16(char *output, char *outend, short nVal)
+{
+  if (output+2 &gt; outend)
+    return NULL;
+
+  output[1] = nVal &amp; 0xff;
+  output[0] = nVal &gt;&gt; 8;
+  return output+2;
+}
+//3字节的int数据进行AMF编码，AMF采用大端模式
+char *
+AMF_EncodeInt24(char *output, char *outend, int nVal)
+{
+  if (output+3 &gt; outend)
+    return NULL;
+  //倒过来
+  output[2] = nVal &amp; 0xff;
+  output[1] = nVal &gt;&gt; 8;
+  output[0] = nVal &gt;&gt; 16;
+  //返回指针指向编码后数据的尾部
+  return output+3;
+}
+
+char *
+AMF_EncodeInt32(char *output, char *outend, int nVal)
+{
+  if (output+4 &gt; outend)
+    return NULL;
+
+  output[3] = nVal &amp; 0xff;
+  output[2] = nVal &gt;&gt; 8;
+  output[1] = nVal &gt;&gt; 16;
+  output[0] = nVal &gt;&gt; 24;
+  return output+4;
+}
+
+char *
+AMF_EncodeString(char *output, char *outend, const AVal *bv)
+{
+  if ((bv-&gt;av_len &lt; 65536 &amp;&amp; output + 1 + 2 + bv-&gt;av_len &gt; outend) ||
+	output + 1 + 4 + bv-&gt;av_len &gt; outend)
+    return NULL;
+
+  if (bv-&gt;av_len &lt; 65536)
+    {
+      *output++ = AMF_STRING;
+
+      output = AMF_EncodeInt16(output, outend, bv-&gt;av_len);
+    }
+  else
+    {
+      *output++ = AMF_LONG_STRING;
+
+      output = AMF_EncodeInt32(output, outend, bv-&gt;av_len);
+    }
+  memcpy(output, bv-&gt;av_val, bv-&gt;av_len);
+  output += bv-&gt;av_len;
+
+  return output;
+}
+
+char *
+AMF_EncodeNumber(char *output, char *outend, double dVal)
+{
+  if (output+1+8 &gt; outend)
+    return NULL;
+
+  *output++ = AMF_NUMBER;	/* type: Number */
+
+#if __FLOAT_WORD_ORDER == __BYTE_ORDER
+#if __BYTE_ORDER == __BIG_ENDIAN
+  memcpy(output, &amp;dVal, 8);
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+  {
+    unsigned char *ci, *co;
+    ci = (unsigned char *)&amp;dVal;
+    co = (unsigned char *)output;
+    co[0] = ci[7];
+    co[1] = ci[6];
+    co[2] = ci[5];
+    co[3] = ci[4];
+    co[4] = ci[3];
+    co[5] = ci[2];
+    co[6] = ci[1];
+    co[7] = ci[0];
+  }
+#endif
+#else
+#if __BYTE_ORDER == __LITTLE_ENDIAN	/* __FLOAT_WORD_ORER == __BIG_ENDIAN */
+  {
+    unsigned char *ci, *co;
+    ci = (unsigned char *)&amp;dVal;
+    co = (unsigned char *)output;
+    co[0] = ci[3];
+    co[1] = ci[2];
+    co[2] = ci[1];
+    co[3] = ci[0];
+    co[4] = ci[7];
+    co[5] = ci[6];
+    co[6] = ci[5];
+    co[7] = ci[4];
+  }
+#else /* __BYTE_ORDER == __BIG_ENDIAN &amp;&amp; __FLOAT_WORD_ORER == __LITTLE_ENDIAN */
+  {
+    unsigned char *ci, *co;
+    ci = (unsigned char *)&amp;dVal;
+    co = (unsigned char *)output;
+    co[0] = ci[4];
+    co[1] = ci[5];
+    co[2] = ci[6];
+    co[3] = ci[7];
+    co[4] = ci[0];
+    co[5] = ci[1];
+    co[6] = ci[2];
+    co[7] = ci[3];
+  }
+#endif
+#endif
+
+  return output+8;
+}
+
+char *
+AMF_EncodeBoolean(char *output, char *outend, int bVal)
+{
+  if (output+2 &gt; outend)
+    return NULL;
+
+  *output++ = AMF_BOOLEAN;
+
+  *output++ = bVal ? 0x01 : 0x00;
+
+  return output;
+}
+
+char *
+AMF_EncodeNamedString(char *output, char *outend, const AVal *strName, const AVal *strValue)
+{
+  if (output+2+strName-&gt;av_len &gt; outend)
+    return NULL;
+  output = AMF_EncodeInt16(output, outend, strName-&gt;av_len);
+
+  memcpy(output, strName-&gt;av_val, strName-&gt;av_len);
+  output += strName-&gt;av_len;
+
+  return AMF_EncodeString(output, outend, strValue);
+}
+
+char *
+AMF_EncodeNamedNumber(char *output, char *outend, const AVal *strName, double dVal)
+{
+  if (output+2+strName-&gt;av_len &gt; outend)
+    return NULL;
+  output = AMF_EncodeInt16(output, outend, strName-&gt;av_len);
+
+  memcpy(output, strName-&gt;av_val, strName-&gt;av_len);
+  output += strName-&gt;av_len;
+
+  return AMF_EncodeNumber(output, outend, dVal);
+}
+
+char *
+AMF_EncodeNamedBoolean(char *output, char *outend, const AVal *strName, int bVal)
+{
+  if (output+2+strName-&gt;av_len &gt; outend)
+    return NULL;
+  output = AMF_EncodeInt16(output, outend, strName-&gt;av_len);
+
+  memcpy(output, strName-&gt;av_val, strName-&gt;av_len);
+  output += strName-&gt;av_len;
+
+  return AMF_EncodeBoolean(output, outend, bVal);
+}
+
+void
+AMFProp_GetName(AMFObjectProperty *prop, AVal *name)
+{
+  *name = prop-&gt;p_name;
+}
+
+void
+AMFProp_SetName(AMFObjectProperty *prop, AVal *name)
+{
+  prop-&gt;p_name = *name;
+}
+
+AMFDataType
+AMFProp_GetType(AMFObjectProperty *prop)
+{
+  return prop-&gt;p_type;
+}
+
+double
+AMFProp_GetNumber(AMFObjectProperty *prop)
+{
+  return prop-&gt;p_vu.p_number;
+}
+
+int
+AMFProp_GetBoolean(AMFObjectProperty *prop)
+{
+  return prop-&gt;p_vu.p_number != 0;
+}
+
+void
+AMFProp_GetString(AMFObjectProperty *prop, AVal *str)
+{
+  *str = prop-&gt;p_vu.p_aval;
+}
+
+void
+AMFProp_GetObject(AMFObjectProperty *prop, AMFObject *obj)
+{
+  *obj = prop-&gt;p_vu.p_object;
+}
+
+int
+AMFProp_IsValid(AMFObjectProperty *prop)
+{
+  return prop-&gt;p_type != AMF_INVALID;
+}
+
+char *
+AMFProp_Encode(AMFObjectProperty *prop, char *pBuffer, char *pBufEnd)
+{
+  if (prop-&gt;p_type == AMF_INVALID)
+    return NULL;
+
+  if (prop-&gt;p_type != AMF_NULL &amp;&amp; pBuffer + prop-&gt;p_name.av_len + 2 + 1 &gt;= pBufEnd)
+    return NULL;
+
+  if (prop-&gt;p_type != AMF_NULL &amp;&amp; prop-&gt;p_name.av_len)
+    {
+      *pBuffer++ = prop-&gt;p_name.av_len &gt;&gt; 8;
+      *pBuffer++ = prop-&gt;p_name.av_len &amp; 0xff;
+      memcpy(pBuffer, prop-&gt;p_name.av_val, prop-&gt;p_name.av_len);
+      pBuffer += prop-&gt;p_name.av_len;
+    }
+
+  switch (prop-&gt;p_type)
+    {
+    case AMF_NUMBER:
+      pBuffer = AMF_EncodeNumber(pBuffer, pBufEnd, prop-&gt;p_vu.p_number);
+      break;
+
+    case AMF_BOOLEAN:
+      pBuffer = AMF_EncodeBoolean(pBuffer, pBufEnd, prop-&gt;p_vu.p_number != 0);
+      break;
+
+    case AMF_STRING:
+      pBuffer = AMF_EncodeString(pBuffer, pBufEnd, &amp;prop-&gt;p_vu.p_aval);
+      break;
+
+    case AMF_NULL:
+      if (pBuffer+1 &gt;= pBufEnd)
+        return NULL;
+      *pBuffer++ = AMF_NULL;
+      break;
+
+    case AMF_OBJECT:
+      pBuffer = AMF_Encode(&amp;prop-&gt;p_vu.p_object, pBuffer, pBufEnd);
+      break;
+
+    default:
+      RTMP_Log(RTMP_LOGERROR, "%s, invalid type. %d", __FUNCTION__, prop-&gt;p_type);
+      pBuffer = NULL;
+    };
+
+  return pBuffer;
+}
+
+#define AMF3_INTEGER_MAX	268435455
+#define AMF3_INTEGER_MIN	-268435456
+
+int
+AMF3ReadInteger(const char *data, int32_t *valp)
+{
+  int i = 0;
+  int32_t val = 0;
+
+  while (i &lt;= 2)
+    {				/* handle first 3 bytes */
+      if (data[i] &amp; 0x80)
+	{			/* byte used */
+	  val &lt;&lt;= 7;		/* shift up */
+	  val |= (data[i] &amp; 0x7f);	/* add bits */
+	  i++;
+	}
+      else
+	{
+	  break;
+	}
+    }
+
+  if (i &gt; 2)
+    {				/* use 4th byte, all 8bits */
+      val &lt;&lt;= 8;
+      val |= data[3];
+
+      /* range check */
+      if (val &gt; AMF3_INTEGER_MAX)
+	val -= (1 &lt;&lt; 29);
+    }
+  else
+    {				/* use 7bits of last unparsed byte (0xxxxxxx) */
+      val &lt;&lt;= 7;
+      val |= data[i];
+    }
+
+  *valp = val;
+
+  return i &gt; 2 ? 4 : i + 1;
+}
+
+int
+AMF3ReadString(const char *data, AVal *str)
+{
+  int32_t ref = 0;
+  int len;
+  assert(str != 0);
+
+  len = AMF3ReadInteger(data, &amp;ref);
+  data += len;
+
+  if ((ref &amp; 0x1) == 0)
+    {				/* reference: 0xxx */
+      uint32_t refIndex = (ref &gt;&gt; 1);
+      RTMP_Log(RTMP_LOGDEBUG,
+	  "%s, string reference, index: %d, not supported, ignoring!",
+	  __FUNCTION__, refIndex);
+      return len;
+    }
+  else
+    {
+      uint32_t nSize = (ref &gt;&gt; 1);
+
+      str-&gt;av_val = (char *)data;
+      str-&gt;av_len = nSize;
+
+      return len + nSize;
+    }
+  return len;
+}
+
+int
+AMF3Prop_Decode(AMFObjectProperty *prop, const char *pBuffer, int nSize,
+		int bDecodeName)
+{
+  int nOriginalSize = nSize;
+  AMF3DataType type;
+
+  prop-&gt;p_name.av_len = 0;
+  prop-&gt;p_name.av_val = NULL;
+
+  if (nSize == 0 || !pBuffer)
+    {
+      RTMP_Log(RTMP_LOGDEBUG, "empty buffer/no buffer pointer!");
+      return -1;
+    }
+
+  /* decode name */
+  if (bDecodeName)
+    {
+      AVal name;
+      int nRes = AMF3ReadString(pBuffer, &amp;name);
+
+      if (name.av_len &lt;= 0)
+	return nRes;
+
+      prop-&gt;p_name = name;
+      pBuffer += nRes;
+      nSize -= nRes;
+    }
+
+  /* decode */
+  type = (AMF3DataType) *pBuffer++;
+  nSize--;
+
+  switch (type)
+    {
+    case AMF3_UNDEFINED:
+    case AMF3_NULL:
+      prop-&gt;p_type = AMF_NULL;
+      break;
+    case AMF3_FALSE:
+      prop-&gt;p_type = AMF_BOOLEAN;
+      prop-&gt;p_vu.p_number = 0.0;
+      break;
+    case AMF3_TRUE:
+      prop-&gt;p_type = AMF_BOOLEAN;
+      prop-&gt;p_vu.p_number = 1.0;
+      break;
+    case AMF3_INTEGER:
+      {
+	int32_t res = 0;
+	int len = AMF3ReadInteger(pBuffer, &amp;res);
+	prop-&gt;p_vu.p_number = (double)res;
+	prop-&gt;p_type = AMF_NUMBER;
+	nSize -= len;
+	break;
+      }
+    case AMF3_DOUBLE:
+      if (nSize &lt; 8)
+	return -1;
+      prop-&gt;p_vu.p_number = AMF_DecodeNumber(pBuffer);
+      prop-&gt;p_type = AMF_NUMBER;
+      nSize -= 8;
+      break;
+    case AMF3_STRING:
+    case AMF3_XML_DOC:
+    case AMF3_XML:
+      {
+	int len = AMF3ReadString(pBuffer, &amp;prop-&gt;p_vu.p_aval);
+	prop-&gt;p_type = AMF_STRING;
+	nSize -= len;
+	break;
+      }
+    case AMF3_DATE:
+      {
+	int32_t res = 0;
+	int len = AMF3ReadInteger(pBuffer, &amp;res);
+
+	nSize -= len;
+	pBuffer += len;
+
+	if ((res &amp; 0x1) == 0)
+	  {			/* reference */
+	    uint32_t nIndex = (res &gt;&gt; 1);
+	    RTMP_Log(RTMP_LOGDEBUG, "AMF3_DATE reference: %d, not supported!", nIndex);
+	  }
+	else
+	  {
+	    if (nSize &lt; 8)
+	      return -1;
+
+	    prop-&gt;p_vu.p_number = AMF_DecodeNumber(pBuffer);
+	    nSize -= 8;
+	    prop-&gt;p_type = AMF_NUMBER;
+	  }
+	break;
+      }
+    case AMF3_OBJECT:
+      {
+	int nRes = AMF3_Decode(&amp;prop-&gt;p_vu.p_object, pBuffer, nSize, TRUE);
+	if (nRes == -1)
+	  return -1;
+	nSize -= nRes;
+	prop-&gt;p_type = AMF_OBJECT;
+	break;
+      }
+    case AMF3_ARRAY:
+    case AMF3_BYTE_ARRAY:
+    default:
+      RTMP_Log(RTMP_LOGDEBUG, "%s - AMF3 unknown/unsupported datatype 0x%02x, @0x%08X",
+	  __FUNCTION__, (unsigned char)(*pBuffer), pBuffer);
+      return -1;
+    }
+
+  return nOriginalSize - nSize;
+}
+//对AMF数据类型解析
+int
+AMFProp_Decode(AMFObjectProperty *prop, const char *pBuffer, int nSize,
+	       int bDecodeName)
+{
+  int nOriginalSize = nSize;
+  int nRes;
+
+  prop-&gt;p_name.av_len = 0;
+  prop-&gt;p_name.av_val = NULL;
+
+  if (nSize == 0 || !pBuffer)
+    {
+      RTMP_Log(RTMP_LOGDEBUG, "%s: Empty buffer/no buffer pointer!", __FUNCTION__);
+      return -1;
+    }
+
+  if (bDecodeName &amp;&amp; nSize &lt; 4)
+    {				/* at least name (length + at least 1 byte) and 1 byte of data */
+      RTMP_Log(RTMP_LOGDEBUG,
+	  "%s: Not enough data for decoding with name, less than 4 bytes!",
+	  __FUNCTION__);
+      return -1;
+    }
+
+  if (bDecodeName)
+    {
+      unsigned short nNameSize = AMF_DecodeInt16(pBuffer);
+      if (nNameSize &gt; nSize - 2)
+	{
+	  RTMP_Log(RTMP_LOGDEBUG,
+	      "%s: Name size out of range: namesize (%d) &gt; len (%d) - 2",
+	      __FUNCTION__, nNameSize, nSize);
+	  return -1;
+	}
+
+      AMF_DecodeString(pBuffer, &amp;prop-&gt;p_name);
+      nSize -= 2 + nNameSize;
+      pBuffer += 2 + nNameSize;
+    }
+
+  if (nSize == 0)
+    {
+      return -1;
+    }
+
+  nSize--;
+
+  prop-&gt;p_type = (AMFDataType) *pBuffer++;
+  switch (prop-&gt;p_type)
+    {
+	//Number数据类型
+    case AMF_NUMBER:
+      if (nSize &lt; 8)
+	return -1;
+      prop-&gt;p_vu.p_number = AMF_DecodeNumber(pBuffer);
+      nSize -= 8;
+      break;
+	 //Boolean数据类型
+    case AMF_BOOLEAN:
+      if (nSize &lt; 1)
+	return -1;
+      prop-&gt;p_vu.p_number = (double)AMF_DecodeBoolean(pBuffer);
+      nSize--;
+      break;
+	  //String数据类型
+    case AMF_STRING:
+      {
+	unsigned short nStringSize = AMF_DecodeInt16(pBuffer);
+
+	if (nSize &lt; (long)nStringSize + 2)
+	  return -1;
+	AMF_DecodeString(pBuffer, &amp;prop-&gt;p_vu.p_aval);
+	nSize -= (2 + nStringSize);
+	break;
+      }
+	  //Object数据类型
+    case AMF_OBJECT:
+      {
+	int nRes = AMF_Decode(&amp;prop-&gt;p_vu.p_object, pBuffer, nSize, TRUE);
+	if (nRes == -1)
+	  return -1;
+	nSize -= nRes;
+	break;
+      }
+    case AMF_MOVIECLIP:
+      {
+	RTMP_Log(RTMP_LOGERROR, "AMF_MOVIECLIP reserved!");
+	return -1;
+	break;
+      }
+    case AMF_NULL:
+    case AMF_UNDEFINED:
+    case AMF_UNSUPPORTED:
+      prop-&gt;p_type = AMF_NULL;
+      break;
+    case AMF_REFERENCE:
+      {
+	RTMP_Log(RTMP_LOGERROR, "AMF_REFERENCE not supported!");
+	return -1;
+	break;
+      }
+    case AMF_ECMA_ARRAY:
+      {
+	nSize -= 4;
+
+	/* next comes the rest, mixed array has a final 0x000009 mark and names, so its an object */
+	nRes = AMF_Decode(&amp;prop-&gt;p_vu.p_object, pBuffer + 4, nSize, TRUE);
+	if (nRes == -1)
+	  return -1;
+	nSize -= nRes;
+	prop-&gt;p_type = AMF_OBJECT;
+	break;
+      }
+    case AMF_OBJECT_END:
+      {
+	return -1;
+	break;
+      }
+    case AMF_STRICT_ARRAY:
+      {
+	unsigned int nArrayLen = AMF_DecodeInt32(pBuffer);
+	nSize -= 4;
+
+	nRes = AMF_DecodeArray(&amp;prop-&gt;p_vu.p_object, pBuffer + 4, nSize,
+				   nArrayLen, FALSE);
+	if (nRes == -1)
+	  return -1;
+	nSize -= nRes;
+	prop-&gt;p_type = AMF_OBJECT;
+	break;
+      }
+    case AMF_DATE:
+      {
+	RTMP_Log(RTMP_LOGDEBUG, "AMF_DATE");
+
+	if (nSize &lt; 10)
+	  return -1;
+
+	prop-&gt;p_vu.p_number = AMF_DecodeNumber(pBuffer);
+	prop-&gt;p_UTCoffset = AMF_DecodeInt16(pBuffer + 8);
+
+	nSize -= 10;
+	break;
+      }
+    case AMF_LONG_STRING:
+      {
+	unsigned int nStringSize = AMF_DecodeInt32(pBuffer);
+	if (nSize &lt; (long)nStringSize + 4)
+	  return -1;
+	AMF_DecodeLongString(pBuffer, &amp;prop-&gt;p_vu.p_aval);
+	nSize -= (4 + nStringSize);
+	prop-&gt;p_type = AMF_STRING;
+	break;
+      }
+    case AMF_RECORDSET:
+      {
+	RTMP_Log(RTMP_LOGERROR, "AMF_RECORDSET reserved!");
+	return -1;
+	break;
+      }
+    case AMF_XML_DOC:
+      {
+	RTMP_Log(RTMP_LOGERROR, "AMF_XML_DOC not supported!");
+	return -1;
+	break;
+      }
+    case AMF_TYPED_OBJECT:
+      {
+	RTMP_Log(RTMP_LOGERROR, "AMF_TYPED_OBJECT not supported!");
+	return -1;
+	break;
+      }
+    case AMF_AVMPLUS:
+      {
+	int nRes = AMF3_Decode(&amp;prop-&gt;p_vu.p_object, pBuffer, nSize, TRUE);
+	if (nRes == -1)
+	  return -1;
+	nSize -= nRes;
+	prop-&gt;p_type = AMF_OBJECT;
+	break;
+      }
+    default:
+      RTMP_Log(RTMP_LOGDEBUG, "%s - unknown datatype 0x%02x, @0x%08X", __FUNCTION__,
+	  prop-&gt;p_type, pBuffer - 1);
+      return -1;
+    }
+
+  return nOriginalSize - nSize;
+}
+
+void
+AMFProp_Dump(AMFObjectProperty *prop)
+{
+  char strRes[256];
+  char str[256];
+  AVal name;
+
+  if (prop-&gt;p_type == AMF_INVALID)
+    {
+      RTMP_Log(RTMP_LOGDEBUG, "Property: INVALID");
+      return;
+    }
+
+  if (prop-&gt;p_type == AMF_NULL)
+    {
+      RTMP_Log(RTMP_LOGDEBUG, "Property: NULL");
+      return;
+    }
+
+  if (prop-&gt;p_name.av_len)
+    {
+      name = prop-&gt;p_name;
+    }
+  else
+    {
+      name.av_val = "no-name.";
+      name.av_len = sizeof("no-name.") - 1;
+    }
+  if (name.av_len &gt; 18)
+    name.av_len = 18;
+
+  snprintf(strRes, 255, "Name: %18.*s, ", name.av_len, name.av_val);
+
+  if (prop-&gt;p_type == AMF_OBJECT)
+    {
+      RTMP_Log(RTMP_LOGDEBUG, "Property: &lt;%sOBJECT&gt;", strRes);
+      AMF_Dump(&amp;prop-&gt;p_vu.p_object);
+      return;
+    }
+
+  switch (prop-&gt;p_type)
+    {
+    case AMF_NUMBER:
+      snprintf(str, 255, "NUMBER:\t%.2f", prop-&gt;p_vu.p_number);
+      break;
+    case AMF_BOOLEAN:
+      snprintf(str, 255, "BOOLEAN:\t%s",
+	       prop-&gt;p_vu.p_number != 0.0 ? "TRUE" : "FALSE");
+      break;
+    case AMF_STRING:
+      snprintf(str, 255, "STRING:\t%.*s", prop-&gt;p_vu.p_aval.av_len,
+	       prop-&gt;p_vu.p_aval.av_val);
+      break;
+    case AMF_DATE:
+      snprintf(str, 255, "DATE:\ttimestamp: %.2f, UTC offset: %d",
+	       prop-&gt;p_vu.p_number, prop-&gt;p_UTCoffset);
+      break;
+    default:
+      snprintf(str, 255, "INVALID TYPE 0x%02x", (unsigned char)prop-&gt;p_type);
+    }
+
+  RTMP_Log(RTMP_LOGDEBUG, "Property: &lt;%s%s&gt;", strRes, str);
+}
+
+void
+AMFProp_Reset(AMFObjectProperty *prop)
+{
+  if (prop-&gt;p_type == AMF_OBJECT)
+    AMF_Reset(&amp;prop-&gt;p_vu.p_object);
+  else
+    {
+      prop-&gt;p_vu.p_aval.av_len = 0;
+      prop-&gt;p_vu.p_aval.av_val = NULL;
+    }
+  prop-&gt;p_type = AMF_INVALID;
+}
+
+/* AMFObject */
+
+char *
+AMF_Encode(AMFObject *obj, char *pBuffer, char *pBufEnd)
+{
+  int i;
+
+  if (pBuffer+4 &gt;= pBufEnd)
+    return NULL;
+
+  *pBuffer++ = AMF_OBJECT;
+
+  for (i = 0; i &lt; obj-&gt;o_num; i++)
+    {
+      char *res = AMFProp_Encode(&amp;obj-&gt;o_props[i], pBuffer, pBufEnd);
+      if (res == NULL)
+	{
+	  RTMP_Log(RTMP_LOGERROR, "AMF_Encode - failed to encode property in index %d",
+	      i);
+	  break;
+	}
+      else
+	{
+	  pBuffer = res;
+	}
+    }
+
+  if (pBuffer + 3 &gt;= pBufEnd)
+    return NULL;			/* no room for the end marker */
+
+  pBuffer = AMF_EncodeInt24(pBuffer, pBufEnd, AMF_OBJECT_END);
+
+  return pBuffer;
+}
+
+int
+AMF_DecodeArray(AMFObject *obj, const char *pBuffer, int nSize,
+		int nArrayLen, int bDecodeName)
+{
+  int nOriginalSize = nSize;
+  int bError = FALSE;
+
+  obj-&gt;o_num = 0;
+  obj-&gt;o_props = NULL;
+  while (nArrayLen &gt; 0)
+    {
+      AMFObjectProperty prop;
+      int nRes;
+      nArrayLen--;
+
+      nRes = AMFProp_Decode(&amp;prop, pBuffer, nSize, bDecodeName);
+      if (nRes == -1)
+	bError = TRUE;
+      else
+	{
+	  nSize -= nRes;
+	  pBuffer += nRes;
+	  AMF_AddProp(obj, &amp;prop);
+	}
+    }
+  if (bError)
+    return -1;
+
+  return nOriginalSize - nSize;
+}
+
+int
+AMF3_Decode(AMFObject *obj, const char *pBuffer, int nSize, int bAMFData)
+{
+  int nOriginalSize = nSize;
+  int32_t ref;
+  int len;
+
+  obj-&gt;o_num = 0;
+  obj-&gt;o_props = NULL;
+  if (bAMFData)
+    {
+      if (*pBuffer != AMF3_OBJECT)
+	RTMP_Log(RTMP_LOGERROR,
+	    "AMF3 Object encapsulated in AMF stream does not start with AMF3_OBJECT!");
+      pBuffer++;
+      nSize--;
+    }
+
+  ref = 0;
+  len = AMF3ReadInteger(pBuffer, &amp;ref);
+  pBuffer += len;
+  nSize -= len;
+
+  if ((ref &amp; 1) == 0)
+    {				/* object reference, 0xxx */
+      uint32_t objectIndex = (ref &gt;&gt; 1);
+
+      RTMP_Log(RTMP_LOGDEBUG, "Object reference, index: %d", objectIndex);
+    }
+  else				/* object instance */
+    {
+      int32_t classRef = (ref &gt;&gt; 1);
+
+      AMF3ClassDef cd = { {0, 0}
+      };
+      AMFObjectProperty prop;
+
+      if ((classRef &amp; 0x1) == 0)
+	{			/* class reference */
+	  uint32_t classIndex = (classRef &gt;&gt; 1);
+	  RTMP_Log(RTMP_LOGDEBUG, "Class reference: %d", classIndex);
+	}
+      else
+	{
+	  int32_t classExtRef = (classRef &gt;&gt; 1);
+	  int i;
+
+	  cd.cd_externalizable = (classExtRef &amp; 0x1) == 1;
+	  cd.cd_dynamic = ((classExtRef &gt;&gt; 1) &amp; 0x1) == 1;
+
+	  cd.cd_num = classExtRef &gt;&gt; 2;
+
+	  /* class name */
+
+	  len = AMF3ReadString(pBuffer, &amp;cd.cd_name);
+	  nSize -= len;
+	  pBuffer += len;
+
+	  /*std::string str = className; */
+
+	  RTMP_Log(RTMP_LOGDEBUG,
+	      "Class name: %s, externalizable: %d, dynamic: %d, classMembers: %d",
+	      cd.cd_name.av_val, cd.cd_externalizable, cd.cd_dynamic,
+	      cd.cd_num);
+
+	  for (i = 0; i &lt; cd.cd_num; i++)
+	    {
+	      AVal memberName;
+	      len = AMF3ReadString(pBuffer, &amp;memberName);
+	      RTMP_Log(RTMP_LOGDEBUG, "Member: %s", memberName.av_val);
+	      AMF3CD_AddProp(&amp;cd, &amp;memberName);
+	      nSize -= len;
+	      pBuffer += len;
+	    }
+	}
+
+      /* add as referencable object */
+
+      if (cd.cd_externalizable)
+	{
+	  int nRes;
+	  AVal name = AVC("DEFAULT_ATTRIBUTE");
+
+	  RTMP_Log(RTMP_LOGDEBUG, "Externalizable, TODO check");
+
+	  nRes = AMF3Prop_Decode(&amp;prop, pBuffer, nSize, FALSE);
+	  if (nRes == -1)
+	    RTMP_Log(RTMP_LOGDEBUG, "%s, failed to decode AMF3 property!",
+		__FUNCTION__);
+	  else
+	    {
+	      nSize -= nRes;
+	      pBuffer += nRes;
+	    }
+
+	  AMFProp_SetName(&amp;prop, &amp;name);
+	  AMF_AddProp(obj, &amp;prop);
+	}
+      else
+	{
+	  int nRes, i;
+	  for (i = 0; i &lt; cd.cd_num; i++)	/* non-dynamic */
+	    {
+	      nRes = AMF3Prop_Decode(&amp;prop, pBuffer, nSize, FALSE);
+	      if (nRes == -1)
+		RTMP_Log(RTMP_LOGDEBUG, "%s, failed to decode AMF3 property!",
+		    __FUNCTION__);
+
+	      AMFProp_SetName(&amp;prop, AMF3CD_GetProp(&amp;cd, i));
+	      AMF_AddProp(obj, &amp;prop);
+
+	      pBuffer += nRes;
+	      nSize -= nRes;
+	    }
+	  if (cd.cd_dynamic)
+	    {
+	      int len = 0;
+
+	      do
+		{
+		  nRes = AMF3Prop_Decode(&amp;prop, pBuffer, nSize, TRUE);
+		  AMF_AddProp(obj, &amp;prop);
+
+		  pBuffer += nRes;
+		  nSize -= nRes;
+
+		  len = prop.p_name.av_len;
+		}
+	      while (len &gt; 0);
+	    }
+	}
+      RTMP_Log(RTMP_LOGDEBUG, "class object!");
+    }
+  return nOriginalSize - nSize;
+}
+//解AMF编码的Object数据类型
+int
+AMF_Decode(AMFObject *obj, const char *pBuffer, int nSize, int bDecodeName)
+{
+  int nOriginalSize = nSize;
+  int bError = FALSE;		/* if there is an error while decoding - try to at least find the end mark AMF_OBJECT_END */
+
+  obj-&gt;o_num = 0;
+  obj-&gt;o_props = NULL;
+  while (nSize &gt; 0)
+    {
+      AMFObjectProperty prop;
+      int nRes;
+
+      if (nSize &gt;=3 &amp;&amp; AMF_DecodeInt24(pBuffer) == AMF_OBJECT_END)
+	{
+	  nSize -= 3;
+	  bError = FALSE;
+	  break;
+	}
+
+      if (bError)
+	{
+	  RTMP_Log(RTMP_LOGERROR,
+	      "DECODING ERROR, IGNORING BYTES UNTIL NEXT KNOWN PATTERN!");
+	  nSize--;
+	  pBuffer++;
+	  continue;
+	}
+	  //解Object里的Property
+      nRes = AMFProp_Decode(&amp;prop, pBuffer, nSize, bDecodeName);
+      if (nRes == -1)
+	bError = TRUE;
+      else
+	{
+	  nSize -= nRes;
+	  pBuffer += nRes;
+	  AMF_AddProp(obj, &amp;prop);
+	}
+    }
+
+  if (bError)
+    return -1;
+
+  return nOriginalSize - nSize;
+}
+
+void
+AMF_AddProp(AMFObject *obj, const AMFObjectProperty *prop)
+{
+  if (!(obj-&gt;o_num &amp; 0x0f))
+    obj-&gt;o_props = (AMFObjectProperty *)
+      realloc(obj-&gt;o_props, (obj-&gt;o_num + 16) * sizeof(AMFObjectProperty));
+  obj-&gt;o_props[obj-&gt;o_num++] = *prop;
+}
+
+int
+AMF_CountProp(AMFObject *obj)
+{
+  return obj-&gt;o_num;
+}
+
+AMFObjectProperty *
+AMF_GetProp(AMFObject *obj, const AVal *name, int nIndex)
+{
+  if (nIndex &gt;= 0)
+    {
+      if (nIndex &lt;= obj-&gt;o_num)
+	return &amp;obj-&gt;o_props[nIndex];
+    }
+  else
+    {
+      int n;
+      for (n = 0; n &lt; obj-&gt;o_num; n++)
+	{
+	  if (AVMATCH(&amp;obj-&gt;o_props[n].p_name, name))
+	    return &amp;obj-&gt;o_props[n];
+	}
+    }
+
+  return (AMFObjectProperty *)&amp;AMFProp_Invalid;
+}
+
+void
+AMF_Dump(AMFObject *obj)
+{
+  int n;
+  RTMP_Log(RTMP_LOGDEBUG, "(object begin)");
+  for (n = 0; n &lt; obj-&gt;o_num; n++)
+    {
+      AMFProp_Dump(&amp;obj-&gt;o_props[n]);
+    }
+  RTMP_Log(RTMP_LOGDEBUG, "(object end)");
+}
+
+void
+AMF_Reset(AMFObject *obj)
+{
+  int n;
+  for (n = 0; n &lt; obj-&gt;o_num; n++)
+    {
+      AMFProp_Reset(&amp;obj-&gt;o_props[n]);
+    }
+  free(obj-&gt;o_props);
+  obj-&gt;o_props = NULL;
+  obj-&gt;o_num = 0;
+}
+
+
+/* AMF3ClassDefinition */
+
+void
+AMF3CD_AddProp(AMF3ClassDef *cd, AVal *prop)
+{
+  if (!(cd-&gt;cd_num &amp; 0x0f))
+    cd-&gt;cd_props = (AVal *)realloc(cd-&gt;cd_props, (cd-&gt;cd_num + 16) * sizeof(AVal));
+  cd-&gt;cd_props[cd-&gt;cd_num++] = *prop;
+}
+
+AVal *
+AMF3CD_GetProp(AMF3ClassDef *cd, int nIndex)
+{
+  if (nIndex &gt;= cd-&gt;cd_num)
+    return (AVal *)&amp;AV_empty;
+  return &amp;cd-&gt;cd_props[nIndex];
+}
+</pre><br /><p>可参考文件：</p><p>AMF3 中文版介绍：<a href="http://download.csdn.net/detail/leixiaohua1020/6389977">http://download.csdn.net/detail/leixiaohua1020/6389977</a><br /></p><p></p><p style="margin-top:0px;margin-bottom:10px;padding-top:0px;padding-bottom:0px;line-height:21px;font-family:'微软雅黑', Verdana, sans-serif, '宋体';font-size:13px;">rtmpdump源代码（Linux）：<a href="http://download.csdn.net/detail/leixiaohua1020/6376561">http://download.csdn.net/detail/leixiaohua1020/6376561</a></p><p style="margin-top:0px;margin-bottom:10px;padding-top:0px;padding-bottom:0px;line-height:21px;font-family:'微软雅黑', Verdana, sans-serif, '宋体';font-size:13px;">rtmpdump源代码（VC 2005 工程）：<a href="http://download.csdn.net/detail/leixiaohua1020/6563163">http://download.csdn.net/detail/leixiaohua1020/6563163</a></p><br /><p></p>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/12954145		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=RTMPdump&t=blog" target="_blank">RTMPdump						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=rtmp&t=blog" target="_blank">rtmp						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=源代码&t=blog" target="_blank">源代码						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=AMF&t=blog" target="_blank">AMF						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1362941"  target="_blank">libRTMP						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/osmedia.html" target="_blank">开源多媒体项目源代码分析</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div data-track-view='{"mod":"popu_625","con": ",https://blog.csdn.net/leixiaohua1020/article/details/12954145,from_360"}' style="margin-top: 8px;padding: 20px;background-color: #fff;overflow: hidden;" id="adt0"></div>
+                            <script>
+                                var adWidth = $("div.blog-content-box").outerWidth() - 40;
+                                NEWS_FEED({
+                                    w: adWidth,
+                                    h : 130,
+                                    showid : "s02a31",
+                                    placeholderId: "adt0",
+                                    inject : "define",
+                                    define : {
+                                    imagePosition : "right",
+                                    imageBorderRadius : 0,
+                                    imageWidth: 231,
+                                    imageHeight: 130,
+                                    imageFill : "clip",
+                                    displayImage : true,
+                                    displayTitle : true,
+                                    titleFontSize: 20,
+                                    titleFontColor: "#333",
+                                    titleFontFamily : "Microsoft Yahei",
+                                    titleFontWeight: "bold",
+                                    titlePaddingTop : 0,
+                                    titlePaddingRight : 0,
+                                    titlePaddingBottom : 10,
+                                    titlePaddingLeft : 0,
+                                    displayDesc : true,
+                                    descFontSize: 14,
+                                    descFontColor: "#6b6b6b",
+                                    descFontFamily : "Microsoft Yahei",
+                                    paddingTop : 0,
+                                    paddingRight : 0,
+                                    paddingBottom : 0,
+                                    paddingLeft : 0,
+                                    backgroundColor: "#fff",
+                                    hoverColor: "#ca0c16"
+                                    }
+                                })
+                            </script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12954145#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u010680536/article/details/53735454" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>AMF</em>序列格式详细介绍			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u010680536/article/details/53735454" target="_blank" >
+				<em>AMF</em>目前有两种版本，<em>AMF</em>0和<em>AMF</em>3，他们在数据类型的定义上有细微不同。关于<em>AMF</em>的官方文档参见这里。
+ 
+
+
+
+Type
+Byte code
+Notes
+
+
+Number 
+0×00 
+
+
+
+B...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u010680536" title="u010680536" target="_blank">
+					<img src="https://avatar.csdn.net/2/2/B/3_u010680536.jpg" alt="u010680536" class="avatar-pic">
+					<span class="name">u010680536</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-19 10:21:13</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1019</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/ddr77/article/details/52355337" target="_blank" strategy="BlogCommendFromBaidu_1">
+				<em>amf</em>数据格式			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/ddr77/article/details/52355337" target="_blank" >
+				原文地址为 http://blog.csdn.net/yeyumin89/article/details/7932585
+
+
+复制黏贴下
+这里有一个连接，<em>amf</em>0和<em>amf</em>3的库，我下了看了下，...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/ddr77" title="ddr77" target="_blank">
+					<img src="https://avatar.csdn.net/A/4/F/3_ddr77.jpg" alt="ddr77" class="avatar-pic">
+					<span class="name">ddr77</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-08-29 17:59:20</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1761</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/houxq123/article/details/39525117" target="_blank" strategy="BlogCommendFromBaidu_2">
+				FLASH 之 <em>AMF</em> 格式			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/houxq123/article/details/39525117" target="_blank" >
+				一、什么是<em>AMF</em>
+<em>AMF</em>是Flash与服务器进行通信的一种<em>编码</em>格式（为了方便理解，你可以暂时把它理解为与XML相似的技术），但它是以二进制数据进行传输的，客户端采用POST形式进行数据提交，它的最大...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/houxq123" title="houxq123" target="_blank">
+					<img src="https://avatar.csdn.net/4/6/E/3_houxq123.jpg" alt="houxq123" class="avatar-pic">
+					<span class="name">houxq123</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-09-24 17:21:51</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1353</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leiych/article/details/18270895" target="_blank" strategy="BlogCommendFromBaidu_3">
+				RTMP协议中的<em>AMF</em>数据类型说明			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leiych/article/details/18270895" target="_blank" >
+				这里有一个连接，<em>amf</em>0和<em>amf</em>3的库，我下了看了下，还是自己写吧，哎。http://wooce.iteye.com/blog/1396278
+参考crtmpserver的代码写的，其中有<em>amf</em>.h文...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leiych" title="leiych" target="_blank">
+					<img src="https://avatar.csdn.net/E/2/E/3_leiych.jpg" alt="leiych" class="avatar-pic">
+					<span class="name">leiych</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-01-14 19:53:05</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2489</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/k1988/article/details/5348165" target="_blank" strategy="BlogCommendFromBaidu_4">
+				小谈RTMP中<em>AMF</em>3类型的Command message 			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/k1988/article/details/5348165" target="_blank" >
+				由于历史原因我喜欢将这个消息叫做invoke。 1、<em>AMF</em>3类型的Invoke消息的类型是17，而<em>AMF</em>0的Invoke消息的消息类型是20。 2、<em>AMF</em>3类型的Invoke也是使用<em>AMF</em>0进行序列化...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/k1988" title="k1988" target="_blank">
+					<img src="https://avatar.csdn.net/4/4/6/3_k1988.jpg" alt="k1988" class="avatar-pic">
+					<span class="name">k1988</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2010-03-05 09:52:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1901</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/chgaowei/article/details/51248119" target="_blank" strategy="BlogCommendFromBaidu_5">
+				rtmp官方协议详解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/chgaowei/article/details/51248119" target="_blank" >
+				标准规范学习：rtmp消息结构，包括几个部分：时戳：4  byte，单位毫秒。超过最大值后会翻转。长度：消息负载的长度。类型ID：Type Id 一部分ID范围用于rtmp的控制信令。还有一部分可以供...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/chgaowei" title="chgaowei" target="_blank">
+					<img src="https://avatar.csdn.net/F/2/D/3_chgaowei.jpg" alt="chgaowei" class="avatar-pic">
+					<span class="name">chgaowei</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-04-26 10:00:19</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：17868</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/yeyumin89/article/details/7932585" target="_blank" strategy="BlogCommendFromBaidu_6">
+				RTMP协议中的<em>AMF</em>数据			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/yeyumin89/article/details/7932585" target="_blank" >
+				这里有一个连接，<em>amf</em>0和<em>amf</em>3的库，我下了看了下，还是自己写吧，哎。http://wooce.iteye.com/blog/1396278
+参考crtmpserver的代码写的，其中有<em>amf</em>.h...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/yeyumin89" title="yeyumin89" target="_blank">
+					<img src="https://avatar.csdn.net/8/5/4/3_yeyumin89.jpg" alt="yeyumin89" class="avatar-pic">
+					<span class="name">yeyumin89</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2012-09-01 16:52:59</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4483</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/shangmingyang/article/details/50837852" target="_blank" strategy="BlogCommendFromBaidu_7">
+				带你吃透RTMP			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/shangmingyang/article/details/50837852" target="_blank" >
+				title: 带你吃透RTMP 
+date: 2016-03-06 19:26:00tag: [RTMP, 协议]RTMP协议是Real Time Message Protocol(实时信息传输协议)...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/shangmingyang" title="shangmingyang" target="_blank">
+					<img src="https://avatar.csdn.net/C/9/4/3_shangmingyang.jpg" alt="shangmingyang" class="avatar-pic">
+					<span class="name">shangmingyang</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-03-09 19:15:01</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：23409</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/is2120/article/details/52530614" target="_blank" strategy="BlogCommendFromBaidu_9">
+				rtmp 之 <em>amf</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/is2120/article/details/52530614" target="_blank" >
+				//z 2016-09-13 23:57:54 L.109'126   BG57IV3 T3733526206.K.F1949578739[T1,L143,R4,V10]
+1. <em>amf</em> 类型
+
+
+
+N...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/is2120" title="is2120" target="_blank">
+					<img src="https://avatar.csdn.net/B/F/2/3_is2120.jpg" alt="is2120" class="avatar-pic">
+					<span class="name">is2120</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-09-13 23:58:33</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：292</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/b35838715/9582265" target="_blank" strategy="BlogCommendFromBaidu_10">
+						<em>librtmp</em>源码					</a>
+				</h4>
+				<p>
+					<span class="data">2016年07月21日 </span>
+					<span class="size">76KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/b35838715/9582265" target="_blank" strategy="BlogCommendFromBaidu_10">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12954145" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421442">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>7</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "RTMPdump（libRTMP） 源代码分析 3： AMF编码";
+    var ChannelId = 16;
+    var articleId = "12954145";
+    var commentscount = 2;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12954145";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "amf+%E8%A7%A3%E7%A0%81";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"RTMPdump（libRTMP） 源代码分析 3： AMF编码");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=amf+%E8%A7%A3%E7%A0%81"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

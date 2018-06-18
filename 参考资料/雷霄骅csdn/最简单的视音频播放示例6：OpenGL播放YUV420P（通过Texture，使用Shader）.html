@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/40379845"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文记录OpenGL播放视频的技术。上一篇文章中，介绍了一种简单的使用OpenGL显示视频的方式。但是那还不是OpenGL显示视频技术的精髓。和Direct3D一样，OpenGL更好的显示视频的方式也是通过纹理（Texture）。本文介绍OpenGL通过纹理的方式显示视频的技术。 OpenGL中纹理和Direct3D纹理的不同OpenGL中的纹理的坐标和Direct3D中的坐标是不一样的。在Dir" />
+    <meta name="keywords" content="OpenGL,Texture" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader） - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40379845"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2014年10月28日 00:35:40</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：35058</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================<br /></p><p>最简单的视音频播放示例系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783">最简单的视音频播放示例1：总述</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40266503">最简单的视音频播放示例2：GDI播放YUV, RGB</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40279297">最简单的视音频播放示例3：Direct3D播放YUV，RGB（通过Surface）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40301179">最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40333583">最简单的视音频播放示例5：OpenGL播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40379845">最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40525591">最简单的视音频播放示例7：SDL2播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40540147">最简单的视音频播放示例8：DirectSound播放PCM</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40544521">最简单的视音频播放示例9：SDL2播放PCM</a><br /></p><p>=====================================================</p><br /><p>本文记录OpenGL播放视频的技术。上一篇文章中，介绍了一种简单的使用OpenGL显示视频的方式。但是那还不是OpenGL显示视频技术的精髓。和Direct3D一样，OpenGL更好的显示视频的方式也是通过纹理（Texture）。本文介绍OpenGL通过纹理的方式显示视频的技术。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027124723000?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><h2>OpenGL中坐标和Direct3D坐标的不同</h2><p>OpenGL中的纹理的坐标和Direct3D中的坐标是不一样的。</p><p>在Direct3D中。纹理坐标如下图所示。取值是0到1。坐标系原点在左上角。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027130303978?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>物体表面坐标如下图所示。取值是实际的像素值。坐标系原点在左上角。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027130326629?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p>OpenGL纹理坐标取值范围是0-1，坐标原点位于左下角。这一点和Direct3D是不同的，Direct3D纹理坐标的取值虽然也是0-1，但是他的坐标原点位于左上角。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141027130656875?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /> </div>在OpenGL中，物体表面坐标取值范围是-1到1。坐标系原点在中心位置。<br /><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027130718078?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p><br /></p><h2>OpenGL视频显示的流程</h2><p>有关纹理方面的知识已经在文章《<a href="http://blog.csdn.net/leixiaohua1020/article/details/40301179">最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）</a>》中有详细的记录。OpenGL中纹理的概念和Direct3D中纹理的概念基本上是等同的，因此不再重复记录了。</p>本文记录的程序，播放的是YUV420P格式的像素数据。上一篇文章中的程序也可以播放YUV420P格式的像素数据。但是它们的原理是不一样的。上一篇文章中，输入的YUV420P像素数据通过一个普通的函数转换为RGB数据后，传送给OpenGL播放。也就是像素的转换是通过CPU完成的。本文的程序，输入的YUV420P像素数据通过Shader转换为YUV数据，传送给OpenGL播放。像素的转换是通过显卡上的GPU完成的。通过本程序，可以了解使用OpenGL进行GPU编程的基础知识。<br /><br />使用Shader通过OpenGL的纹理（Texture）播放视频一般情况下需要如下步骤：<br /><strong>1.<span style="white-space:pre;">	</span>初始化</strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)<span style="white-space:pre;">	</span>初始化<br />2)<span style="white-space:pre;">	</span>创建窗口<br />3)<span style="white-space:pre;">	</span>设置绘图函数<br />4)<span style="white-space:pre;">	</span>设置定时器<br />5)<span style="white-space:pre;">	</span>初始化Shader<br />初始化Shader的步骤比较多，主要可以分为3步：创建Shader，创建Program，初始化Texture。<br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">（1）<span style="white-space:pre;">	</span>创建一个Shader对象<br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1）编写Vertex Shader和Fragment Shader源码。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">2）创建两个shader 实例 。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">3）给Shader实例指定源码。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">4）在线编译shaer源码。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">（2）<span style="white-space:pre;">	</span>创建一个Program对象<br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1）创建program。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">2）绑定shader到program。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">3）链接program。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">4）使用porgram。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">（3）<span style="white-space:pre;">	</span>初始化Texture。可以分为以下步骤。<br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1）定义定点数组</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">2）设置顶点数组</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">3）初始化纹理</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">6)<span style="white-space:pre;">	</span>进入消息循环</blockquote><strong>2.<span style="white-space:pre;">	</span>循环显示画面</strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)<span style="white-space:pre;">	</span>设置纹理<br />2)<span style="white-space:pre;">	</span>绘制<br />3)<span style="white-space:pre;">	</span>显示</blockquote>下面详述一下使用Shader通过OpenGL的纹理的播放YUV的步骤。有些地方和上一篇文章是重复的，会比较简单的提一下。<br /><strong>1.<span style="white-space:pre;">	</span>初始化<br />1)<span style="white-space:pre;">	</span>初始化</strong><br />glutInit()用于初始化glut库。它原型如下：<br /><pre class="cpp">void glutInit(int *argcp, char **argv);</pre><br />它包含两个参数：argcp和argv。一般情况下，直接把main()函数中的argc，argv传递给它即可。<br />glutInitDisplayMode()用于设置初始显示模式。它的原型如下。<br /><pre class="cpp">void glutInitDisplayMode(unsigned int mode);</pre><br />需要注意的是，如果使用双缓冲（GLUT_DOUBLE），则需要用glutSwapBuffers ()绘图。如果使用单缓冲（GLUT_SINGLE），则需要用glFlush()绘图。<br />在使用OpenGL播放视频的时候，我们可以使用下述代码：<br /><pre class="cpp">glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );</pre><br /><br /><strong>2)<span style="white-space:pre;">	</span>创建窗口</strong><br />glutInitWindowPosition()用于设置窗口的位置。可以指定x，y坐标。<br />glutInitWindowSize()用于设置窗口的大小。可以设置窗口的宽，高。<br />glutCreateWindow()创建一个窗口。可以指定窗口的标题。<br />上述几个函数十分基础，不再详细叙述。直接贴出一段示例代码：<br /><pre class="cpp">glutInitWindowPosition(100, 100);
+glutInitWindowSize(500, 500);
+glutCreateWindow("Simplest Video Play OpenGL");	</pre><br /><br /><strong>3)<span style="white-space:pre;">	</span>设置绘图函数</strong><br />glutDisplayFunc()用于设置绘图函数。操作系统在必要时刻就会调用该函数对窗体进行重新绘制操作。类似于windows程序设计中处理WM_PAINT消息。例如，当把窗口移动到屏幕边上，然后又移动回来的时候，就会调用该函数对窗口进行重绘。它的原型如下。<br /><pre class="cpp">void glutDisplayFunc(void (*func)(void));</pre><br />其中(*func)用于指定重绘函数。<br />例如在视频播放的时候，指定display()函数用于重绘：<br /><pre class="cpp">glutDisplayFunc(&amp;display);</pre><br />4)<span style="white-space:pre;">	</span>设置定时器<br />播放视频的时候，每秒需要播放一定的画面（一般是25帧），因此使用定时器每间隔一段时间调用一下绘图函数绘制图形。定时器函数glutTimerFunc()的原型如下。<br /><pre class="cpp">void glutTimerFunc(unsigned int millis, void (*func)(int value), int value);</pre><br />它的参数含义如下：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">millis：定时的时间，单位是毫秒。1秒=1000毫秒。<br /><p>(*func)(int value)：用于指定定时器调用的函数。</p><p>value：给回调函数传参。比较高端，没有接触过。</p><p><br /></p></blockquote>如果只在主函数中写一个glutTimerFunc()函数的话，会发现只会调用该函数一次。因此需要在回调函数中再写一个glutTimerFunc()函数，并调用回调函数自己。只有这样才能实现反反复复循环调用回调函数。<br />例如在视频播放的时候，指定每40毫秒调用一次timeFunc ()函数：<br />主函数中：<br /><pre class="cpp">glutTimerFunc(40, timeFunc, 0);</pre><br />而后在timeFunc()函数中如下设置。<br /><pre class="cpp">void timeFunc(int value){
+    display();
+    // Present frame every 40 ms
+    glutTimerFunc(40, timeFunc, 0);
+}</pre><br />这样就实现了每40ms调用一次display()。<br /><br /><br /><strong>5)<span style="white-space:pre;">	</span>初始化Shader</strong><br />初始化Shader的步骤比较多，主要可以分为3步：创建Shader，创建Program，初始化Texture。它们的步骤如下所示。<br /><strong>（1）<span style="white-space:pre;">	</span>创建一个Shader对象</strong><br />Shader有点类似于一个程序的编译器。创建一个Shader可以分成以下4步：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1）编写Vertex Shader和Fragment Shader源码。<br />2）创建两个shader 实例:glCreateShader()。<br />3）给Shader实例指定源码:glShaderSource()。<br />4）在线编译shaer源码 glCompileShader()。</blockquote>下面详细分析这4步。<br /><strong>1）<span style="white-space:pre;">	</span>编写Vertex Shader和Fragment Shader源码。</strong><br />在这里用到了一种新的语言：OpenGL Shader Language,简称GLSL。它是一种类似于C语言的专门为GPU设计的语言，它可以放在GPU里面被并行运行。<br />OpenGL的着色器有.fsh和.vsh两个文件。这两个文件在被编译和链接后就可以产生可执行程序与GPU交互。.vsh 是Vertex Shader（顶点着色器），用于顶点计算，可以理解控制顶点的位置，在这个文件中我们通常会传入当前顶点的位置，和纹理的坐标。.fsh 是Fragment Shader（片元着色器），在这里面我可以对于每一个像素点进行重新计算。<br />下面这张图可以更好的解释Vertex Shader和Fragment Shader的作用。这张图是OpenGL的渲染管线。其中的信息太多先不一一记录了。从图中可以看出，Vertex Shader在前，Fragment Shader在后。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141027132053204?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><p>在这里贴出本文的示例程序的fsh和vsh的代码。</p><p>Shader.vsh</p><pre class="plain">attribute vec4 vertexIn; 
+attribute vec2 textureIn;
+varying vec2 textureOut;
+void main(void)
+{
+    gl_Position = vertexIn; 
+    textureOut = textureIn;
+}</pre><br />Shader.fsh<br /><pre class="plain">varying vec2 textureOut;
+uniform sampler2D tex_y;
+uniform sampler2D tex_u;
+uniform sampler2D tex_v;
+void main(void)
+{
+    vec3 yuv;
+    vec3 rgb;    
+    yuv.x = texture2D(tex_y, textureOut).r;
+    yuv.y = texture2D(tex_u, textureOut).r - 0.5;
+    yuv.z = texture2D(tex_v, textureOut).r - 0.5;
+    rgb = mat3( 1,       1,         1,
+                0,       -0.39465,  2.03211,
+                1.13983, -0.58060,  0) * yuv;    
+    gl_FragColor = vec4(rgb, 1);
+}</pre><br />从上述代码中可以看出GLSL的语法和C语言很类似。每一个Shader程序都有一个main函数，这一点和c语言是一样的。这里的变量命名规则保持跟c一样就行了，注意gl_开头的变量名是系统内置的变量。有以下几种变量：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">attribute：外部传入vsh文件的变量，每一个顶点都会有这两个属性。变化率高，用于定义每个点。<br />varying：用于 vsh和fsh之间相互传递的参数。<br />uniform：外部传入vsh文件的变量。变化率较低，对于可能在整个渲染过程没有改变，只是个常量。<br />上文代码中使用了以下数据类型：<br />vec2：包含了2个浮点数的向量<br />vec3：包含了3个浮点数的向量<br />vec4：包含了4个浮点数的向量<br />sampler1D：1D纹理着色器<br />sampler2D：2D纹理着色器<br />sampler3D：3D纹理着色器<br />mat2：2*2维矩阵 <br />mat3：3*3维矩阵 <br /><p>mat4：4*4维矩阵</p><p><br /></p></blockquote>上文代码中还使用到了OpenGL的几个全局变量：<br />gl_Position：原始的顶点数据在Vertex Shader中经过平移、旋转、缩放等数学变换后，生成新的顶点位置（一个四维 (vec4) 变量，包含顶点的 x、y、z 和 w 值）。新的顶点位置通过在Vertex Shader中写入gl_Position传递到渲染管线的后继阶段继续处理。<br />gl_FragColor：Fragment Shader的输出，它是一个四维变量（或称为 vec4）。gl_FragColor 表示在经过着色器代码处理后，正在呈现的像素的 R、G、B、A 值。<br />Vertex Shader是作用于每一个顶点的，如果Vertex有三个点，那么Vertex Shader会被执行三次。Fragment Shader是作用于每个像素的，一个像素运行一次。从源代码中可以看出，像素的转换在Fragment Shader中完成。<br />在网上看到两张图可以很好地说明Vertex Shader和Fragment Shader的作用：<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141027132152578?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><div style="text-align:center;"><br /></div><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141027132203778?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div>Vertex Shader（顶点着色器）主要是传入相应的Attribute变量、Uniforms变量、采样器以及临时变量，最后生成Varying变量，以及gl_Posizion等变量。Fragment Shade（片元着色器）可以执行纹理的访问、颜色的汇总、雾化等操作，最后生成gl_FragColor变量。有高手总结如下：“vsh负责搞定像素位置，填写gl_Posizion；fsh负责搞定像素外观，填写 gl_FragColor。”<br /><br /><strong>2）<span style="white-space:pre;">	</span>创建两个shader 实例。</strong><br />创建一个容纳shader的容器。用glCreateShader ()创建一个容纳shader的容器，它的原型如下：<br /><pre class="cpp">int glCreateShader (int type)</pre><br />其中type包含2种： <br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">GLES20.GL_VERTEX_SHADER：Vertex Shader.<br /><p>GLES20.GL_FRAGMENT_SHADER：Fragment Shader. </p><p><br /></p></blockquote>如果调用成功的话，函数将返回一个整形的正整数作为Shader容器的id。<br /><strong>3）<span style="white-space:pre;">	</span>给Shader实例指定源码。</strong><br />Shader容器中添加shader的源代码。源代码应该以字符串数组的形式表示。glShaderSource函数的原型如下： <br /><pre class="cpp">void glShaderSource (int shader, String string) </pre><br />参数含义如下： <br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">shader：是代表shader容器的id（由glCreateShader()返回的整形数）。<br /><p>strings：是包含源程序的字符串数组。</p><p><br /></p></blockquote>如果感觉通过“字符串数组”的方式写源代码不太习惯的话，可以把源代码写到单独的一个文本文件里。然后在需要源代码的时候，读取该文本文件中的所有内容。<br /><strong>4）<span style="white-space:pre;">	</span>在线编译Shader源码。</strong><br />使用glCompileShader()对shader容器中的源代码进行编译。函数的原型如下：  <br /><pre class="cpp">void glCompileShader (int shader)</pre><br />其中shader是代表Shader容器的id。<br />在编译完成后，可能需要调试。调试一个Shader是非常困难的。Shader的世界里没有printf，无法在控制台中打印调试信息。但是可以通过一些OpenGL提供的函数来获取编译和连接过程中的信息。在编译阶段使用glGetShaderiv获取编译情况。glGetShaderiv()函数原型如下：<br /><pre class="cpp">void glGetShaderiv (int shader, int pname, int[] params, int offset) </pre><br />参数含义： <br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">shader：一个shader的id； <br />pname：使用GL_COMPILE_STATUS； <br />params：返回值，如果一切正常返回GL_TRUE代，否则返回GL_FALSE。</blockquote><br /><strong>（2）<span style="white-space:pre;">	</span>创建一个Program对象</strong><br />Program有点类似于一个程序的链接器。program对象提供了把需要做的事连接在一起的机制。在一个program中，shader对象可以连接在一起。<br />创建一个Program可以分成以下4步：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1）创建program：glCreateProgram()<br />2）绑定shader到program ：glAttachShader()。<br /><span style="white-space:pre;">	</span>*每个program必须绑定一个Vertex Shader 和一个Fragment Shader。<br />3）链接program ：glLinkProgram()。<br />4）使用porgram ：glUseProgram()。</blockquote>下面详细分析这4步。<br /><strong>1）<span style="white-space:pre;">	</span>创建program。</strong><br />首先使用glCreateProgram ()创建一个容纳程序（Program）的容器，我们称之为程序容器。<br />函数的原型如下：<br /><pre class="cpp">int glCreateProgram ()</pre><br />如果函数调用成功将返回一个整形正整数作为该着色器程序的id。<br /><strong>2）<span style="white-space:pre;">	</span>绑定shader到program。</strong><br />使用glAttachShader()将shader容器添加到程序中。这时的shader容器不一定需要被编译，他们甚至不需要包含任何的代码。<br /><span style="white-space:pre;">	</span>函数的原型如下：  <br /><pre class="cpp">void glAttachShader (int program, int shader) </pre><br />参数含义： <br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">program：着色器程序容器的id。<br />shader：要添加的顶点或者片元shader容器的id。 <br /></blockquote>Vertex Shader和Fragment Shader需要分别将他们各自的两个shader容器添加的程序容器中。<br /><br /><strong>3）<span style="white-space:pre;">	</span>链接program。</strong><br />使用glLinkProgram()链接程序对象。<br />函数的原型如下：  <br /><pre class="cpp">void glLinkProgram (int program) </pre><br />program是着色器程序容器的id。<br />如果任何类型为GL_VERTEX_SHADER的shader对象连接到program，它将产生在“顶点着色器”（Vertex Shader）上可执行的程序；如果任何类型为GL_FRAGMENT_SHADER的shader对象连接到program，它将产生在“像素着色器”（Pixel Shader）上可执行的程序。<br />在链接阶段使用glGetProgramiv()获取编译情况。glGetProgramiv ()函数原型如下：<br /><pre class="cpp">void glGetProgramiv (int program, int pname, int[] params, int offset) </pre><br />参数含义： <br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">program：一个着色器程序的id； <br />pname：GL_LINK_STATUS； <br />param：返回值，如果一切正常返回GL_TRUE代，否则返回GL_FALSE。</blockquote><br />通过glBindAttribLocation()把“顶点属性索引”绑定到“顶点属性名”。<br /><pre class="cpp">void glBindAttribLocation(GLuint program,GLuint index,const GLchar* name);</pre><br />参数含义：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">program：着色器程序容器的id。<br />index：顶点属性索引。<br />name：顶点属性名。</blockquote><br /><strong>4）<span style="white-space:pre;">	</span>使用porgram。</strong><br />在链接了程序以后，我们可以使用glUseProgram()函数来加载并使用链接好的程序。glUseProgram函数原型如下： <br /><pre class="cpp">void glUseProgram (int program) </pre><br />其中program是要使用的着色器程序的id。<br /><br /><strong>（3）<span style="white-space:pre;">	</span>初始化Texture</strong><br /><p>初始化Texture可以分为以下步骤。</p><p><strong>1）<span style="white-space:pre;">	</span>定义顶点数组</strong></p><p>这一步需要初始化两个数组，</p><p><strong>2）<span style="white-space:pre;">	</span>设置顶点数组</strong></p><br />这一步通过glVertexAttribPointer()完成。glVertexAttribPointer()定义一个通用顶点属性数组。当渲染时，它指定了通用顶点属性数组从索引index处开始的位置和数据格式。<br />glVertexAttribPointer()原型如下。<br /><pre class="cpp">void glVertexAttribPointer(  
+	GLuint   index, 
+	GLint   size, 
+	GLenum   type, 
+	GLboolean   normalized, 
+	GLsizei   stride, 
+	const GLvoid *   pointer); </pre><br />每个参数的含义：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">index：指示将被修改的通用顶点属性的索引 <br />size：指点每个顶点元素个数(1~4)  <br />type：数组中每个元素的数据类型 <br />normalized：指示定点数据值是否被归一化(归一化&lt;[-1,1]或[0,1]&gt;：GL_TRUE,直接使用:GL_FALSE)  <br />stride：连续顶点属性间的偏移量，如果为0，相邻顶点属性间紧紧相邻 <br />pointer:顶点数组 </blockquote><br />使用函数glEnableVertexAttribArray()启用属性数组。默认状态下，所有客户端的能力被Disabled，包括所有通用顶点属性数组。如果被Enable，通用顶点属性数组中的值将被访问并被用于Rendering。函数的原型如下：<br /><pre class="cpp">void glEnableVertexAttribArray( GLuint   index);</pre><br /><p>其中index用于指定通用顶点属性的索引。</p><p><strong>3）<span style="white-space:pre;">	</span>初始化纹理</strong></p><p>使用glGenTextures()初始化纹理，其原型如下。</p><pre class="cpp">glGenTextures(GLsizei n, GLuint *textures) </pre><br />参数含义：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">n：用来生成纹理的数量<br /><p>textures：存储纹理索引的数组</p><p><br /></p></blockquote>glGenTextures()就是用来产生你要操作的纹理对象的索引的，比如你告诉OpenGL，我需要5个纹理对象，它会从没有用到的整数里返回5个给你。<br />产生纹理索引之后，需要使用glBindTexture()绑定纹理，才能对该纹理进行操作。glBindTexture()告诉OpenGL下面对纹理的任何操作都是针对它所绑定的纹理对象的，比如glBindTexture(GL_TEXTURE_2D,1)即告诉OpenGL下面代码中对2D纹理的任何设置都是针对索引为1的纹理的。<br />glBindTexture()函数的声明如下所示：<br /><pre class="cpp">void glBindTexture(GLenum target, GLuint texture );</pre><br />函数参数的含义：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">target：纹理被绑定的目标，它只能取值GL_TEXTURE_1D、GL_TEXTURE_2D、GL_TEXTURE_3D或者GL_TEXTURE_CUBE_MAP。<br /><p>texture：纹理的名称，并且，该纹理的名称在当前的应用中不能被再次使用。</p><p><br /></p></blockquote>绑定纹理之后，就可以设置该纹理的一些属性了。<br />纹理过滤函数glTexParameteri()可以用来确定如何把图像从纹理图象空间映射到帧缓冲图象空间。即把纹理像素映射成像素。glTexParameteri()的原型如下。<br /><pre class="cpp">void glTexParameteri(GLenum target,GLenum pname,GLint param);</pre><br />部分参数功能说明如下:<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">pname：参数。可以指定为GL_TEXTURE_MAG_FILTER（放大过滤），GL_TEXTURE_MIN_FILTER（缩小过滤）等。<br />param：参数的值。例如GL_LINEAR（线性插值。使用距离当前渲染像素中心最近的4个纹素加权平均值），GL_NEAREST（临近像素插值。该方法质量较差）</blockquote><br /><p><strong>6)<span style="white-space:pre;">	</span>进入消息循环</strong></p><p>glutMainLoop()将会进入GLUT事件处理循环。一旦被调用，这个程序将永远不会返回。视频播放的时候，调用该函数之后即开始播放视频。</p><br /><p><strong>2.<span style="white-space:pre;">	</span>循环显示画面</strong></p><p><strong>1)<span style="white-space:pre;">	</span>设置纹理</strong></p>使用glActiveTexture()选择可以由纹理函数进行修改的当前纹理单位。后续的操作都是对选择的纹理进行的。glActiveTexture()的原型如下。<br /><pre class="cpp">void glActiveTexture(GLenum texUnit);</pre><br />接着使用glBindTexture()告诉OpenGL下面对纹理的任何操作都是针对它所绑定的纹理对象的，这一点前文已经记录，不再重复。<br />然后使用glTexImage2D()根据指定的参数，生成一个2D纹理（Texture）。相似的函数还有glTexImage1D、glTexImage3D。glTexImage2D()原型如下。<br /><pre class="cpp">void glTexImage2D(	GLenum target,
+ 	GLint level,
+ 	GLint internalformat,
+ 	GLsizei width,
+ 	GLsizei height,
+ 	GLint border,
+ 	GLenum format,
+ 	GLenum type,
+ 	const GLvoid * data);</pre><br />参数说明如下：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">target：指定目标纹理，这个值必须是GL_TEXTURE_2D。<br />level：执行细节级别。0是最基本的图像级别，n表示第N级贴图细化级别。<br />internalformat：指定纹理中的颜色格式。可选的值有GL_ALPHA,GL_RGB,GL_RGBA,GL_LUMINANCE, GL_LUMINANCE_ALPHA 等几种。<br />width：纹理图像的宽度。<br />height：纹理图像的高度。<br />border：边框的宽度。必须为0。<br />format：像素数据的颜色格式, 不需要和internalformatt取值必须相同。可选的值参考internalformat。<br />type：指定像素数据的数据类型。可以使用的值有GL_UNSIGNED_BYTE,GL_UNSIGNED_SHORT_5_6_5,GL_UNSIGNED_SHORT_4_4_4_4,GL_UNSIGNED_SHORT_5_5_5_1等。<br />pixels：指定内存中指向图像数据的指针</blockquote><br />glUniform()为当前程序对象指定Uniform变量的值。（注意，由于OpenGL由C语言编写，但是C语言不支持函数的重载，所以会有很多名字相同后缀不同的函数版本存在。其中函数名中包含数字（1、2、3、4）表示接受该数字个用于更改uniform变量的值，i表示32位整形，f表示32位浮点型，ub表示8位无符号byte，ui表示32位无符号整形，v表示接受相应的指针类型。 ）<br /><br /><p><strong>2)<span style="white-space:pre;">	</span>绘制</strong></p><p>使用glDrawArrays()进行绘制。glDrawArrays()原型如下。</p><pre class="cpp">void glDrawArrays (GLenum mode, GLint first, GLsizei count);</pre><br />参数说明：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">mode：绘制方式，提供以下参数：GL_POINTS、GL_LINES、GL_LINE_LOOP、GL_LINE_STRIP、GL_TRIANGLES、GL_TRIANGLE_STRIP、GL_TRIANGLE_FAN。<br />first：从数组缓存中的哪一位开始绘制，一般为0。<br />count：数组中顶点的数量。</blockquote><br /><p><strong>3)<span style="white-space:pre;">	</span>显示</strong></p><p>如果使用“双缓冲”方式的话，使用glutSwapBuffers()绘制。如果使用“单缓冲”方式的话，使用glFlush()绘制。glutSwapBuffers()的功能是交换两个缓冲区指针，表现的形式即是把画面呈现到屏幕上。</p><span style="white-space:pre;">	</span>简单解释一下双缓冲技术。当我们进行复杂的绘图操作时，画面便可能有明显的闪烁。这是由于绘制的东西没有同时出现在屏幕上而导致的。使用双缓冲可以解决这个问题。所谓双缓冲技术， 是指使用两个缓冲区： 前台缓冲和后台缓冲。前台缓冲即我们看到的屏幕，后台缓冲则在内存当中，对我们来说是不可见的。每次的所有绘图操作不是在屏幕上直接绘制，而是在后台缓冲中进行， 当绘制完成时，再把绘制的最终结果显示到屏幕上。<br /><p>glutSwapBuffers()函数执行之后，缓冲区指针交换，两个缓冲的“角色”也发生了对调。原先的前台缓冲变成了后台缓冲，等待进行下一次绘制。而原先的后台缓冲变成了前台缓冲，展现出绘制的结果。</p><p><br /></p><h3>视频显示（使用Texture）流程总结</h3><p>上文流程的函数流程可以用下图表示。</p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141027133425279?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><br /><h2>代码</h2><p>源代码如下所示。</p><pre class="cpp">/**
+ * 最简单的OpenGL播放视频的例子（OpenGL播放YUV）[Texture]
+ * Simplest Video Play OpenGL (OpenGL play YUV) [Texture]
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ *
+ * 本程序使用OpenGL播放YUV视频像素数据。本程序支持YUV420P的
+ * 像素数据作为输入，经过转换后输出到屏幕上。其中用到了多种
+ * 技术，例如Texture，Shader等，是一个相对比较复杂的例子。
+ * 适合有一定OpenGL基础的初学者学习。
+ *
+ * 函数调用步骤如下: 
+ *
+ * [初始化]
+ * glutInit(): 初始化glut库。
+ * glutInitDisplayMode(): 设置显示模式。
+ * glutCreateWindow(): 创建一个窗口。
+ * glewInit(): 初始化glew库。
+ * glutDisplayFunc(): 设置绘图函数（重绘的时候调用）。
+ * glutTimerFunc(): 设置定时器。
+ * InitShaders(): 设置Shader。包含了一系列函数，暂不列出。
+ * glutMainLoop(): 进入消息循环。
+ *
+ * [循环渲染数据]
+ * glActiveTexture(): 激活纹理单位。
+ * glBindTexture(): 绑定纹理
+ * glTexImage2D(): 根据像素数据，生成一个2D纹理。
+ * glUniform1i(): 
+ * glDrawArrays(): 绘制。
+ * glutSwapBuffers(): 显示。
+ *
+ * This software plays YUV raw video data using OpenGL.
+ * It support read YUV420P raw file and show it on the screen.
+ * It's use a slightly more complex technologies such as Texture,
+ * Shaders etc. Suitable for beginner who already has some 
+ * knowledge about OpenGL.
+ *
+ * The process is shown as follows:
+ *
+ * [Init]
+ * glutInit(): Init glut library.
+ * glutInitDisplayMode(): Set display mode.
+ * glutCreateWindow(): Create a window.
+ * glewInit(): Init glew library.
+ * glutDisplayFunc(): Set the display callback.
+ * glutTimerFunc(): Set timer.
+ * InitShaders(): Set Shader, Init Texture. It contains some functions about Shader.
+ * glutMainLoop(): Start message loop.
+ *
+ * [Loop to Render data]
+ * glActiveTexture(): Active a Texture unit 
+ * glBindTexture(): Bind Texture
+ * glTexImage2D(): Specify pixel data to generate 2D Texture
+ * glUniform1i(): 
+ * glDrawArrays(): draw.
+ * glutSwapBuffers(): show.
+ */
+
+#include &lt;stdio.h&gt;
+
+#include "glew.h"
+#include "glut.h"
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;malloc.h&gt;
+#include &lt;string.h&gt;
+
+//Select one of the Texture mode (Set '1'):
+#define TEXTURE_DEFAULT   0
+//Rotate the texture
+#define TEXTURE_ROTATE    0
+//Show half of the Texture
+#define TEXTURE_HALF      1
+
+const int screen_w=500,screen_h=500;
+const int pixel_w = 320, pixel_h = 180;
+//YUV file
+FILE *infile = NULL;
+unsigned char buf[pixel_w*pixel_h*3/2];
+unsigned char *plane[3];
+
+
+GLuint p;                
+GLuint id_y, id_u, id_v; // Texture id
+GLuint textureUniformY, textureUniformU,textureUniformV;
+
+
+#define ATTRIB_VERTEX 3
+#define ATTRIB_TEXTURE 4
+
+void display(void){
+    if (fread(buf, 1, pixel_w*pixel_h*3/2, infile) != pixel_w*pixel_h*3/2){
+        // Loop
+        fseek(infile, 0, SEEK_SET);
+        fread(buf, 1, pixel_w*pixel_h*3/2, infile);
+    }
+	//Clear
+	glClearColor(0.0,255,0.0,0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	//Y
+	//
+    glActiveTexture(GL_TEXTURE0);
+	
+    glBindTexture(GL_TEXTURE_2D, id_y);
+	
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, pixel_w, pixel_h, 0, GL_RED, GL_UNSIGNED_BYTE, plane[0]); 
+	
+	glUniform1i(textureUniformY, 0);    
+	//U
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, id_u);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, pixel_w/2, pixel_h/2, 0, GL_RED, GL_UNSIGNED_BYTE, plane[1]);       
+    glUniform1i(textureUniformU, 1);
+	//V
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, id_v);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, pixel_w/2, pixel_h/2, 0, GL_RED, GL_UNSIGNED_BYTE, plane[2]);    
+    glUniform1i(textureUniformV, 2);   
+
+    // Draw
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	// Show
+	//Double
+    glutSwapBuffers();
+	//Single
+	//glFlush();
+}
+
+void timeFunc(int value){
+    display();
+    // Timer: 40ms
+    glutTimerFunc(40, timeFunc, 0);
+}
+
+char *textFileRead(char * filename)
+{
+    char *s = (char *)malloc(8000);
+    memset(s, 0, 8000);
+    FILE *infile = fopen(filename, "rb");
+    int len = fread(s, 1, 8000, infile);
+    fclose(infile);
+    s[len] = 0;
+    return s;
+}
+
+//Init Shader
+void InitShaders()
+{
+    GLint vertCompiled, fragCompiled, linked;
+    
+    GLint v, f;
+    const char *vs,*fs;
+	//Shader: step1
+    v = glCreateShader(GL_VERTEX_SHADER);
+    f = glCreateShader(GL_FRAGMENT_SHADER);
+	//Get source code
+    vs = textFileRead("Shader.vsh");
+    fs = textFileRead("Shader.fsh");
+	//Shader: step2
+    glShaderSource(v, 1, &amp;vs,NULL);
+    glShaderSource(f, 1, &amp;fs,NULL);
+	//Shader: step3
+    glCompileShader(v);
+	//Debug
+    glGetShaderiv(v, GL_COMPILE_STATUS, &amp;vertCompiled);
+    glCompileShader(f);
+    glGetShaderiv(f, GL_COMPILE_STATUS, &amp;fragCompiled);
+
+	//Program: Step1
+    p = glCreateProgram(); 
+	//Program: Step2
+    glAttachShader(p,v);
+    glAttachShader(p,f); 
+
+    glBindAttribLocation(p, ATTRIB_VERTEX, "vertexIn");
+    glBindAttribLocation(p, ATTRIB_TEXTURE, "textureIn");
+	//Program: Step3
+    glLinkProgram(p);
+	//Debug
+    glGetProgramiv(p, GL_LINK_STATUS, &amp;linked);  
+	//Program: Step4
+    glUseProgram(p);
+
+
+	//Get Uniform Variables Location
+	textureUniformY = glGetUniformLocation(p, "tex_y");
+	textureUniformU = glGetUniformLocation(p, "tex_u");
+	textureUniformV = glGetUniformLocation(p, "tex_v"); 
+
+#if TEXTURE_ROTATE
+    static const GLfloat vertexVertices[] = {
+        -1.0f, -0.5f,
+         0.5f, -1.0f,
+        -0.5f,  1.0f,
+         1.0f,  0.5f,
+    };    
+#else
+	static const GLfloat vertexVertices[] = {
+		-1.0f, -1.0f,
+		1.0f, -1.0f,
+		-1.0f,  1.0f,
+		1.0f,  1.0f,
+	};    
+#endif
+
+#if TEXTURE_HALF
+	static const GLfloat textureVertices[] = {
+		0.0f,  1.0f,
+		0.5f,  1.0f,
+		0.0f,  0.0f,
+		0.5f,  0.0f,
+	}; 
+#else
+	static const GLfloat textureVertices[] = {
+		0.0f,  1.0f,
+		1.0f,  1.0f,
+		0.0f,  0.0f,
+		1.0f,  0.0f,
+	}; 
+#endif
+	//Set Arrays
+    glVertexAttribPointer(ATTRIB_VERTEX, 2, GL_FLOAT, 0, 0, vertexVertices);
+	//Enable it
+    glEnableVertexAttribArray(ATTRIB_VERTEX);    
+    glVertexAttribPointer(ATTRIB_TEXTURE, 2, GL_FLOAT, 0, 0, textureVertices);
+    glEnableVertexAttribArray(ATTRIB_TEXTURE);
+
+
+	//Init Texture
+    glGenTextures(1, &amp;id_y); 
+    glBindTexture(GL_TEXTURE_2D, id_y);    
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    glGenTextures(1, &amp;id_u);
+    glBindTexture(GL_TEXTURE_2D, id_u);   
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    glGenTextures(1, &amp;id_v); 
+    glBindTexture(GL_TEXTURE_2D, id_v);    
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+}
+
+
+
+int main(int argc, char* argv[])
+{
+	//Open YUV420P file
+	if((infile=fopen("../test_yuv420p_320x180.yuv", "rb"))==NULL){
+		printf("cannot open this file\n");
+		return -1;
+	}
+
+	//YUV Data
+    plane[0] = buf;
+    plane[1] = plane[0] + pixel_w*pixel_h;
+    plane[2] = plane[1] + pixel_w*pixel_h/4;
+
+    //Init GLUT
+    glutInit(&amp;argc, argv);  
+	//GLUT_DOUBLE
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA /*| GLUT_STENCIL | GLUT_DEPTH*/);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(screen_w, screen_h);
+    glutCreateWindow("Simplest Video Play OpenGL (Texture)");
+	printf("Lei Xiaohua\n");
+	printf("http://blog.csdn.net/leixiaohua1020\n");
+    printf("Version: %s\n", glGetString(GL_VERSION));
+    GLenum l = glewInit();
+
+    glutDisplayFunc(&amp;display);
+    glutTimerFunc(40, timeFunc, 0); 
+
+    InitShaders();
+
+    // Begin!
+    glutMainLoop();
+
+    return 0;
+}
+</pre><br /><p></p><p>Shader.vsh</p><pre class="plain">attribute vec4 vertexIn; 
+attribute vec2 textureIn;
+varying vec2 textureOut;
+void main(void)
+{
+    gl_Position = vertexIn; 
+    textureOut = textureIn;
+}</pre><br />Shader.fsh<br /><pre class="plain">varying vec2 textureOut;
+uniform sampler2D tex_y;
+uniform sampler2D tex_u;
+uniform sampler2D tex_v;
+void main(void)
+{
+    vec3 yuv;
+    vec3 rgb;    
+    yuv.x = texture2D(tex_y, textureOut).r;
+    yuv.y = texture2D(tex_u, textureOut).r - 0.5;
+    yuv.z = texture2D(tex_v, textureOut).r - 0.5;
+    rgb = mat3( 1,       1,         1,
+                0,       -0.39465,  2.03211,
+                1.13983, -0.58060,  0) * yuv;    
+    gl_FragColor = vec4(rgb, 1);
+}</pre><div><br /></div><h3>代码注意事项</h3><p>1.<span style="white-space:pre;">	</span>目前支持读取YUV420P格式的像素数据。</p><br />2.<span style="white-space:pre;">	</span>窗口的宽高为screen_w，screen_h。像素数据的宽高为pixel_w,pixel_h。它们的定义如下。<br /><pre class="cpp">//Width, Height    
+const int screen_w=500,screen_h=500;    
+const int pixel_w=320,pixel_h=180;    </pre><br />3.<span style="white-space:pre;">	</span>通过代码前面的宏，可以选择几种不同的纹理映射方式<br /><pre class="cpp">//Select one of the Texture mode (Set '1'):  
+#define TEXTURE_DEFAULT 1  
+//Rotate the texture  
+#define TEXTURE_ROTATE  0  
+//Show half of the Texture  
+#define TEXTURE_HALF    0  </pre><br />第一种是正常的映射方式，第二种是“旋转”的方式，第三种是只映射一半的方式。<br /><br /><h2>结果</h2><p>程序运行结果如下。默认的纹理映射：</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027134906587?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>“旋转”：</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027134953593?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>一半纹理：</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141027134930003?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><br /><h2>下载</h2><p>代码位于“Simplest Media Play”中</p><br /><br />SourceForge项目地址：<a href="https://sourceforge.net/projects/simplestmediaplay/">https://sourceforge.net/projects/simplestmediaplay/</a><br />CSDN下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8054395">http://download.csdn.net/detail/leixiaohua1020/8054395</a><br /><p><br /></p><p></p><p>注：</p><p>该项目会不定时的更新并修复一些小问题，最新的版本请参考该系列文章的总述页面：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783"> 《最简单的视音频播放示例1：总述》</a></p><br /><br />上述工程包含了使用各种API（Direct3D，OpenGL，GDI，DirectSound，SDL2）播放多媒体例子。其中音频输入为PCM采样数据。输出至系统的声卡播放出来。视频输入为YUV/RGB像素数据。输出至显示器上的一个窗口播放出来。<br />通过本工程的代码初学者可以快速学习使用这几个API播放视频和音频的技术。<br />一共包括了如下几个子工程：<br />simplest_audio_play_directsound: <span style="white-space:pre;">	</span>使用DirectSound播放PCM音频采样数据。<br />simplest_audio_play_sdl2: <span style="white-space:pre;">			</span>使用SDL2播放PCM音频采样数据。<br />simplest_video_play_direct3d: <span style="white-space:pre;">		</span>使用Direct3D的Surface播放RGB/YUV视频像素数据。<br />simplest_video_play_direct3d_texture:<span style="white-space:pre;">	</span>使用Direct3D的Texture播放RGB视频像素数据。<br />simplest_video_play_gdi: <span style="white-space:pre;">			<span style="white-space:pre;">	</span></span>使用GDI播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl: <span style="white-space:pre;">		<span style="white-space:pre;">	</span></span>使用OpenGL播放RGB/YUV视频像素数据。<br /><span style="color:#ff0000;">simplest_video_play_opengl_texture:<span style="white-space:pre;">	</span>使用OpenGL的Texture播放YUV视频像素数据。</span><br />simplest_video_play_sdl2: <span style="white-space:pre;">			</span>使用SDL2播放RGB/YUV视频像素数据。<br /><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/40379845		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=OpenGL&t=blog" target="_blank">OpenGL						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Texture&t=blog" target="_blank">Texture						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=YUV&t=blog" target="_blank">YUV						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=渲染&t=blog" target="_blank">渲染						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Shader&t=blog" target="_blank">Shader						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2639829"  target="_blank">OpenGL						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40379845#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/King1425/article/details/72773331" target="_blank" strategy="BlogCommendFromBaidu_21">
+				<em>openGL</em> ES进阶教程（四）用<em>openGL</em> ES+MediaPlayer 渲染<em>播放</em>视频+滤镜效果			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/King1425/article/details/72773331" target="_blank" >
+				之前曾经写过用SurfaceView，<em>Texture</em>View+MediaPlayer <em>播放</em>视频，和  ffmpeg avi解码后SurfaceView<em>播放</em>视频 ，今天再给大家来一篇<em>openGL</em> ES+...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/King1425" title="King1425" target="_blank">
+					<img src="https://avatar.csdn.net/B/B/8/3_king1425.jpg" alt="King1425" class="avatar-pic">
+					<span class="name">King1425</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-27 09:50:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3253</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/sinat_36684217/article/details/78085611" target="_blank" strategy="BlogCommendFromBaidu_0">
+				基于 qt 的 <em>Opengl</em> 渲染 YUV			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/sinat_36684217/article/details/78085611" target="_blank" >
+				运行环境：Ubuntu 14.04、Qt 5.6.1
+qt <em>opengl</em> 渲染 显示 yuv 
+yv12
+nv12			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/sinat_36684217" title="sinat_36684217" target="_blank">
+					<img src="https://avatar.csdn.net/0/6/B/3_sinat_36684217.jpg" alt="sinat_36684217" class="avatar-pic">
+					<span class="name">sinat_36684217</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-09-25 15:21:59</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1037</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zhuweigangzwg/article/details/53927841" target="_blank" strategy="BlogCommendFromBaidu_1">
+				<em>OpenGL</em><em>播放</em>yuv数据流(着色器<em>SHADER</em>)-android(一)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhuweigangzwg/article/details/53927841" target="_blank" >
+				<em>OpenGL</em><em>播放</em>yuv数据流(着色器<em>SHADER</em>)-android(一)
+可以参考：http://blog.csdn.net/ueryueryuery/article/details/1760818...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zhuweigangzwg" title="zhuweigangzwg" target="_blank">
+					<img src="https://avatar.csdn.net/F/A/4/3_zhuweigangzwg.jpg" alt="zhuweigangzwg" class="avatar-pic">
+					<span class="name">zhuweigangzwg</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-29 14:58:41</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3765</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/lidec/article/details/73732369" target="_blank" strategy="BlogCommendFromBaidu_2">
+				视频学习笔记：Android <em>OpenGL</em>渲染<em>YUV420P</em>图像			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/lidec/article/details/73732369" target="_blank" >
+				背景Android 开发中，当得到一张yuv图需要显示时，之前的做法是利用ffmpeg自带的方法将其转换为RGB565或者RGBA，然后将RGB数据拷贝到aNativeWindow的图像缓冲区，达到显...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/lidec" title="lidec" target="_blank">
+					<img src="https://avatar.csdn.net/E/A/D/3_lidec.jpg" alt="lidec" class="avatar-pic">
+					<span class="name">lidec</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-06-26 19:43:03</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3178</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u013654125/article/details/78881325" target="_blank" strategy="BlogCommendFromBaidu_3">
+				<em>通过</em><em>opengl</em>来实现yuv的显示			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u013654125/article/details/78881325" target="_blank" >
+				文章转载自：http://blog.csdn.net/eastlhu/article/details/9382431
+// <em>OpenGL</em> ES 2.0 code  
+#include &quot;<em>Shader</em>....			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u013654125" title="u013654125" target="_blank">
+					<img src="https://avatar.csdn.net/F/8/9/3_u013654125.jpg" alt="u013654125" class="avatar-pic">
+					<span class="name">u013654125</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-12-23 17:59:32</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：176</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xiaoguaihai/article/details/8672631" target="_blank" strategy="BlogCommendFromBaidu_4">
+				【<em>OpenGL</em>】用<em>OpenGL</em> <em>shader</em>实现将YUV转RGB-(直接调用GPU实现，纯硬件方式，效率高)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xiaoguaihai/article/details/8672631" target="_blank" >
+				这段时间一直在搞视频格式的转换问题，终于最近将一个图片的YUV格式转RGB格式转换成功了。下面就来介绍一下：
+
+
+由于我的工程是在vs2008中的，其中包含一些相关头文件和库，所以下面只是列出部分核心...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xiaoguaihai" title="xiaoguaihai" target="_blank">
+					<img src="https://avatar.csdn.net/3/D/6/3_xiaoguaihai.jpg" alt="xiaoguaihai" class="avatar-pic">
+					<span class="name">xiaoguaihai</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-03-14 13:42:15</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：20483</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/GG_SiMiDa/article/details/74474780" target="_blank" strategy="BlogCommendFromBaidu_5">
+				<em>OpenGL</em>学习笔记--渲染yuv纹理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/GG_SiMiDa/article/details/74474780" target="_blank" >
+				一般ffmpeg解码后的数据类型都是I420，即<em>YUV420P</em>，<em>OpenGL</em>没有提供直接渲染yuv的接口，我们可以<em>通过</em>可编程渲染管线，利用多重纹理将Y、U、V纹理分别传入，在片元着色器GL_FRAGM...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/GG_SiMiDa" title="GG_SiMiDa" target="_blank">
+					<img src="https://avatar.csdn.net/B/2/4/3_gg_simida.jpg" alt="GG_SiMiDa" class="avatar-pic">
+					<span class="name">GG_SiMiDa</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-07-05 18:34:34</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1293</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/dtx525942103/9132413" target="_blank" strategy="BlogCommendFromBaidu_6">
+						android 采用<em>opengl</em>显示yuv数据					</a>
+				</h4>
+				<p>
+					<span class="data">2015年09月23日 </span>
+					<span class="size">631KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/dtx525942103/9132413" target="_blank" strategy="BlogCommendFromBaidu_6">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/vbbbbbbbbbbbbbbbbbb/9430156" target="_blank" strategy="BlogCommendFromBaidu_7">
+						<em>openGL</em>显示yuv代码					</a>
+				</h4>
+				<p>
+					<span class="data">2016年02月12日 </span>
+					<span class="size">943KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/vbbbbbbbbbbbbbbbbbb/9430156" target="_blank" strategy="BlogCommendFromBaidu_7">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zhuweigangzwg/article/details/53927750" target="_blank" strategy="BlogCommendFromBaidu_8">
+				<em>OpenGL</em><em>播放</em>yuv数据流(着色器<em>SHADER</em>)-IOS(一)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhuweigangzwg/article/details/53927750" target="_blank" >
+				<em>OpenGL</em><em>播放</em>yuv数据流(着色器<em>SHADER</em>)-IOS(一)
+//.h/** Copyright (c/c++)  
+ * Function
+ * Opanal for video renderi...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zhuweigangzwg" title="zhuweigangzwg" target="_blank">
+					<img src="https://avatar.csdn.net/F/A/4/3_zhuweigangzwg.jpg" alt="zhuweigangzwg" class="avatar-pic">
+					<span class="name">zhuweigangzwg</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-29 14:42:50</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2214</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40379845" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421246">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>15</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）";
+    var ChannelId = 16;
+    var articleId = "40379845";
+    var commentscount = 42;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/40379845";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "qt+opengl+yuv420";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=qt+opengl+yuv420"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

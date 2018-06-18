@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/40301179"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文接着上一篇文章继续记录Direct3D（简称D3D）播放视频的技术。上一篇文章中已经记录了使用Direct3D中的Surface渲染视频的技术。本文记录一种稍微复杂但是更加灵活的渲染视频的方式：使用Direct3D中的Texture（纹理）渲染视频。 纹理有关的基础知识在记录使用Direct3D的Texture渲染视频的技术之前，首先记录一下有关纹理的基础知识。我自己归纳总结了以下几点知识。1" />
+    <meta name="keywords" content="Direct3D,Texture" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>最简单的视音频播放示例4：Direct3D播放RGB（通过Texture） - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40301179"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2014年10月22日 02:26:51</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：14022</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p>=====================================================<br /></p><p>最简单的视音频播放示例系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783">最简单的视音频播放示例1：总述</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40266503">最简单的视音频播放示例2：GDI播放YUV, RGB</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40279297">最简单的视音频播放示例3：Direct3D播放YUV，RGB（通过Surface）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40301179">最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40333583">最简单的视音频播放示例5：OpenGL播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40379845">最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40525591">最简单的视音频播放示例7：SDL2播放RGB/YUV</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40540147">最简单的视音频播放示例8：DirectSound播放PCM</a><br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40544521">最简单的视音频播放示例9：SDL2播放PCM</a><br /></p><p>=====================================================</p><br /><p>本文接着上一篇文章继续记录Direct3D（简称D3D）播放视频的技术。上一篇文章中已经记录了使用Direct3D中的Surface渲染视频的技术。本文记录一种稍微复杂但是更加灵活的渲染视频的方式：使用Direct3D中的Texture（纹理）渲染视频。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020152542569?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><h2>纹理有关的基础知识</h2><p>在记录使用Direct3D的Texture渲染视频的技术之前，首先记录一下有关纹理的基础知识。我自己归纳总结了以下几点知识。</p><br /><br /><h3>1.<span style="white-space:pre;">	</span>渲染（Render），纹理（Texture）</h3><p>刚开始学习Direct3D显示视频技术的人一定会有一个疑问：“像GDI那样直接指定一下像素数据，然后画在窗口上不就行了？为什么又是渲染又是纹理，搞得这么复杂？”。确实，相比于GDI，Direct3D的入门的代码要复杂很多。其实Ditect3D中的很多概念并不是出自于视频领域，而是出自于3D制作。下面简单记录一下Direct3D这些概念的意义。</p><strong>纹理（Texture）</strong><br /><p>纹理实际上就是一张图片。个人感觉这个词的英文Texture其实也可以翻译成“材质”（“纹理”总给人一种有很多花纹的感觉 =_=）。在3D制作过程中，如果单靠计算机绘制生成3D模型，往往达不到很真实的效果。如果可以把一张2D图片“贴”到3D模型的表面上，则不但节约了计算机绘图的计算量，而且也能达到更真实的效果。纹理就是这张“贴图”。例如，下面这张图就是把一张“木箱表面”的纹理贴在了一个正六面体的六个面上，从而达到了一个“木箱”的效果（还挺像CS里面的木箱的）。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020152631366?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><strong>渲染（Render）</strong><br />渲染就是从模型生成图像的过程，通常是3D制作的最后一步。例如上图的那个木箱，在经过纹理贴图之后，形成了一个“木箱”模型。但是只有把它作为2D图像输出到屏幕上之后，它才能被我们的看见。这个输出的过程就是渲染。我们也可以调整这个“木箱模型”的参数，达到不同的渲染结果。比如说改变观察角度等等。<br /><br /><br /><h3>2.<span style="white-space:pre;">	</span>纹理坐标</h3>Direct3D使用一个纹理坐标系统，它是由用水平方向的u轴和竖直方向v轴构成。注意v轴是向下的（OpenGL的v轴是向上的）。需要注意的是，纹理坐标的取值范围是0-1，而不是像普通坐标那样以像素为单位。它代表了一种图像映射的关系。例如纹理坐标是(0.5,0.0)，就是把2D纹理横向二分之一处的点映射到随后定义的物体顶点上去。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141020152658463?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>纹理坐标和图像的大小是没有关系的。下图显示了一大一小两张图片中纹理坐标(0，0.5)的位置。可以看出都位于它们宽度中间的位置。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141020152715311?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>下面有关纹理坐标再多说两句。举个例子，纹理图像分辨率为640x480。我们如果选定(0, 0), (0, 1), (1, 0), (1, 1)四个纹理坐标的点对纹理图像映射的话，就是映射的整个纹理图片。如果我们选择(0, 0), (0, 1), (0.5, 0), (0.5, 1) 四个纹理坐标的点对纹理图像映射的话，就是映射左半边的纹理图片（相当于右半边图片不要了），相当于取了一张320x480的图片。但是有一点需要注意，映射的纹理图片不一定是“矩形”的。实际上可以指定任意形状的纹理坐标进行映射。下面这张图就是映射了一个梯形的纹理到目标物体表面。这也是纹理（Texture）比上一篇文章中记录的表面（Surface）更加灵活的地方。<br /><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141020152734811?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>当然，使用Direct3D播放视频的时候，还是映射整个纹理画面的，不然视频就没法看了。下面那本文记录的程序做几个示例。<br /><p>输入像素数据的分辨率是320x180。把它作为纹理的时候，它的纹理坐标如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020152805902?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>我们可以映射整张纹理到目标物体表面。把纹理坐标(0,0),(0,1)(1,0),(1,1)映射到坐标(0,0), (0,180), (320,0), (320,180)后的结果如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020152844980?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>可以试着修改一下目标物体表面的坐标。把纹理坐标(0,0),(0,1)(1,0),(1,1)映射到坐标(80,0), (0,135), (320,45), (240,180)后的结果如下图所示。相当于把纹理“旋转”了一下。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020152902250?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>也可以试着修改一下纹理的坐标。把纹理坐标(0,0),(0,1)(0.5,0),(0.5,1)映射到坐标(0,0), (0,180), (320,0), (320,180)后的结果如下图所示。由图可见，“故宫”只有左半边了。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020152918084?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><p>此外纹理映射还有其他更多的功能，使用起来非常灵活，就不一一记录了。</p><h3>3.<span style="white-space:pre;">	</span>灵活顶点格式（Flexible Vertex Format，FVF）</h3><p>上文记录了纹理到目标物体表面坐标的映射，但究竟是什么变量建立起了这二者之间的联系呢？就是灵活顶点格式。灵活顶点格式（Flexible Vertex Format，FVF）在Direct3D中用来描述一个顶点。灵活顶点格式可以让我们随心所欲地自定义其中所包含的顶点属性信息。例如，指定顶点的三维坐标、颜色、顶点法线和纹理坐标等等。比如我们可以定义一个只包含顶点三维坐标和颜色的结构体：</p><p></p><pre class="cpp">struct CUSTOMVERTEX  
+{  
+  float x, y, z;             //顶点的三维坐标值，x，y，z  
+   DWORD color;               //顶点的颜色值  
+};</pre><br /><p></p>也可以定义一个复杂一点，包含很多属性的顶点：<br /><pre class="cpp">struct NormalTexVertex  
+{  
+  float x, y, z; // 顶点坐标  
+  float nx, ny, nz; // 法线向量  
+  float u, v; // 纹理坐标  
+};  </pre><br />但单单定义出结构体， Direct3D是不能理解我们在干嘛的，这时候，我们需要一个宏来传达我们定义的顶点有哪些属性。<br /><p>比如刚刚我定义的CUSTOMVERTEX结构体就可以通过以下方式来描述：</p><p></p><pre class="cpp">#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)  </pre><p></p><p>需要注意的是：上述的定义是有顺序的。Direct3D支持下述定义。</p><p></p><table border="1" cellspacing="0" cellpadding="0" width="500" align="center"><tbody><tr><td valign="top" width="50"><p>序号</p></td>  <td valign="top" width="150"><p>标示</p></td>  <td valign="top"><p>含义</p></td> </tr><tr><td valign="top"><p>1</p></td>  <td valign="top"><p>D3DFVF_XYZ</p></td>  <td valign="top"><p>包含未经过坐标变换的顶点坐标值，不可以和D3DFVF_XYZRHW一起使用</p></td> </tr><tr><td valign="top"><p>2</p></td>  <td valign="top"><p>D3DFVF_XYZRHW</p></td>  <td valign="top"><p>包含经过坐标变换的顶点坐标值，不可以和D3DFVF_XYZ以及D3DFVF_NORMAL一起使用</p></td> </tr><tr><td valign="top"><p>3</p></td>  <td valign="top"><p>D3DFVF_XYZB1~5</p></td>  <td valign="top"><p>标示顶点混合的权重值</p></td> </tr><tr><td valign="top"><p>4</p></td>  <td valign="top"><p>D3DFVF_NORMAL</p></td>  <td valign="top"><p>包含法线向量的数值</p></td> </tr><tr><td valign="top"><p>5</p></td>  <td valign="top"><p>D3DFVF_DIFFUSE</p></td>  <td valign="top"><p>包含漫反射的颜色值</p></td> </tr><tr><td valign="top"><p>6</p></td>  <td valign="top"><p>D3DFVF_SPECULAR</p></td>  <td valign="top"><p>包含镜面反射的数值</p></td> </tr><tr><td valign="top"><p>7</p></td>  <td valign="top"><p>D3DFVF_TEX1~8</p></td>  <td valign="top"><p>表示包含1~8个纹理坐标信息，是几重纹理后缀就用几，最多8层纹理</p></td> </tr></tbody></table><br /><br />下面给出一个使用Direct3D播放视频的时候的自定义顶点类型的代码。<br /><pre class="cpp">typedef struct
+{
+	FLOAT       x,y,z;
+	FLOAT       rhw; 
+	D3DCOLOR    diffuse; 
+	FLOAT       tu, tv; 
+} CUSTOMVERTEX;
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)</pre><br /><p>从上述代码中可以看出，其中包含了一个顶点在目标物体表面的坐标(x, y)，以及它的纹理坐标(tu, tv)。修改上述两个坐标的值，就可以实现各种各样的映射了。</p><p>PS：z坐标在这里用不到。</p><br /><h3>4.<span style="white-space:pre;">	</span>纹理（Texture）和表面（Surface）的区别与联系</h3>Surfaces是一个存储2D图像的内存。<br />Textures是一张贴图。Texture的图像数据存储于它的Surface中。一个Texture可以包含多个Surface。<br /><br /><br /><h2>D3D视频显示的流程</h2><p><span style="white-space:pre;">	</span>下文将会结合代码记录Direct3D中与视频显示相关的功能。</p><strong>函数分析</strong><br /><span style="white-space:pre;">	</span>有关DirectX的安装可以参考前文，不再记录。在这里只记录一下使用Direct3D的Texture渲染视频的步骤：<br />1.<span style="white-space:pre;">	</span>创建一个窗口（不属于D3D的API）<br />2.<span style="white-space:pre;">	</span>初始化<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)<span style="white-space:pre;">	</span>创建一个Device<br />2)<span style="white-space:pre;">	</span>设置一些参数（非必须）<br />3)<span style="white-space:pre;">	</span>基于Device创建一个<span style="color:#ff0000;">Texture</span><br />4)<span style="white-space:pre;">	</span>基于Device创建一个<span style="color:#ff0000;">VertexBuffer</span><br />5)<span style="white-space:pre;">	</span>填充VertexBuffer</blockquote>3.<span style="white-space:pre;">	</span>循环显示画面<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">1)<span style="white-space:pre;">	</span>清理<br />2)<span style="white-space:pre;">	</span><span style="color:#ff0000;">一帧视频数</span>据拷贝至<span style="color:#ff0000;">Texture</span><br />3)<span style="white-space:pre;">	</span>开始一个Scene<br />4)<span style="white-space:pre;">	</span>Device需要启用的<span style="color:#ff0000;">Texture</span><br />5)<span style="white-space:pre;">	</span>Device绑定<span style="color:#ff0000;">VertexBuffer</span><br />6)<span style="white-space:pre;">	</span>渲染<br />7)<span style="white-space:pre;">	</span>显示</blockquote><span style="white-space:pre;">	</span>下面结合Direct3D的Texture播放RGB的示例代码，详细分析一下上文的流程。注意有一部分代码和上一篇文章中介绍的Direct3D的Surface播放视频的代码是一样的，这里再重复一下。<br /><h3>1.<span style="white-space:pre;">	</span>创建一个窗口（不属于D3D的API）</h3>建立一个Win32的窗口程序，就可以用于Direct3D的显示。程序的入口函数是WinMain()，调用CreateWindow()即可创建一个窗口。<br /><h3>2.<span style="white-space:pre;">	</span>初始化</h3><strong>1)<span style="white-space:pre;">	</span>创建一个Device</strong><br /><p>这一步完成的时候，可以得到一个IDirect3DDevice9接口的指针。创建一个Device又可以分成以下几个详细的步骤：</p><p><strong>(a)<span style="white-space:pre;">	</span>通过 Direct3DCreate9()创建一个IDirect3D9接口。</strong></p>获取IDirect3D9接口的关键实现代码只有一行：<br /><pre class="cpp">IDirect3D9 *m_pDirect3D9 = Direct3DCreate9( D3D_SDK_VERSION );</pre><p>IDirect3D9接口是一个代表我们显示3D图形的物理设备的C++对象。它可以用于获得物理设备的信息和创建一个IDirect3DDevice9接口。例如，可以通过它的GetAdapterDisplayMode()函数获取当前主显卡输出的分辨率，刷新频率等参数，实现代码如下。</p><p></p><pre class="cpp">D3DDISPLAYMODE d3dDisplayMode;
+lRet = m_pDirect3D9-&gt;GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &amp;d3dDisplayMode );</pre>由代码可以看出，获取的信息存储在D3DDISPLAYMODE结构体中。D3DDISPLAYMODE结构体中包含了主显卡的分辨率等信息：<p></p><pre class="cpp">/* Display Modes */
+typedef struct _D3DDISPLAYMODE
+{
+    UINT            Width;
+    UINT            Height;
+    UINT            RefreshRate;
+    D3DFORMAT       Format;
+} D3DDISPLAYMODE;</pre><br />也可以用它的GetDeviceCaps()函数搞清楚主显卡是否支持硬件顶点处理，实现的代码如下。<br /><pre class="cpp">	D3DCAPS9 d3dcaps;
+	lRet=m_pDirect3D9-&gt;GetDeviceCaps(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&amp;d3dcaps);
+	int hal_vp = 0;
+	if( d3dcaps.DevCaps &amp; D3DDEVCAPS_HWTRANSFORMANDLIGHT ){
+		// yes, save in ‘vp’ the fact that hardware vertex
+		// processing is supported.
+		hal_vp = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+	}</pre><br /><p>由代码可以看出，获取的设备信息存储在D3DCAPS9结构体中。D3DCAPS9定义比较长包含了各种各样的信息，不再列出来。从该结构体的DevCaps字段可以判断得出该设备是否支持硬件顶点处理。</p><p><strong>(b)<span style="white-space:pre;">	</span>设置D3DPRESENT_PARAMETERS结构体，为创建Device做准备。</strong></p><p>接下来填充一个D3DPRESENT_PARAMETERS结构的实例。这个结构用于设定我们将要创建的IDirect3DDevice9对象的一些特性，它的定义如下。</p><pre class="cpp">typedef struct _D3DPRESENT_PARAMETERS_
+{
+    UINT                BackBufferWidth;
+    UINT                BackBufferHeight;
+    D3DFORMAT           BackBufferFormat;
+    UINT                BackBufferCount;
+
+
+    D3DMULTISAMPLE_TYPE MultiSampleType;
+    DWORD               MultiSampleQuality;
+
+
+    D3DSWAPEFFECT       SwapEffect;
+    HWND                hDeviceWindow;
+    BOOL                Windowed;
+    BOOL                EnableAutoDepthStencil;
+    D3DFORMAT           AutoDepthStencilFormat;
+    DWORD               Flags;
+
+
+    /* FullScreen_RefreshRateInHz must be zero for Windowed mode */
+    UINT                FullScreen_RefreshRateInHz;
+    UINT                PresentationInterval;
+} D3DPRESENT_PARAMETERS;</pre><br />D3DPRESENT_PARAMETERS这个结构体比较重要。详细列一下它每个参数的含义：<br />BackBufferWidth：后备缓冲表面的宽度（以像素为单位）<br />BackBufferHeight：后备缓冲表面的高度（以像素为单位）<br />BackBufferFormat：后备缓冲表面的像素格式（如：32位像素格式为D3DFMT：A8R8G8B8）<br />BackBufferCount：后备缓冲表面的数量，通常设为“1”，即只有一个后备表面<br />MultiSampleType：全屏抗锯齿的类型，显示视频没用到，不详细分析。<br />MultiSampleQuality：全屏抗锯齿的质量等级，显示视频没用到，不详细分析。<br />SwapEffect：指定表面在交换链中是如何被交换的。支持以下取值：<br /><span style="white-space:pre;">	</span>*D3DSWAPEFFECT_DISCARD:后备缓冲区的东西被复制到屏幕上后,后备缓冲区的东西就没有什么用了,可以丢弃了。<br /><span style="white-space:pre;">	</span>*D3DSWAPEFFECT_FLIP:<span style="white-space:pre;">	</span>后备缓冲拷贝到前台缓冲，保持后备缓冲内容不变。当后备缓冲大于1个时使用。<br /><span style="white-space:pre;">	</span>*D3DSWAPEFFECT_COPY:<span style="white-space:pre;">	</span>同上。当后备缓冲等于1个时使用。<br />一般使用D3DSWAPEFFECT_DISCARD。<br />hDeviceWindow：与设备相关的窗口句柄，你想在哪个窗口绘制就写那个窗口的句柄<br />Windowed：BOOL型，设为true则为窗口模式，false则为全屏模式<br />EnableAutoDepthStencil：设为true，D3D将自动创建深度/模版缓冲。<br />AutoDepthStencilFormat：深度/模版缓冲的格式<br />Flags：一些附加特性<br />FullScreen_RefreshRateInHz：刷新率，设定D3DPRESENT_RATE_DEFAULT使用默认刷新率<br />PresentationInterval：设置刷新的间隔，可以用以下方式：<br /><span style="white-space:pre;">	</span>*D3DPRENSENT_INTERVAL_DEFAULT，则说明在显示一个渲染画面的时候必要等候显示器刷新完一次屏幕。例如显示器刷新率设为80Hz的话，则一秒最多可以显示80个渲染画面。<br /><span style="white-space:pre;">	</span>*D3DPRENSENT_INTERVAL_IMMEDIATE:表示可以以实时的方式来显示渲染画面。<br />下面列出使用Direct3D播放视频的时候的一个典型的设置。可以看出有一些参数都是设置的False：<br /><pre class="cpp">	//D3DPRESENT_PARAMETERS Describes the presentation parameters.
+	D3DPRESENT_PARAMETERS d3dpp;
+	ZeroMemory( &amp;d3dpp, sizeof(d3dpp) );
+	d3dpp.BackBufferWidth = lWidth;   
+	d3dpp.BackBufferHeight = lHeight;
+	d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;	
+	d3dpp.BackBufferCount        = 1;
+	d3dpp.MultiSampleType   = D3DMULTISAMPLE_NONE;	
+	d3dpp.SwapEffect  = D3DSWAPEFFECT_COPY;	
+	d3dpp.hDeviceWindow  = hwnd;
+	d3dpp.Windowed   = TRUE;
+	d3dpp.EnableAutoDepthStencil = FALSE;
+	d3dpp.Flags = D3DPRESENTFLAG_VIDEO;
+	d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_DEFAULT;</pre><br /><p><strong>(c)<span style="white-space:pre;">	</span>通过IDirect3D9的CreateDevice ()创建一个Device。</strong></p><p>最后就可以调用IDirect3D9的CreateDevice()方法创建Device了。</p>CreateDevice()的函数原型如下：<br /><pre class="cpp">HRESULT CreateDevice(
+UINT Adapter,
+D3DDEVTYPE DeviceType,
+HWND hFocusWindow,
+DWORD BehaviorFlags,
+D3DPRESENT_PARAMETERS *pPresentationParameters,
+IDirect3DDevice9** ppReturnedDeviceInterface
+);</pre><br />其中每个参数的含义如下所列：<br />Adapter：指定对象要表示的物理显示设备。D3DADAPTER_DEFAULT始终是主要的显示器适配器。<br />DeviceType：设备类型，包括D3DDEVTYPE_HAL(Hardware Accelerator，硬件加速)、D3DDEVTYPE_SW(SoftWare，软件)。<br />hFocusWindow：同我们在前面d3dpp.hDeviceWindow的相同<br />BehaviorFlags：设定为D3DCREATE_SOFTWARE_VERTEXPROCESSING（软件顶点处理）或者D3DCREATE_HARDWARE_VERTEXPROCESSING（硬件顶点处理），使用前应该用D3DCAPS9来检测用户计算机是否支持硬件顶点处理功能。<br />pPresentationParameters：指定一个已经初始化好的D3DPRESENT_PARAMETERS实例<br />ppReturnedDeviceInterface：返回创建的Device<br /><br />下面列出使用Direct3D播放视频的时候的一个典型的代码。<br /><pre class="cpp">IDirect3DDevice9 *m_pDirect3DDevice;
+D3DPRESENT_PARAMETERS d3dpp;
+…
+m_pDirect3D9-&gt;CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, NULL,
+D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED, &amp;d3dpp, &amp;m_pDirect3DDevice );</pre><br /><strong>2)<span style="white-space:pre;">	</span>设置一些参数（非必须）</strong><br /><p>这一步不是必需的。创建完成IDirect3DDevice9之后，就可以针对该Device设置一些参数了。IDirect3DDevice9提供了一系列设置参数的API，在这里无法一一列举，仅列出几个在视频播放过程中设置参数需要用到的API：SetSamplerState()，SetRenderState()，SetTextureStageState()。</p><p><strong>Direct3D函数命名</strong></p>在记录着几个函数的作用之前，先说一下IDirect3D中函数的命名特点：所有接口中的函数名称都重新定义了一遍。原来形如XXXX-&gt;YYYY(….)的函数，名称改为了IDirect3DXXXX_YYYY(XXXX,…)。即原本接口的指针移动到了函数内部成为了第一个参数，同时函数名称前面加上了“IDirect3DXXXX_”。这样描述说不清楚，举个具体的例子吧。比如说调用IDirect3DDevice9中的SetSamplerState可以采用如下方法：<br /><pre class="cpp">IDirect3DDevice9 * m_pDirect3DDevice;
+…
+m_pDirect3DDevice-&gt;SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);</pre><br />实际上也可以使用如下方法：<br /><pre class="cpp">IDirect3DDevice9 * m_pDirect3DDevice;
+…
+IDirect3DDevice9_SetSamplerState (m_pDirect3DDevice, 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);</pre><br /><br /><p><strong>设置参数</strong></p><p>设置参数这里用到了3个API：SetSamplerState()，SetRenderState()，SetTextureStageState()。其中SetSamplerState()可以设置枚举类型D3DSAMPLERSTATETYPE的属性的值。SetRenderState()可以设置枚举类型D3DRENDERSTATETYPE的属性的值。SetTextureStageState()可以设置枚举类型D3DTEXTURESTAGESTATETYPE的属性的值。以上3个枚举类型中的数据太多，无法一一列举。在这里直接列出Direct3D播放视频的时候的设置代码：</p><pre class="cpp">	//SetSamplerState()
+	// Texture coordinates outside the range [0.0, 1.0] are set
+	// to the texture color at 0.0 or 1.0, respectively.
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+	// Set linear filtering quality
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	//SetRenderState()
+	//set maximum ambient light
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_AMBIENT, D3DCOLOR_XRGB(255,255,0));
+	// Turn off culling
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_CULLMODE, D3DCULL_NONE);
+	// Turn off the zbuffer
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ZENABLE, D3DZB_FALSE);
+	// Turn off lights
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_LIGHTING, FALSE);
+	// Enable dithering
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_DITHERENABLE, TRUE);
+	// disable stencil
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_STENCILENABLE, FALSE);
+	// manage blending
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHABLENDENABLE, TRUE);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_SRCBLEND,D3DBLEND_SRCALPHA);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_DESTBLEND,D3DBLEND_INVSRCALPHA);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHATESTENABLE,TRUE);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHAREF, 0x10);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHAFUNC,D3DCMP_GREATER);
+	// Set texture states
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_COLOROP,D3DTOP_MODULATE);
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_COLORARG1,D3DTA_TEXTURE);
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_COLORARG2,D3DTA_DIFFUSE);
+	// turn off alpha operation
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);</pre><br />这些代码设定的属性值确实太多，我自己也没能一一研究。这些属性不设置的话也可以显示，可能会影响到显示的效果，在这里不再详细叙述。<br /><p><strong>3)<span style="white-space:pre;">	</span>基于Device创建一个Texture</strong></p><p>通过IDirect3DDevice9接口的CreateTexture()方法可以创建一个Texture。CreateTexture()的函数原型如下所示：</p><pre class="cpp">HRESULT CreateTexture(
+  UINT Width,
+  UINT Height,
+  UINT Levels,
+  DWORD Usage,
+  D3DFORMAT Format,
+  D3DPOOL Pool,
+  IDirect3DTexture9 **ppTexture,
+  HANDLE *pSharedHandle
+);</pre><br />其中每个参数的含义如下所列：<br />Width：宽。<br />Height：高。<br />Levels：设为1。<br />Usage：可以设定一些选项。例如D3DUSAGE_SOFTWAREPROCESSING表示使用软件来进行顶点运算，不指定这个值的话，就取的是默认方式：硬件顶点运算。<br />Format：<br />Pool：D3DPOOL定义了资源对应的内存类型，例如如下几种类型。<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">D3D3POOL_DEFAULT：默认值，表示存在于显卡的显存中。<br />D3D3POOL_MANAGED：由Direct3D自由调度内存的位置（显存或者缓存中）。<br />D3DPOOL_SYSTEMMEM： 表示位于内存中。</blockquote>ppTexture：得到的Texture。<br />pSharedHandle：可以设为NULL。<br />下面给出一个使用Direct3D播放视频的时候CreateTexture()的典型代码。<br /><pre class="cpp">IDirect3DDevice9 * m_pDirect3DDevice;
+IDirect3DTexture9 *m_pDirect3DTexture;
+…
+m_pDirect3DDevice-&gt;CreateTexture(lWidth, lHeight, 1, D3DUSAGE_SOFTWAREPROCESSING,
+		D3DFMT_X8R8G8B8,
+		D3DPOOL_MANAGED,
+		&amp;m_pDirect3DTexture, NULL );</pre><br /><p><strong>4)<span style="white-space:pre;">	</span>基于Device创建一个VertexBuffer</strong></p><p>通过IDirect3DDevice9接口的CreateVertexBuffer()方法即可创建一个VertexBuffer。CreateVertexBuffer ()的函数原型如下所示：</p><pre class="cpp">HRESULT IDirect3DDevice9::CreateVertexBuffer(
+UINT Length,
+DWORD Usage,
+DWORD FVF,
+D3DPOOL Pool,
+IDirectVertexBuffer9** ppVertexBuffer,
+HANDLE pHandle
+);</pre><br />其中每个参数的含义如下所列：<br />Length：指定顶点缓冲区的大小,以字节为单位<br />Usage：指定顶点缓冲区属性（上文已经说过）。它可以设为0或几种值的组合，例如D3DUSAGE_SOFTWAREPROCESSING表示使用软件进行顶点计算,否则使用硬件进行顶点计算<br />FVF：表示顶点的灵活顶点格式，可以设置D3DFVF_DIFFUSE，D3DFVF_XYZRHW等值。注意其中有些值不能同时使用。<br />Pool：D3DPOOL定义了资源对应的内存类型，例如如下几种类型（上文已经说过）。<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">D3D3POOL_DEFAULT: 默认值，表示顶点缓存存在于显卡的显存中。<br />D3D3POOL_MANAGED：由Direct3D自由调度顶点缓冲区内存的位置（显存或者缓存中）。<br />D3DPOOL_SYSTEMMEM： 表示顶点缓存位于内存中。</blockquote>ppVertexBuffer：是一个指向创建的顶点缓冲区地址的指针,用于返回顶点缓冲区的地址<br />pSharedHandle：是一个保留参数,可设置为NULL<br />下面给出一个使用Direct3D播放视频的时候CreateVertexBuffer ()的典型代码。<br /><pre class="cpp">IDirect3DDevice9 * m_pDirect3DDevice;
+IDirect3DVertexBuffer9 *m_pDirect3DVertexBuffer;
+typedef struct
+{
+	FLOAT       x,y,z;
+	FLOAT       rhw; 
+	D3DCOLOR    diffuse; 
+	FLOAT       tu, tv; 
+} CUSTOMVERTEX;
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
+…
+m_pDirect3DDevice-&gt;CreateVertexBuffer( 4 * sizeof(CUSTOMVERTEX),
+		0, D3DFVF_CUSTOMVERTEX, D3DPOOL_DEFAULT, &amp;m_pDirect3DVertexBuffer, NULL );</pre><br />上述代码中用到了一个名为CUSTOMVERTEX自定义的灵活顶点格式(Flexible Vertex Format简称FVF)。前文已经介绍，这里不再重复。<br /><br /><br /><strong>5)<span style="white-space:pre;">	</span>填充VertexBuffer</strong><br />通过IDirect3DVertexBuffer9接口的Lock()函数可以锁定VertexBuffer并且填充其中的数据。数据填充完毕后，可以调用IDirect3DVertexBuffer9d的Unlock()方法解锁。<br />其中每个参数的含义如下所列：<br />OffsetToLock： 指定加锁内存起始地址。<br />SizeToLock：指定加锁内存大小。<br />ppbData： 用于返回内存指针地址。<br />Flags： 表示顶点缓冲区的加锁属性。<br />下面给出一个使用Direct3D播放视频的时候IDirect3DVertexBuffer9的Lock ()的典型代码。其中的CUSTOMVERTEX是自定义的灵活顶点格式。<br /><br /><pre class="cpp">//Flexible Vertex Format, FVF
+typedef struct{
+	FLOAT       x,y,z;      // vertex untransformed position
+	FLOAT       rhw;        // eye distance
+	D3DCOLOR    diffuse;    // diffuse color
+	FLOAT       tu, tv;     // texture relative coordinates
+} CUSTOMVERTEX;
+IDirect3DVertexBuffer9 *m_pDirect3DVertexBuffer;
+…
+CUSTOMVERTEX *pVertex;
+	lRet = m_pDirect3DVertexBuffer-&gt;Lock( 0, 4 * sizeof(CUSTOMVERTEX), (void**)&amp;pVertex, 0 );</pre><br />加锁之后，直接通过赋值的方法设定自定义的定点数组就可以了，例如上文中的pVertex中的数据的设置如下所示。其中lWidth和lHeight分别代表了视频显示窗口的宽和高。<br /><pre class="cpp">	pVertex[0].x       = 0.0f;       // left
+	pVertex[0].y       = 0.0f;       // top
+	pVertex[0].z       = 0.0f;
+	pVertex[0].diffuse = D3DCOLOR_ARGB(255, 255, 255, 255);
+	pVertex[0].rhw     = 1.0f;
+	pVertex[0].tu      = 0.0f;
+	pVertex[0].tv      = 0.0f;
+
+
+	pVertex[1].x       = lWidth;    // right
+	pVertex[1].y       = 0.0f;       // top
+	pVertex[1].z       = 0.0f;
+	pVertex[1].diffuse = D3DCOLOR_ARGB(255, 255, 255, 255);
+	pVertex[1].rhw     = 1.0f;
+	pVertex[1].tu      = 1.0f;
+	pVertex[1].tv      = 0.0f;
+
+
+	pVertex[2].x       = lWidth;    // right
+	pVertex[2].y       = lHeight;   // bottom
+	pVertex[2].z       = 0.0f;
+	pVertex[2].diffuse = D3DCOLOR_ARGB(255, 255, 255, 255);
+	pVertex[2].rhw     = 1.0f;
+	pVertex[2].tu      = 1.0f;
+	pVertex[2].tv      = 1.0f;
+
+
+	pVertex[3].x       = 0.0f;       // left
+	pVertex[3].y       = lHeight;   // bottom
+	pVertex[3].z       = 0.0f;
+	pVertex[3].diffuse = D3DCOLOR_ARGB(255, 255, 255, 255);
+	pVertex[3].rhw     = 1.0f;
+	pVertex[3].tu      = 0.0f;
+	pVertex[3].tv      = 1.0f;</pre><br />从代码中可以看出，x、y分别指定了映射后的坐标。z在这里没有用到。Diffuse在这里设定的是白色。tu、tv分别指定了纹理坐标。<br /><p>数据设定完后，调用Unlock()即可。</p><pre class="cpp">m_pDirect3DVertexBuffer-&gt;Unlock();</pre><p>填充VertexBuffer完成之后，初始化工作就完成了。</p><p><br /></p><h3>3.<span style="white-space:pre;">	</span>循环显示画面</h3><p>循环显示画面就是一帧一帧的读取YUV/RGB数据，然后显示在屏幕上的过程，下面详述一下步骤。</p><p><strong>1)<span style="white-space:pre;">	</span>清理</strong></p><p>在显示之前，通过IDirect3DDevice9接口的Clear()函数可以清理Surface。个人感觉在播放视频的时候用不用这个函数都可以。因为视频本身就是全屏显示的。显示下一帧的时候自然会覆盖前一帧的所有内容。Clear()函数的原型如下所示：</p><pre class="cpp">HRESULT Clear(
+ DWORD Count,
+ const D3DRECT *pRects,
+ DWORD Flags,
+ D3DCOLOR Color,
+ float Z,
+ DWORD Stencil
+);</pre><br />其中每个参数的含义如下所列：<br />Count：说明你要清空的矩形数目。如果要清空的是整个客户区窗口，则设为0。 <br /> pRects：这是一个D3DRECT结构体的一个数组，如果count中设为5，则这个数组中就得有5个元素。 <br /> Flags：一些标记组合。只有三种标记：D3DCLEAR_STENCIL , D3DCLEAR_TARGET , D3DCLEAR_ZBUFFER。 <br /> Color：清除目标区域所使用的颜色。 <br /> float：设置Z缓冲的Z初始值。Z缓冲还没研究过，不再记录。 <br /> Stencil：这个在播放视频的时候也没有用到，不再记录。<br />下面给出一个使用Direct3D播放视频的时候IDirect3DDevice9的Clear()的典型代码。<br /><pre class="cpp">IDirect3DDevice9 *m_pDirect3DDevice;
+m_pDirect3DDevice-&gt;Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0);</pre>上述代码运行完后，屏幕会变成蓝色（R,G,B取值为0,0,255）。<br /><br /><br /><p><strong>2)<span style="white-space:pre;">	</span>一帧视频数据拷贝至Texture</strong></p><p>操作Texture的像素数据，需要使用IDirect3DTexture9的LockRect()和UnlockRect()方法。使用LockRect()锁定纹理上的一块矩形区域，该矩形区域被映射成像素数组。利用函数返回的D3DLOCKED_RECT结构体，可以对数组中的像素进行直接存取。LockRect()函数原型如下。</p><pre class="cpp">HRESULT LockRect(
+  UINT Level,
+  D3DLOCKED_RECT *pLockedRect,
+  const RECT *pRect,
+  DWORD Flags
+);</pre><br />每个参数的意义如下：<br />Level: 指定了锁定的纹理是哪一层。<br />pLockedRect: 返回的一个D3DLOCKED_RECT结构体用于描述被锁定的区域。<br />pRect: 使用一个 RECT结构体指定需要锁定的区域。如果为NULL的话就是整个区域。<br />Flags: 暂时还没有细研究。<br />其中D3DLOCKED_RECT结构体定义如下所示。<br /><pre class="cpp">typedef struct _D3DLOCKED_RECT
+{
+    INT                 Pitch;
+    void*               pBits;
+} D3DLOCKED_RECT;</pre><br />两个参数的意义如下：<br />Pitch：Texture中一行像素的数据量（Bytes）。注意，这个值和设备有关，一般为4的整数倍，可能会大于一行像素的数据量。大于的那部分是无效的数据。<br />pBits：指向被锁定的数据。<br /><p>结构如下图所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20141020155024640?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p>使用LockRect()函数之后，就可以对其返回的D3DLOCKED_RECT中的数据进行操作了。例如memcpy()等。操作完成后，调用UnlockRect()方法。<br /><br /><p>下面给出一个使用Direct3D播放视频的时候IDirect3DTexture9的数据拷贝的典型代码。</p><p></p><pre class="cpp">IDirect3DTexture9 *m_pDirect3DTexture;
+...
+D3DLOCKED_RECT d3d_rect;
+
+
+// Copy pixel data to texture
+	m_pDirect3DTexture-&gt;LockRect( 0, &amp;d3d_rect, 0, 0 );
+	byte *pSrc = buffer;
+	byte *pDest = (byte *)d3d_rect.pBits;
+	int stride = d3d_rect.Pitch;
+
+
+	int pixel_w_size=pixel_w*bpp/8;
+	for(unsigned long i=0; i&lt; pixel_h; i++){
+		memcpy( pDest, pSrc, pixel_w_size );
+		pDest += stride;
+		pSrc += pixel_w_size;
+	}
+
+
+	m_pDirect3DTexture-&gt;UnlockRect( 0 );</pre><p><br /></p><p>从代码中可以看出，是一行一行的拷贝像素数据的。</p><br /><strong>3)<span style="white-space:pre;">	</span>开始一个Scene</strong><br />使用IDirect3DDevice9接口的BeginScene()开始一个Scene。Direct3D中规定所有绘制方法都必须在BeginScene()和EndScene()之间完成。这个函数没有参数。<br /><br /><p><strong>4)<span style="white-space:pre;">	</span>Device设置需要启用的Texture</strong></p><p>使用IDirect3DDevice9接口的SetTexture ()设置我们当前需要启用的纹理。SetTexture()函数的原型如下。</p><p></p><pre class="cpp">HRESULT SetTexture( DWORD Sampler,IDirect3DBaseTexture9 *pTexture );</pre>其中每个参数的含义如下所列：<p></p>Sampler：指定了应用的纹理是哪一层。Direct3D中最多可以设置8层纹理，所以这个参数取值就在0~7之间了。<br />pTexture：表示我们将要启用的纹理的IDirect3DBaseTexture9接口对象。<br />下面给出一个使用Direct3D播放视频的时候IDirect3DDevice9的SetTexture ()的典型代码。<br /><pre class="cpp">IDirect3DDevice9 *m_pDirect3DDevice;
+IDirect3DTexture9 *m_pDirect3DTexture;
+…
+m_pDirect3DDevice-&gt;SetTexture( 0, m_pDirect3DTexture );</pre><br /><p><strong>5)<span style="white-space:pre;">	</span>Device绑定VertexBuffer</strong></p><p>使用IDirect3DDevice9接口的SetStreamSource()绑定VertexBuffer。SetStreamSource()方法把一个顶点缓存绑定到一个设备数据流，这样就在顶点数据和一个顶点数据流端口之间建立了联系。</p>而后使用SetFVF()设置顶点格式。即告知系统如何解读VertexBuffer中的数据。<br />SetStreamSource()函数的原型如下。<br /><pre class="cpp">HRESULT SetStreamSource(
+  UINT StreamNumber,
+  IDirect3DVertexBuffer9 *pStreamData,
+  UINT OffsetInBytes,
+  UINT Stride
+);</pre><br />几个参数的定义如下：<br />StreamNumber：指定数据流。<br />pStreamData：指向IDirect3DVertexBuffer9的指针，用于绑定数据流。<br />OffsetInBytes：还没有研究该字段。<br />Stride：单位Vertex数据的大小。<br />下面给出一个使用Direct3D播放视频的时候IDirect3DDevice9的SetStreamSource()和SetFVF()的典型代码。<br /><pre class="cpp">IDirect3DDevice9 *m_pDirect3DDevice;
+//Flexible Vertex Format, FVF
+typedef struct
+{
+	FLOAT       x,y,z;      // vertex untransformed position
+	FLOAT       rhw;        // eye distance
+	D3DCOLOR    diffuse;    // diffuse color
+	FLOAT       tu, tv;     // texture relative coordinates
+} CUSTOMVERTEX;
+// Custom flexible vertex format (FVF), which describes custom vertex structure
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
+//...
+m_pDirect3DDevice-&gt;SetStreamSource( 0, m_pDirect3DVertexBuffer,0, sizeof(CUSTOMVERTEX) );
+m_pDirect3DDevice-&gt;SetFVF( D3DFVF_CUSTOMVERTEX );</pre><br /><strong>6)<span style="white-space:pre;">	</span>渲染</strong><br />使用IDirect3DDevice9接口的DrawPrimitive()进行渲染。渲染完成后，就可以使用EndScene()结束这个Scene了。DrawPrimitive()函数原型如下。<br /><pre class="cpp">HRESULT DrawPrimitive(
+  D3DPRIMITIVETYPE PrimitiveType,
+  UINT StartVertex,
+  UINT PrimitiveCount
+);</pre><br />几个参数的意义如下：<br />PrimitiveType：一个标记，它通知 Direct3D 以哪种方式渲染物件。<br />StartVertex：第一个顶点的索引。<br />PrimitiveCount：通知绘制的物件的数目。<br />PrimitiveType有下面选项（注：这个地方不太好理解，直接使用D3DPT_TRIANGLEFAN也可以）<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">D3DPT_POINTLIST <br />点列表：将一连串的顶点作为像素进行绘制<br />D3DPT_LINELIST <br />线列表：彼此孤立（彼此没有发生连接）的一些直线<br />D3DPT_LINESTRIP<br />线带：一连串连接的直线。每条直线都是从前一个顶点到当前顶点绘制而成，很像连接点<br />D3DPT_TRIANGLELIST<br />三角形列表：这个设置比较简单，索引区每隔三个一个三角形。 <br />D3DPT_TRIANGLESTRIP<br />三角形带：索引区中每三个一个三角形，前一个三角形的后两个顶点和后一个三角形的前两个顶点重合。即绘制的第一个三边形使用3个顶点，后面绘制的每一个三角形只使用一个额外的顶点。<br />D3DPT_TRIANGLEFAN <br />三角扇形：索引区中第一个点为公共顶点，后面依次展开，每两个点和公共定点组成三角形。<br />下图显示了几种不同的渲染物件的方式。图中分别按顺序1,3,5,7,9…渲染这些点。</blockquote><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141020155215406?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div>对应的代码如下所示<br /><pre class="cpp">//从第0个点开始用D3DPT_POINTLIST模式渲染6个点
+m_pDirect3DDevice-&gt;DrawPrimitive(D3DPT_POINTLIST,0,6);
+//从第0个点开始用D3DPT_LINELIST 模式渲染3条线
+m_pDirect3DDevice-&gt;DrawPrimitive(D3DPT_LINELIST,0,3);
+//从第0个点开始用D3DPT_TRIANGLESTRIP 模式渲染4个三角形
+m_pDirect3DDevice-&gt;DrawPrimitive(D3DPT_TRIANGLESTRIP,0,4);
+//从第0个点开始用D3DPT_TRIANGLEFAN模式渲染3个三角形
+m_pDirect3DDevice-&gt;DrawPrimitive(D3DPT_TRIANGLEFAN,0,3);
+//从第0个点开始用D3DPT_LINESTRIP 模式渲染5条线
+m_pDirect3DDevice-&gt;DrawPrimitive(D3DPT_LINELIST,0,5);
+//从第0个点开始用D3DPT_TRIANGLELIST 模式渲染2个三角形
+m_pDirect3DDevice-&gt;DrawPrimitive(D3DPT_TRIANGLELIST,0,2);</pre>下面给出一个使用Direct3D播放视频的时候IDirect3DDevice9的DrawPrimitive ()的典型代码。<br /><pre class="cpp">IDirect3DDevice9 *m_pDirect3DDevice;
+…
+m_pDirect3DDevice-&gt;DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2 );</pre><br /><br /><strong>7)<span style="white-space:pre;">	</span>显示</strong><br />使用IDirect3DDevice9接口的Present ()显示结果。Present ()的原型如下。<br /><pre class="cpp">HRESULT Present(
+   const RECT *pSourceRect,
+   const RECT *pDestRect,
+   HWND hDestWindowOverride,
+   const RGNDATA *pDirtyRegion
+  );</pre><br />几个参数的意义如下：<br />pSourceRect：你想要显示的后备缓冲区的一个矩形区域。设为NULL则表示要把整个后备缓冲区的内容都显示。 <br />pDestRect：表示一个显示区域。设为NULL表示整个客户显示区。 <br />hDestWindowOverride：你可以通过它来把显示的内容显示到不同的窗口去。设为NULL则表示显示到主窗口。<br />pDirtyRegion：高级使用。一般设为NULL<br />下面给出一个使用Direct3D播放视频的时候IDirect3DDevice9的Present ()的典型代码。可见直接全部设置为NULL就可以了。<br /><pre class="cpp">IDirect3DDevice9 *m_pDirect3DDevice;
+…
+m_pDirect3DDevice-&gt;Present( NULL, NULL, NULL, NULL );</pre><br /><br /><h2>播放视频流程总结</h2><p>文章至此，使用Direct3D显示YUV/RGB的全部流程就记录完毕了。最后贴一张图总结上述流程。</p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141020155732418?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><br /><h2>数据结构总结</h2><p>在Direct3D播放YUV/RGB的流程中，用到了许多的数据结构，现在理一下它们之间的关系，如下图所示。</p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20141020155827642?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><p><strong>接口如下所列</strong></p><p>IDirect3D9</p>IDirect3DDevice9<br />IDirect3DTexture9<br />IDirect3DVertexBuffer9<br /><p><br /></p><p><strong>结构体如下所列</strong></p><p>D3DCAPS9</p>D3DDISPLAYMODE<br />D3DPRESENT_PARAMETERS<br />D3DLOCKED_RECT<br /><p>CUSTOMVERTEX</p><h2>代码</h2>完成的代码其实长度并不长，如下所示。<br /><pre class="cpp">/**
+ * 最简单的Direct3D播放视频的例子(Direct3D播放RGB)[Texture]
+ * Simplest Video Play Direct3D (Direct3D play RGB)[Texture]
+ *
+ * 雷霄骅 Lei Xiaohua
+ * leixiaohua1020@126.com
+ * 中国传媒大学/数字电视技术
+ * Communication University of China / Digital TV Technology
+ * http://blog.csdn.net/leixiaohua1020
+ *
+ * 本程序使用Direct3D播放RGB/YUV视频像素数据。使用D3D中的Texture渲染数据。
+ * 相对于使用Surface渲染视频数据来说，使用Texture渲染视频数据功能更加灵活，
+ * 但是学习起来也会相对复杂一些。
+ *
+ * 函数调用步骤如下：
+ *
+ * [初始化]
+ * Direct3DCreate9()：获得IDirect3D9
+ * IDirect3D9-&gt;CreateDevice()：通过IDirect3D9创建Device（设备）
+ * IDirect3DDevice9-&gt;CreateTexture()：通过Device创建一个Texture（纹理）。
+ * IDirect3DDevice9-&gt;CreateVertexBuffer()：通过Device创建一个VertexBuffer（顶点缓存）。
+ * IDirect3DVertexBuffer9-&gt;Lock()：锁定顶点缓存。
+ * memcpy()：填充顶点缓存。
+ * IDirect3DVertexBuffer9-&gt;Unlock()：解锁顶点缓存。
+ *
+ * [循环渲染数据]
+ * IDirect3DTexture9-&gt;LockRect()：锁定纹理。
+ * memcpy()：填充纹理数据
+ * IDirect3DTexture9-&gt;UnLockRect()：解锁纹理。
+ * IDirect3DDevice9-&gt;BeginScene()：开始绘制。
+ * IDirect3DDevice9-&gt;SetTexture()：设置当前要渲染的纹理。
+ * IDirect3DDevice9-&gt;SetStreamSource()：绑定VertexBuffer。
+ * IDirect3DDevice9-&gt;SetFVF()：设置Vertex格式。
+ * IDirect3DDevice9-&gt;DrawPrimitive()：渲染。
+ * IDirect3DDevice9-&gt;EndScene()：结束绘制。
+ * IDirect3DDevice9-&gt;Present()：显示出来。
+ *
+ * This software plays RGB/YUV raw video data using Direct3D.
+ * It uses Texture in D3D to render the pixel data.
+ * Compared to another method (use Surface), it's more flexible
+ * but a little difficult.
+ *
+ * The process is shown as follows:
+ *
+ * [Init]
+ * Direct3DCreate9()：Get IDirect3D9.
+ * IDirect3D9-&gt;CreateDevice()：Create a Device.
+ * IDirect3DDevice9-&gt;CreateTexture()：Create a Texture.
+ * IDirect3DDevice9-&gt;CreateVertexBuffer()：Create a VertexBuffer.
+ * IDirect3DVertexBuffer9-&gt;Lock()：Lock VertexBuffer.
+ * memcpy()：Fill VertexBuffer.
+ * IDirect3DVertexBuffer9-&gt;Unlock()：UnLock VertexBuffer.
+ *
+ * [Loop to Render data]
+ * IDirect3DTexture9-&gt;LockRect()：Lock Texture.
+ * memcpy()：Fill pixel data...
+ * IDirect3DTexture9-&gt;UnLockRect()：UnLock Texture.
+ * IDirect3DDevice9-&gt;BeginScene()：Begin to draw.
+ * IDirect3DDevice9-&gt;SetTexture()：Set current Texture.
+ * IDirect3DDevice9-&gt;SetStreamSource()：Bind VertexBuffer.
+ * IDirect3DDevice9-&gt;SetFVF()：Set Vertex Format.
+ * IDirect3DDevice9-&gt;DrawPrimitive()：Render.
+ * IDirect3DDevice9-&gt;EndScene()：End drawing.
+ * IDirect3DDevice9-&gt;Present()：Show on the screen.
+ */
+
+#include &lt;stdio.h&gt;
+#include &lt;tchar.h&gt;
+#include &lt;d3d9.h&gt;
+
+//Flexible Vertex Format, FVF
+typedef struct
+{
+	FLOAT       x,y,z;      
+	FLOAT       rhw;        
+	D3DCOLOR    diffuse;    
+	FLOAT       tu, tv;     
+} CUSTOMVERTEX;
+
+CRITICAL_SECTION  m_critial;
+HWND     m_hVideoWnd;  // 视频窗口
+
+IDirect3D9 *m_pDirect3D9= NULL;
+IDirect3DDevice9 *m_pDirect3DDevice= NULL;
+IDirect3DTexture9 *m_pDirect3DTexture= NULL;
+IDirect3DVertexBuffer9 *m_pDirect3DVertexBuffer= NULL;
+
+// Custom flexible vertex format (FVF), which describes custom vertex structure
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
+
+
+//Select one of the Texture mode (Set '1'):
+#define TEXTURE_DEFAULT 0
+//Rotate the texture
+#define TEXTURE_ROTATE  1
+//Show half of the Texture
+#define TEXTURE_HALF    0
+
+//Width, Height
+const int screen_w=500,screen_h=500;
+const int pixel_w=320,pixel_h=180;
+FILE *fp=NULL;
+//Bit per Pixel
+const int bpp=32;
+
+unsigned char buffer[pixel_w*pixel_h*bpp/8];
+
+
+void Cleanup()
+{
+	EnterCriticalSection(&amp;m_critial);
+	if(m_pDirect3DVertexBuffer)
+		m_pDirect3DVertexBuffer-&gt;Release();
+	if(m_pDirect3DTexture)
+		m_pDirect3DTexture-&gt;Release();
+	if(m_pDirect3DDevice)
+		m_pDirect3DDevice-&gt;Release();
+	if(m_pDirect3D9)
+		m_pDirect3D9-&gt;Release();
+	LeaveCriticalSection(&amp;m_critial);
+}
+
+
+int InitD3D( HWND hwnd, unsigned long lWidth, unsigned long lHeight )
+{
+	HRESULT lRet;
+	InitializeCriticalSection(&amp;m_critial);
+
+	Cleanup();
+
+	EnterCriticalSection(&amp;m_critial);
+	// Create IDirect3D
+	m_pDirect3D9 = Direct3DCreate9( D3D_SDK_VERSION );
+	if ( m_pDirect3D9 == NULL ){
+		LeaveCriticalSection(&amp;m_critial);
+		return -1;
+	}
+
+	if ( lWidth == 0 || lHeight == 0 ){
+		RECT rt;
+		GetClientRect( hwnd, &amp;rt );
+		lWidth = rt.right-rt.left;
+		lHeight = rt.bottom-rt.top;
+	}
+	
+	/*
+	//Get Some Info
+	//Retrieves device-specific information about a device.
+	D3DCAPS9 d3dcaps;
+	lRet=m_pDirect3D9-&gt;GetDeviceCaps(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&amp;d3dcaps);
+	int hal_vp = 0;
+	if( d3dcaps.DevCaps &amp; D3DDEVCAPS_HWTRANSFORMANDLIGHT ){
+		//save in hal_vp the fact that hardware vertex processing is supported.
+		hal_vp = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+	}
+	// get D3DDISPLAYMODE
+	D3DDISPLAYMODE d3dDisplayMode;
+	lRet = m_pDirect3D9-&gt;GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &amp;d3dDisplayMode );
+	if ( FAILED(lRet) ){
+		LeaveCriticalSection(&amp;m_critial);
+		return -1;
+	}
+	*/
+
+	//D3DPRESENT_PARAMETERS Describes the presentation parameters.
+	D3DPRESENT_PARAMETERS d3dpp;
+	ZeroMemory( &amp;d3dpp, sizeof(d3dpp) );
+	d3dpp.BackBufferWidth = lWidth;   
+	d3dpp.BackBufferHeight = lHeight;
+	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;	
+	//d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;
+	d3dpp.BackBufferCount        = 1;
+	d3dpp.MultiSampleType   = D3DMULTISAMPLE_NONE;	
+	d3dpp.SwapEffect  = D3DSWAPEFFECT_COPY;	
+	d3dpp.hDeviceWindow  = hwnd;
+	d3dpp.Windowed   = TRUE;
+	d3dpp.EnableAutoDepthStencil = FALSE;
+	d3dpp.Flags = D3DPRESENTFLAG_VIDEO;
+	d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_DEFAULT;
+
+	m_hVideoWnd = hwnd;
+
+	//Creates a device to represent the display adapter.
+	//Adapter:		Ordinal number that denotes the display adapter. D3DADAPTER_DEFAULT is always the primary display 
+	//D3DDEVTYPE:	D3DDEVTYPE_HAL((Hardware Accelerator), or D3DDEVTYPE_SW(SoftWare)
+	//BehaviorFlags：D3DCREATE_SOFTWARE_VERTEXPROCESSING, or D3DCREATE_HARDWARE_VERTEXPROCESSING
+	lRet = m_pDirect3D9-&gt;CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, NULL,
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED, &amp;d3dpp, &amp;m_pDirect3DDevice );
+
+	/*
+	//Set some property
+	//SetSamplerState()
+	// Texture coordinates outside the range [0.0, 1.0] are set
+	// to the texture color at 0.0 or 1.0, respectively.
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+	// Set linear filtering quality
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	IDirect3DDevice9_SetSamplerState(m_pDirect3DDevice, 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	//SetRenderState()
+	//set maximum ambient light
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_AMBIENT, D3DCOLOR_XRGB(255,255,0));
+	// Turn off culling
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_CULLMODE, D3DCULL_NONE);
+	// Turn off the zbuffer
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ZENABLE, D3DZB_FALSE);
+	// Turn off lights
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_LIGHTING, FALSE);
+	// Enable dithering
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_DITHERENABLE, TRUE);
+	// disable stencil
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_STENCILENABLE, FALSE);
+	// manage blending
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHABLENDENABLE, TRUE);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_SRCBLEND,D3DBLEND_SRCALPHA);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_DESTBLEND,D3DBLEND_INVSRCALPHA);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHATESTENABLE,TRUE);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHAREF, 0x10);
+	IDirect3DDevice9_SetRenderState(m_pDirect3DDevice, D3DRS_ALPHAFUNC,D3DCMP_GREATER);
+	// Set texture states
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_COLOROP,D3DTOP_MODULATE);
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_COLORARG1,D3DTA_TEXTURE);
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_COLORARG2,D3DTA_DIFFUSE);
+	// turn off alpha operation
+	IDirect3DDevice9_SetTextureStageState(m_pDirect3DDevice, 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	*/
+
+
+	//Creates a texture resource.
+	//Usage: 
+	//D3DUSAGE_SOFTWAREPROCESSING: If this flag is used, vertex processing is done in software. 
+	//							If this flag is not used, vertex processing is done in hardware.
+	//D3DPool: 
+	//D3D3POOL_DEFAULT:	Resources are placed in the hardware memory (Such as video memory)
+	//D3D3POOL_MANAGED:	Resources are placed automatically to device-accessible memory as needed.
+	//D3DPOOL_SYSTEMMEM:  Resources are placed in system memory.
+
+	lRet = m_pDirect3DDevice-&gt;CreateTexture(lWidth, lHeight, 1, D3DUSAGE_SOFTWAREPROCESSING,
+		D3DFMT_X8R8G8B8,
+		D3DPOOL_MANAGED,
+		&amp;m_pDirect3DTexture, NULL );
+
+
+	if ( FAILED(lRet) ){
+		LeaveCriticalSection(&amp;m_critial);
+		return -1;
+	}
+	// Create Vertex Buffer
+	lRet = m_pDirect3DDevice-&gt;CreateVertexBuffer( 4 * sizeof(CUSTOMVERTEX),
+		0, D3DFVF_CUSTOMVERTEX, D3DPOOL_DEFAULT, &amp;m_pDirect3DVertexBuffer, NULL );
+	if ( FAILED(lRet) ){
+		LeaveCriticalSection(&amp;m_critial);
+		return -1;
+	}
+
+#if TEXTURE_HALF
+	CUSTOMVERTEX vertices[] ={
+		{0.0f,		0.0f,		0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.0f,0.0f},
+		{lWidth,	0.0f,		0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.5f,0.0f},
+		{lWidth,	lHeight,	0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.5f,1.0f},
+		{0.0f,		lHeight,	0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.0f,1.0f}
+	};
+#elif TEXTURE_ROTATE
+	//Rotate Texture?
+	CUSTOMVERTEX vertices[] ={
+		{lWidth/4,		0.0f,		0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.0f,0.0f},
+		{lWidth,		lHeight/4,	0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),1.0f,0.0f},
+		{lWidth*3/4,	lHeight,	0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),1.0f,1.0f},
+		{0.0f,			lHeight*3/4,0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.0f,1.0f}
+	};
+#else
+	CUSTOMVERTEX vertices[] ={
+		{0.0f,		0.0f,		0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.0f,0.0f},
+		{lWidth,	0.0f,		0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),1.0f,0.0f},
+		{lWidth,	lHeight,	0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),1.0f,1.0f},
+		{0.0f,		lHeight,	0.0f,	1.0f,D3DCOLOR_ARGB(255, 255, 255, 255),0.0f,1.0f}
+	};
+#endif
+
+
+	// Fill Vertex Buffer
+	CUSTOMVERTEX *pVertex;
+	lRet = m_pDirect3DVertexBuffer-&gt;Lock( 0, 4 * sizeof(CUSTOMVERTEX), (void**)&amp;pVertex, 0 );
+	if ( FAILED(lRet) ){
+		LeaveCriticalSection(&amp;m_critial);
+		return -1;
+	}
+	memcpy(pVertex, vertices, sizeof(vertices));
+
+	m_pDirect3DVertexBuffer-&gt;Unlock();
+	LeaveCriticalSection(&amp;m_critial);
+	return 0;
+}
+
+
+bool Render()
+{
+	LRESULT lRet;
+	//Read Data
+	//RGB
+	if (fread(buffer, 1, pixel_w*pixel_h*bpp/8, fp) != pixel_w*pixel_h*bpp/8){
+		// Loop
+		fseek(fp, 0, SEEK_SET);
+		fread(buffer, 1, pixel_w*pixel_h*bpp/8, fp);
+	}
+
+	if(buffer == NULL || m_pDirect3DDevice == NULL) 
+		return false;
+	//Clears one or more surfaces
+	lRet = m_pDirect3DDevice-&gt;Clear(0, NULL, D3DCLEAR_TARGET,
+		D3DCOLOR_XRGB(0, 255, 0), 1.0f, 0);
+
+	D3DLOCKED_RECT d3d_rect;
+	//Locks a rectangle on a texture resource.
+	//And then we can manipulate pixel data in it.
+	lRet = m_pDirect3DTexture-&gt;LockRect( 0, &amp;d3d_rect, 0, 0 );
+	if ( FAILED(lRet) ){
+		return false;
+	}
+	// Copy pixel data to texture
+	byte *pSrc = buffer;
+	byte *pDest = (byte *)d3d_rect.pBits;
+	int stride = d3d_rect.Pitch;
+
+	int pixel_w_size=pixel_w*bpp/8;
+	for(unsigned long i=0; i&lt; pixel_h; i++){
+		memcpy( pDest, pSrc, pixel_w_size );
+		pDest += stride;
+		pSrc += pixel_w_size;
+	}
+
+	m_pDirect3DTexture-&gt;UnlockRect( 0 );
+
+	//Begin the scene
+	if ( FAILED(m_pDirect3DDevice-&gt;BeginScene()) ){
+		return false;
+	}
+
+	lRet = m_pDirect3DDevice-&gt;SetTexture( 0, m_pDirect3DTexture );
+
+	
+	//Binds a vertex buffer to a device data stream.
+	m_pDirect3DDevice-&gt;SetStreamSource( 0, m_pDirect3DVertexBuffer,
+		0, sizeof(CUSTOMVERTEX) );
+	//Sets the current vertex stream declaration.
+	lRet = m_pDirect3DDevice-&gt;SetFVF( D3DFVF_CUSTOMVERTEX );
+	//Renders a sequence of nonindexed, geometric primitives of the 
+	//specified type from the current set of data input streams.
+	m_pDirect3DDevice-&gt;DrawPrimitive( D3DPT_TRIANGLEFAN, 0, 2 );
+	m_pDirect3DDevice-&gt;EndScene();
+	//Presents the contents of the next buffer in the sequence of back 
+	//buffers owned by the device.
+	m_pDirect3DDevice-&gt;Present( NULL, NULL, NULL, NULL );
+	return true;
+}
+
+
+LRESULT WINAPI MyWndProc(HWND hwnd, UINT msg, WPARAM wparma, LPARAM lparam)
+{
+	switch(msg){
+	case WM_DESTROY:
+		Cleanup();
+		PostQuitMessage(0);
+		return 0;
+	}
+	return DefWindowProc(hwnd, msg, wparma, lparam);
+}
+
+int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
+{
+	WNDCLASSEX wc;
+	ZeroMemory(&amp;wc, sizeof(wc));
+
+	wc.cbSize = sizeof(wc);
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wc.lpfnWndProc = (WNDPROC)MyWndProc;
+	wc.lpszClassName = L"D3D";
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+
+	RegisterClassEx(&amp;wc);
+
+	HWND hwnd = NULL;
+	hwnd = CreateWindow(L"D3D", L"Simplest Video Play Direct3D (Texture)", WS_OVERLAPPEDWINDOW, 100, 100, screen_w, screen_h, NULL, NULL, hInstance, NULL);
+	if (hwnd==NULL){
+		return -1;
+	}
+
+
+	if(InitD3D( hwnd, pixel_w, pixel_h)==E_FAIL){
+		return -1;
+	}
+
+	ShowWindow(hwnd, nShowCmd);
+	UpdateWindow(hwnd);
+
+	fp=fopen("../test_bgra_320x180.rgb","rb+");
+
+	if(fp==NULL){
+		printf("Cannot open this file.\n");
+		return -1;
+	}
+
+	MSG msg;
+	ZeroMemory(&amp;msg, sizeof(msg));
+
+	while (msg.message != WM_QUIT){
+		//PeekMessage, not GetMessage
+		if (PeekMessage(&amp;msg, NULL, 0, 0, PM_REMOVE)){
+			TranslateMessage(&amp;msg);
+			DispatchMessage(&amp;msg);
+		}
+		else{
+			Sleep(40);
+			Render();
+		}
+	}
+
+
+	UnregisterClass(L"D3D", hInstance);
+	return 0;
+}
+</pre><br /><br /><h3>代码说明</h3><br /><br />1.<span style="white-space:pre;">	</span>目前支持读取bgra格式的像素数据。<br /><br />2.<span style="white-space:pre;">	</span>窗口的宽高为screen_w，screen_h。像素数据的宽高为pixel_w,pixel_h。它们的定义如下。<br /><pre class="cpp">//Width, Height  
+const int screen_w=500,screen_h=500;  
+const int pixel_w=320,pixel_h=180;  </pre><br />3.<span style="white-space:pre;">	</span>其他要点<br /><span style="white-space:pre;">	</span>本程序使用的是Win32的API创建的窗口。但注意这个并不是MFC应用程序的窗口。MFC代码量太大，并不适宜用来做教程。因此使用Win32的API创建窗口。程序的入口函数是WinMain()，其中调用了CreateWindow()创建了显示视频的窗口。此外，程序中的消息循环使用的是PeekMessage()而不是GetMessage()。GetMessage()获取消息后，将消息从系统中移除，当系统无消息时，会等待下一条消息，是阻塞函数。而函数PeekMesssge()是以查看的方式从系统中获取消息，可以不将消息从系统中移除（相当于“偷看”消息），是非阻塞函数；当系统无消息时，返回FALSE，继续执行后续代码。使用PeekMessage()的好处是可以保证每隔40ms可以显示下一帧画面。<br /><br /><br />4.<span style="white-space:pre;">	</span>通过代码前面的宏，可以选择几种不同的纹理映射方式<br /><pre class="cpp">//Select one of the Texture mode (Set '1'):
+#define TEXTURE_DEFAULT 1
+//Rotate the texture
+#define TEXTURE_ROTATE  0
+//Show half of the Texture
+#define TEXTURE_HALF    0</pre><br />第一种是正常的映射方式，第二种是“旋转”的方式，第三种是只映射一半的方式。<br /><br /><br />5.<span style="white-space:pre;">	</span>代码中还有很多注释的部分都是可用的代码，可以取消注释看看效果。<br /><br /><h2>运行结果</h2><p><span style="font-size:12px;">下面展示一下三种纹理映射方式的结果：</span></p>（1）<span style="white-space:pre;">	</span>正常<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141020160012318?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /> </div>（2）<span style="white-space:pre;">	</span>“旋转”<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141020155655921?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /> </div>（3）<span style="white-space:pre;">	</span>一半纹理<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20141020160050960?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /> </div><br /><br /><h2>下载</h2><p>代码位于“Simplest Media Play”中</p><br /><br />SourceForge项目地址：<a href="https://sourceforge.net/projects/simplestmediaplay/">https://sourceforge.net/projects/simplestmediaplay/</a><br />CSDN下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8054395">http://download.csdn.net/detail/leixiaohua1020/8054395</a><br /><br /><p></p><p>注：</p><p>该项目会不定时的更新并修复一些小问题，最新的版本请参考该系列文章的总述页面：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783"> 《最简单的视音频播放示例1：总述》</a></p><p><br /></p>上述工程包含了使用各种API（Direct3D，OpenGL，GDI，DirectSound，SDL2）播放多媒体例子。其中音频输入为PCM采样数据。输出至系统的声卡播放出来。视频输入为YUV/RGB像素数据。输出至显示器上的一个窗口播放出来。<br />通过本工程的代码初学者可以快速学习使用这几个API播放视频和音频的技术。<br />一共包括了如下几个子工程：<br />simplest_audio_play_directsound: <span style="white-space:pre;">	</span>使用DirectSound播放PCM音频采样数据。<br />simplest_audio_play_sdl2: <span style="white-space:pre;">			</span>使用SDL2播放PCM音频采样数据。<br />simplest_video_play_direct3d: <span style="white-space:pre;">		</span>使用Direct3D的Surface播放RGB/YUV视频像素数据。<br /><span style="color:#ff0000;">simplest_video_play_direct3d_texture:使用Direct3D的Texture播放RGB视频像素数据。</span><br />simplest_video_play_gdi: <span style="white-space:pre;">			</span>使用GDI播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl: <span style="white-space:pre;">		</span>使用OpenGL播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl_texture:<span style="white-space:pre;">	</span>使用OpenGL的Texture播放YUV视频像素数据。<br />simplest_video_play_sdl2: <span style="white-space:pre;">			</span>使用SDL2播放RGB/YUV视频像素数据。<br /><br /><br /><br /><br /><br />            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/40301179		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Direct3D&t=blog" target="_blank">Direct3D						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=Texture&t=blog" target="_blank">Texture						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=视频&t=blog" target="_blank">视频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=渲染&t=blog" target="_blank">渲染						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=RGB&t=blog" target="_blank">RGB						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2619491"  target="_blank">Direct3D						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40301179#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/40333583" target="_blank" strategy="BlogCommendFromBaidu_0">
+				最<em>简单</em>的<em>视音频</em><em>播放</em><em>示例</em>5：OpenGL<em>播放</em><em>RGB</em>/YUV			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/40333583" target="_blank" >
+				本文记录OpenGL<em>播放</em>视频的技术。OpenGL是一个和<em>Direct3D</em>同一层面的技术。相比于<em>Direct3D</em>，OpenGL具有跨平台的优势。尽管在游戏领域，DirectX的影响力已渐渐超越OpenG...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-10-27 12:35:41</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：24363</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/hnust_xiaoluoluo/article/details/79897560" target="_blank" strategy="BlogCommendFromBaidu_1">
+				抗锯齿渲染			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/hnust_xiaoluoluo/article/details/79897560" target="_blank" >
+				抗锯齿渲染
+
+1. 逻辑表示
+
+一个图形的大小总与其数学模型相对应.
+
+2. 抗锯齿绘图
+
+又称为反锯齿或者反走样,就是对图像的边缘进行平滑处理,使其看起来更加柔和流畅的一种技术.QPainter进行...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/hnust_xiaoluoluo" title="hnust_xiaoluoluo" target="_blank">
+					<img src="https://avatar.csdn.net/A/0/0/3_hnust_xiaoluoluo.jpg" alt="hnust_xiaoluoluo" class="avatar-pic">
+					<span class="name">hnust_xiaoluoluo</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-04-11 15:36:13</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：20</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/huanggang982/article/details/50548394" target="_blank" strategy="BlogCommendFromBaidu_2">
+				常见几种视频渲染模式介绍			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/huanggang982/article/details/50548394" target="_blank" >
+				1、视频覆盖：
+　　大概在1995年，当mpeg1(VCD)回放在PC上开始流行的时候，pc的处理能力还么有强大到实时<em>播放</em>的地步。显卡制造厂商适时的推出了&quot;video overlay（视频覆盖）&quot;的...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/huanggang982" title="huanggang982" target="_blank">
+					<img src="https://avatar.csdn.net/1/D/1/3_huanggang982.jpg" alt="huanggang982" class="avatar-pic">
+					<span class="name">huanggang982</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-01-20 14:44:45</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3720</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leonwei/article/details/8212701" target="_blank" strategy="BlogCommendFromBaidu_3">
+				D3D9学习笔记(七) <em>TEXTURE</em> 纹理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leonwei/article/details/8212701" target="_blank" >
+				<em>texture</em>永远是图形学最精华细节最多的地方，所以我也花了最多的时间阅读和写这个章节。
+ 
+d3dDevice-&gt;Set<em>Texture</em>（n,tex）设置当前在n通道的<em>texture</em>，n的数量硬件...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leonwei" title="leonwei" target="_blank">
+					<img src="https://avatar.csdn.net/E/2/5/3_leonwei.jpg" alt="leonwei" class="avatar-pic">
+					<span class="name">leonwei</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2012-11-22 15:56:31</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：9211</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qq_29523119/article/details/52725566" target="_blank" strategy="BlogCommendFromBaidu_4">
+				Directx11基础教程四之<em>Texture</em>(纹理)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_29523119/article/details/52725566" target="_blank" >
+				这节教程是介绍如何实现D3D11的纹理映射的,先看看这节的结构吧
+
+
+
+
+
+
+在看看纹理坐标系
+
+
+
+
+这节注意的:
+第一,首先修复一下前几个教程冒出来的BUG，那时我以为是VS2015的bug，也就...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qq_29523119" title="qq_29523119" target="_blank">
+					<img src="https://avatar.csdn.net/5/A/4/3_qq_29523119.jpg" alt="qq_29523119" class="avatar-pic">
+					<span class="name">qq_29523119</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-10-02 22:57:29</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1430</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/narutojzm1/article/details/49702673" target="_blank" strategy="BlogCommendFromBaidu_5">
+				D3D中的纹理贴图			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/narutojzm1/article/details/49702673" target="_blank" >
+				2014/09/18
+（转载自http://www.cppblog.com/lovedday/archive/2007/05/13/24059.html）
+
+
+
+天行健 君子当自强而不息
+...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/narutojzm1" title="narutojzm1" target="_blank">
+					<img src="https://avatar.csdn.net/9/2/F/3_narutojzm1.jpg" alt="narutojzm1" class="avatar-pic">
+					<span class="name">narutojzm1</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-11-07 15:50:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1180</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/linuxheik/article/details/54139349" target="_blank" strategy="BlogCommendFromBaidu_6">
+				理解D3D—(2)最多混合几层<em>texture</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/linuxheik/article/details/54139349" target="_blank" >
+				理解D3D—(2)最多混合几层<em>texture</em>
+
+
+
+
+先提出问题 
+Q:要是模型有很多层贴图，再加上shadow map，还有ssao，岂不是会不够用了？
+
+A:
+参考资料 
+ID...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/linuxheik" title="linuxheik" target="_blank">
+					<img src="https://avatar.csdn.net/4/C/C/3_linuxheik.jpg" alt="linuxheik" class="avatar-pic">
+					<span class="name">linuxheik</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-01-06 16:20:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：396</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/bojie5744/article/details/30811941" target="_blank" strategy="BlogCommendFromBaidu_7">
+				D3D加载纹理的步骤之点精灵加载2D图片(2)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/bojie5744/article/details/30811941" target="_blank" >
+				由于在（1）中写的代码文字比较长，所以分了两篇文章写。			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/bojie5744" title="bojie5744" target="_blank">
+					<img src="https://avatar.csdn.net/D/C/B/3_bojie5744.jpg" alt="bojie5744" class="avatar-pic">
+					<span class="name">bojie5744</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-06-14 22:21:51</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1282</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/gggg_ggg/article/details/41285049" target="_blank" strategy="BlogCommendFromBaidu_8">
+				DrectX11学习笔记之<em>Texture</em>2D相关			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/gggg_ggg/article/details/41285049" target="_blank" >
+				/////////////////////////////////////////////////////////////////////////////////////
+
+有时候....有时候......			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/gggg_ggg" title="gggg_ggg" target="_blank">
+					<img src="https://avatar.csdn.net/2/F/C/3_gggg_ggg.jpg" alt="gggg_ggg" class="avatar-pic">
+					<span class="name">gggg_ggg</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-19 18:56:57</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1972</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/happyweb/article/details/6534303" target="_blank" strategy="BlogCommendFromBaidu_9">
+				<em>Direct3D</em>显示视频			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/happyweb/article/details/6534303" target="_blank" >
+				<em>Direct3D</em>显示视频 对于视频的显示已经不推荐使用DirectDraw了，但可以使用<em>Direct3D</em>技术。对此，本人做了一些摸索之后，写了如下一个<em>简单</em>的例子，该例子创建<em>Direct3D</em>对象、Dir...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/happyweb" title="happyweb" target="_blank">
+					<img src="https://avatar.csdn.net/9/2/B/3_happyweb.jpg" alt="happyweb" class="avatar-pic">
+					<span class="name">happyweb</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2011-06-09 16:06:00</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3169</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/40301179" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421248">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>5</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）";
+    var ChannelId = 16;
+    var articleId = "40301179";
+    var commentscount = 7;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/40301179";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "d3d%E6%B8%B2%E6%9F%93rgb24";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=d3d%E6%B8%B2%E6%9F%93rgb24"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

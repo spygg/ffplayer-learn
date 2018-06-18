@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12452991"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文分析MediaInfo中解码JPEG信息的模块。之前写了几篇文章都是关于MediaInfo主程序的，并没有分析其具体是如何解析不同多媒体文件信息的。在这里分析一下解码JPEG文件的代码。其他格式如BMP，GIF等解析的思路基本上是类似的。
+ 
+File_Jpeg.h的File_Jpeg类的定义如下所示：
+//****************************************" />
+    <meta name="keywords" content="MediaInfo,源代码" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>MediaInfo源代码分析 5：JPEG解析代码分析 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12452991"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">MediaInfo源代码分析 5：JPEG解析代码分析</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月14日 16:39:56</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：4262</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p><span style="color:#990000;"></span></p><p><span style="color:rgb(153,0,0);">=====================================================<br /></span></p><p><span style="color:rgb(153,0,0);">MediaInfo源代码分析系列文章列表：</span></p><a href="http://blog.csdn.net/leixiaohua1020/article/details/12016231" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 1：整体结构</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12449277" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 2：API函数</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12449803" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 3：Open()函数</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12451561" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 4：Inform()函数</a><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/12452991" style="line-height:30px;font-family:Arial;text-decoration:none;">MediaInfo源代码分析 5：JPEG解析代码分析</a><br /><p><span style="color:#990000;">=====================================================</span></p><br /><p>本文分析MediaInfo中解码JPEG信息的模块。之前写了几篇文章都是关于MediaInfo主程序的，并没有分析其具体是如何解析不同多媒体文件信息的。在这里分析一下解码JPEG文件的代码。其他格式如BMP，GIF等解析的思路基本上是类似的。</p><p> </p><p>File_Jpeg.h的File_Jpeg类的定义如下所示：</p><pre class="cpp">//***************************************************************************
+// Class File_Jpeg
+//***************************************************************************
+//继承 File__Analyze
+class File_Jpeg : public File__Analyze
+{
+public :
+    //In
+    stream_t StreamKind;
+    bool     Interlaced;
+
+    //Constructor/Destructor
+    File_Jpeg();
+
+private :
+    //Streams management
+    void Streams_Accept();
+
+    //Buffer - File header
+    bool FileHeader_Begin();
+
+    //Buffer - Synchro
+    bool Synchronize();
+    bool Synched_Test();
+    void Synched_Init();
+
+    //Buffer - Demux
+    #if MEDIAINFO_DEMUX
+    bool Demux_UnpacketizeContainer_Test() {return Demux_UnpacketizeContainer_Test_OneFramePerFile();}
+    #endif //MEDIAINFO_DEMUX
+
+    //Buffer - Global
+    void Read_Buffer_Unsynched();
+    #if MEDIAINFO_SEEK
+    size_t Read_Buffer_Seek (size_t Method, int64u Value, int64u ID) {return Read_Buffer_Seek_OneFramePerFile(Method, Value, ID);}
+    #endif //MEDIAINFO_SEEK
+
+    //Buffer - Per element
+	//解析头
+    void Header_Parse();
+    bool Header_Parser_Fill_Size();
+	//解析数据
+    void Data_Parse();
+
+    //Elements
+	//JPEG中的单元
+	//解析相应的单元，并获得信息
+    void TEM () {};
+    void SOC () {}
+    void SIZ ();
+    void COD ();
+    void COC () {Skip_XX(Element_Size, "Data");}
+    void TLM () {Skip_XX(Element_Size, "Data");}
+    void PLM () {Skip_XX(Element_Size, "Data");}
+    void PLT () {Skip_XX(Element_Size, "Data");}
+    void QCD ();
+    void QCC () {Skip_XX(Element_Size, "Data");}
+    void RGN () {Skip_XX(Element_Size, "Data");}
+    void PPM () {Skip_XX(Element_Size, "Data");}
+    void PPT () {Skip_XX(Element_Size, "Data");}
+    void CME () {Skip_XX(Element_Size, "Data");}
+    void SOT () {Skip_XX(Element_Size, "Data");}
+    void SOP () {Skip_XX(Element_Size, "Data");}
+    void EPH () {Skip_XX(Element_Size, "Data");}
+    void SOD ();
+    void SOF_();
+    void S0F0() {SOF_();};
+    void S0F1() {SOF_();};
+    void S0F2() {SOF_();};
+    void S0F3() {SOF_();}
+    void DHT () {Skip_XX(Element_Size, "Data");}
+    void S0F5() {SOF_();}
+    void S0F6() {SOF_();}
+    void S0F7() {SOF_();}
+    void JPG () {Skip_XX(Element_Size, "Data");}
+    void S0F9() {SOF_();}
+    void S0FA() {SOF_();}
+    void S0FB() {SOF_();}
+    void DAC () {Skip_XX(Element_Size, "Data");}
+    void S0FD() {SOF_();}
+    void S0FE() {SOF_();}
+    void S0FF() {SOF_();}
+    void RST0() {};
+    void RST1() {};
+    void RST2() {};
+    void RST3() {};
+    void RST4() {};
+    void RST5() {};
+    void RST6() {};
+    void RST7() {};
+    void SOI () {};
+    void EOI () {};
+    void SOS ();
+    void DQT () {Skip_XX(Element_Size, "Data");}
+    void DNL () {Skip_XX(Element_Size, "Data");}
+    void DRI () {Skip_XX(Element_Size, "Data");}
+    void DHP () {Skip_XX(Element_Size, "Data");}
+    void EXP () {Skip_XX(Element_Size, "Data");}
+    void APP0();
+    void APP0_AVI1();
+    void APP0_JFIF();
+    void APP0_JFFF();
+    void APP0_JFFF_JPEG();
+    void APP0_JFFF_1B();
+    void APP0_JFFF_3B();
+    void APP1();
+    void APP1_EXIF();
+    void APP2() {Skip_XX(Element_Size, "Data");}
+    void APP3() {Skip_XX(Element_Size, "Data");}
+    void APP4() {Skip_XX(Element_Size, "Data");}
+    void APP5() {Skip_XX(Element_Size, "Data");}
+    void APP6() {Skip_XX(Element_Size, "Data");}
+    void APP7() {Skip_XX(Element_Size, "Data");}
+    void APP8() {Skip_XX(Element_Size, "Data");}
+    void APP9() {Skip_XX(Element_Size, "Data");}
+    void APPA() {Skip_XX(Element_Size, "Data");}
+    void APPB() {Skip_XX(Element_Size, "Data");}
+    void APPC() {Skip_XX(Element_Size, "Data");}
+    void APPD() {Skip_XX(Element_Size, "Data");}
+    void APPE();
+    void APPE_Adobe0();
+    void APPF() {Skip_XX(Element_Size, "Data");}
+    void JPG0() {Skip_XX(Element_Size, "Data");}
+    void JPG1() {Skip_XX(Element_Size, "Data");}
+    void JPG2() {Skip_XX(Element_Size, "Data");}
+    void JPG3() {Skip_XX(Element_Size, "Data");}
+    void JPG4() {Skip_XX(Element_Size, "Data");}
+    void JPG5() {Skip_XX(Element_Size, "Data");}
+    void JPG6() {Skip_XX(Element_Size, "Data");}
+    void JPG7() {Skip_XX(Element_Size, "Data");}
+    void JPG8() {Skip_XX(Element_Size, "Data");}
+    void JPG9() {Skip_XX(Element_Size, "Data");}
+    void JPGA() {Skip_XX(Element_Size, "Data");}
+    void JPGB() {Skip_XX(Element_Size, "Data");}
+    void JPGC() {Skip_XX(Element_Size, "Data");}
+    void JPGD() {Skip_XX(Element_Size, "Data");}
+    void COM () {Skip_XX(Element_Size, "Data");}
+
+    //Temp
+    int8u APPE_Adobe0_transform;
+    bool  APP0_JFIF_Parsed;
+    bool  SOS_SOD_Parsed;
+};</pre><p><br /></p><p>上面代码有以下几个特点：</p><p>1.继承了File__Analyze类</p><p></p><p>2.包含了很多JPEG中的数据单元的解析：DHT()，DQT()等等</p><p><br /></p><p>下面来分别仔细看看源代码：</p><p>1.File__Analyze类代码巨多无比，先不分析。他继承了继承了File__Base</p><p>2.看一个解码具体单元的代码：SOF_()</p><p>注：SOF0（<span style="font-family:Arial, Helvetica, sans-serif, '宋体';margin:0px;line-height:20px;"><span style="margin:0px;">Start of Image，图像开始</span></span>）。</p><p>SOF0，Start of Frame，帧图像开始<br /><br />                        标记代码                   2字节     固定值0xFFC0<br /><br />                       包含9个具体字段：<br />                                      ① 数据长度           2字节     ①~⑥六个字段的总长度<br />                                                                                      即不包括标记代码，但包括本字段<br />                                     ② 精度                 1字节     每个数据样本的位数<br />                                                                                    通常是8位，一般软件都不支持 12位和16位<br />                                    ③ 图像高度           2字节     图像高度（单位：像素），如果不支持 DNL 就必须 &gt;0<br />                                    ④ 图像宽度           2字节     图像宽度（单位：像素），如果不支持 DNL 就必须 &gt;0<br />                                    ⑤ 颜色分量数        1字节     只有3个数值可选<br />                                                                     1：灰度图；3：YCrCb或YIQ；4：CMYK<br />                                                                     而JFIF中使用YCrCb，故这里颜色分量数恒为3<br />                                   ⑥颜色分量信息      颜色分量数×3字节（通常为9字节）<br />                                                       a)         颜色分量ID                 1字节    <br />                                                       b)        水平/垂直采样因子      1字节            高4位：水平采样因子<br />                                                                  低4位：垂直采样因子<br />                                                                （曾经看到某资料把这两者调转了）<br />                                                       c)        量化表                         1字节            当前分量使用的量化表的ID<br /><br />           本标记段中，字段⑥应该重复出现，有多少个颜色分量（字段⑤），就出现多少次（一般为3次）。<br /></p><p>=====================================</p><p></p><pre class="cpp">void File_Jpeg::SOF_()
+{
+    //Parsing
+    vector&lt;Jpeg_samplingfactor&gt; SamplingFactors;
+    int16u Height, Width;
+    int8u  Resolution, Count;
+    Get_B1 (Resolution,                                         "P - Sample precision");
+    Get_B2 (Height,                                             "Y - Number of lines");
+    Get_B2 (Width,                                              "X - Number of samples per line");
+    Get_B1 (Count,                                              "Nf - Number of image components in frame");
+    for (int8u Pos=0; Pos&lt;Count; Pos++)
+    {
+        Jpeg_samplingfactor SamplingFactor;
+        Element_Begin1("Component");
+        Get_B1 (   SamplingFactor.Ci,                           "Ci - Component identifier"); if (SamplingFactor.Ci&gt;Count) Element_Info1(Ztring().append(1, (Char)SamplingFactor.Ci)); else Element_Info1(SamplingFactor.Ci);
+        BS_Begin();
+        Get_S1 (4, SamplingFactor.Hi,                           "Hi - Horizontal sampling factor"); Element_Info1(SamplingFactor.Hi);
+        Get_S1 (4, SamplingFactor.Vi,                           "Vi - Vertical sampling factor"); Element_Info1(SamplingFactor.Vi);
+        BS_End();
+        Skip_B1(                                                "Tqi - Quantization table destination selector");
+        Element_End0();
+
+        //Filling list of HiVi
+        SamplingFactors.push_back(SamplingFactor);
+    }
+
+    FILLING_BEGIN_PRECISE();
+        if (Frame_Count==0 &amp;&amp; Field_Count==0)
+        {
+            Accept("JPEG");
+            Fill("JPEG");
+
+            if (Count_Get(StreamKind_Last)==0)
+                Stream_Prepare(StreamKind_Last);
+            Fill(StreamKind_Last, 0, Fill_Parameter(StreamKind_Last, Generic_Format), "JPEG");
+            Fill(StreamKind_Last, 0, Fill_Parameter(StreamKind_Last, Generic_Codec), "JPEG");
+            if (StreamKind_Last==Stream_Image)
+                Fill(Stream_Image, 0, Image_Codec_String, "JPEG", Unlimited, true, true); //To Avoid automatic filling
+            if (StreamKind_Last==Stream_Video)
+                Fill(Stream_Video, 0, Video_InternetMediaType, "video/JPEG", Unlimited, true, true);
+            Fill(StreamKind_Last, 0, Fill_Parameter(StreamKind_Last, Generic_BitDepth), Resolution);
+            Fill(StreamKind_Last, 0, "Height", Height*(Interlaced?2:1));
+            Fill(StreamKind_Last, 0, "Width", Width);
+
+            //ColorSpace from http://docs.oracle.com/javase/1.4.2/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
+            switch (APPE_Adobe0_transform)
+            {
+                case 0x01 :
+                            if (Count==3)
+                                Fill(StreamKind_Last, 0, "ColorSpace", "YUV");
+                case 0x02 :
+                            if (Count==4)
+                                Fill(StreamKind_Last, 0, "ColorSpace", "YCCB");
+                            break;
+                default   :
+                            {
+                            int8u Ci[256];
+                            memset(Ci, 0, 256);;
+                            for (int8u Pos=0; Pos&lt;Count; Pos++)
+                                Ci[SamplingFactors[Pos].Ci]++;
+
+                            switch (Count)
+                            {
+                                case 1 :    Fill(StreamKind_Last, 0, "ColorSpace", "Y"); break;
+                                case 2 :    Fill(StreamKind_Last, 0, "ColorSpace", "YA"); break;
+                                case 3 :
+                                                 if (!APP0_JFIF_Parsed &amp;&amp; Ci['R']==1 &amp;&amp; Ci['G']==1 &amp;&amp; Ci['B']==1)                                                       //RGB
+                                                Fill(StreamKind_Last, 0, "ColorSpace", "RGB");
+                                            else if ((Ci['Y']==1 &amp;&amp; ((Ci['C']==1 &amp;&amp; Ci['c']==1)                                                                         //YCc
+                                                                  || Ci['C']==2))                                                                                       //YCC
+                                                  || APP0_JFIF_Parsed                                                                                                   //APP0 JFIF header present so YCC
+                                                  || APPE_Adobe0_transform==0                                                                                           //transform set to YCC
+                                                  || (SamplingFactors[0].Ci==0 &amp;&amp; SamplingFactors[1].Ci==1 &amp;&amp; SamplingFactors[2].Ci==2)                                 //012
+                                                  || (SamplingFactors[0].Ci==1 &amp;&amp; SamplingFactors[1].Ci==2 &amp;&amp; SamplingFactors[2].Ci==3))                                //123
+                                                Fill(StreamKind_Last, 0, "ColorSpace", "YUV");
+                                            break;
+                                case 4 :
+                                                 if (!APP0_JFIF_Parsed &amp;&amp; Ci['R']==1 &amp;&amp; Ci['G']==1 &amp;&amp; Ci['B']==1 &amp;&amp; Ci['A']==1)                                         //RGBA
+                                                Fill(StreamKind_Last, 0, "ColorSpace", "RGBA");
+                                            else if ((Ci['Y']==1 &amp;&amp; Ci['A']==1 &amp;&amp; ((Ci['C']==1 &amp;&amp; Ci['c']==1)                                                           //YCcA
+                                                                                || Ci['C']==2))                                                                         //YCCA
+                                                  || APP0_JFIF_Parsed                                                                                                   //APP0 JFIF header present so YCCA
+                                                  || (SamplingFactors[0].Ci==0 &amp;&amp; SamplingFactors[1].Ci==1 &amp;&amp; SamplingFactors[2].Ci==2 &amp;&amp; SamplingFactors[3].Ci==3)     //0123
+                                                  || (SamplingFactors[0].Ci==1 &amp;&amp; SamplingFactors[1].Ci==2 &amp;&amp; SamplingFactors[2].Ci==3 &amp;&amp; SamplingFactors[3].Ci==4))    //1234
+                                                Fill(StreamKind_Last, 0, "ColorSpace", "YUVA");
+                                            else if (APPE_Adobe0_transform==0)                                                                                          //transform set to CMYK
+                                                Fill(StreamKind_Last, 0, "ColorSpace", "YCCB");
+                                            break;
+                                default:    ;
+                            }
+                            }
+            }
+
+            //Chroma subsampling
+            if ((SamplingFactors.size()==3 || SamplingFactors.size()==4) &amp;&amp; SamplingFactors[1].Hi==1 &amp;&amp; SamplingFactors[2].Hi==1 &amp;&amp; SamplingFactors[1].Vi==1 &amp;&amp; SamplingFactors[2].Vi==1)
+            {
+                string ChromaSubsampling;
+                switch (SamplingFactors[0].Hi)
+                {
+                    case 1 :
+                            switch (SamplingFactors[0].Vi)
+                            {
+                                case 1 : ChromaSubsampling="4:4:4"; break;
+                                default: ;
+                            }
+                            break;
+                    case 2 :
+                            switch (SamplingFactors[0].Vi)
+                            {
+                                case 1 : ChromaSubsampling="4:2:2"; break;
+                                case 2 : ChromaSubsampling="4:2:0"; break;
+                                default: ;
+                            }
+                            break;
+                    case 4 :
+                            switch (SamplingFactors[0].Vi)
+                            {
+                                case 1 : ChromaSubsampling="4:1:1"; break;
+                                default: ;
+                            }
+                            break;
+                    default: ;
+                }
+                if (!ChromaSubsampling.empty())
+                {
+                    if (SamplingFactors.size()==4)
+                    {
+                        if (ChromaSubsampling=="4:4:4" &amp;&amp; SamplingFactors[3].Hi==1 &amp;&amp; SamplingFactors[3].Vi==1)
+                            ChromaSubsampling+=":4";
+                        else
+                            ChromaSubsampling+=":?";
+                    }
+                    Fill(StreamKind_Last, 0, "ChromaSubsampling", ChromaSubsampling);
+                }
+            }
+        }
+    FILLING_END();
+}
+</pre><p></p><p><br /></p>从代码的含义可知，提取出了图像的宽，高，采样方式等信息。<p>详细的代码暂时没有时间研究了，先这样了。<br /><br /></p><p><br /></p><p><br /></p>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/12452991		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=MediaInfo&t=blog" target="_blank">MediaInfo						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=源代码&t=blog" target="_blank">源代码						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=JPEG&t=blog" target="_blank">JPEG						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=解析&t=blog" target="_blank">解析						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1645587"  target="_blank">MediaInfo						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/osmedia.html" target="_blank">开源多媒体项目源代码分析</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12452991#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/shb8845369/article/details/32698585" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>JPEG</em> 最新标准源码工作原理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/shb8845369/article/details/32698585" target="_blank" >
+				以下翻译自IJG <em>JPEG</em> library,介绍该<em>JPEG</em>库的代码工作流程，IJG <em>JPEG</em> library			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/shb8845369" title="shb8845369" target="_blank">
+					<img src="https://avatar.csdn.net/8/F/4/3_shb8845369.jpg" alt="shb8845369" class="avatar-pic">
+					<span class="name">shb8845369</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-06-20 10:57:35</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2197</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12617079" target="_blank" strategy="BlogCommendFromBaidu_1">
+				Tiny <em>Jpeg</em> Decoder （<em>JPEG</em>解码程序） <em>源代码分析</em> 1：解码文件头			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/12617079" target="_blank" >
+				Tiny <em>Jpeg</em> Decoder是一个可以用于嵌入式系统的<em>JPEG</em>解码器。也可以在Windows上编译通过。在此分析一下它部分的源代码，辅助学习<em>JPEG</em>解码知识。
+
+通过Tiny<em>Jpeg</em>可以将JPE...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-11 15:48:08</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：10037</span>
+			</p>
+		</div>
+	</div>
+								<!-- 第四范式广告开关 -->
+<script>window.p4sdk_enable_recommendBox=true</script>
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/libins/article/details/50973498" target="_blank" strategy="BlogCommendFromBaidu_2">
+				图片文件Exif信息详细说明			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/libins/article/details/50973498" target="_blank" >
+				转过来，资料找了蛮久
+原博客网址
+当前，几乎新型的数码相机都使用Exif文件格式来存储图像. 它的规格是由
+JEIDA 来制定的, 但是在互联网上还没有开放的文档可供浏览.因此我根据从互联网上所...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/libins" title="libins" target="_blank">
+					<img src="https://avatar.csdn.net/5/F/8/3_libins.jpg" alt="libins" class="avatar-pic">
+					<span class="name">libins</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-03-24 17:34:01</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3547</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/jsn_ze/article/details/60962631" target="_blank" strategy="BlogCommendFromBaidu_3">
+				<em>JPEG</em>文件格式 JFIF &amp; Exif			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/jsn_ze/article/details/60962631" target="_blank" >
+				<em>JPEG</em>是Joint Photographic Experts Group 的缩写，正是这个专家组制定了<em>JPEG</em>标准以及其他静态图片编解码标准。Joint（联合）是指ISO TC97 WG8（计算机与...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/jsn_ze" title="jsn_ze" target="_blank">
+					<img src="https://avatar.csdn.net/7/1/5/3_jsn_ze.jpg" alt="jsn_ze" class="avatar-pic">
+					<span class="name">jsn_ze</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-03-09 16:28:38</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：360</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/copy_yuan/article/details/51337204" target="_blank" strategy="BlogCommendFromQuerySearch_4">
+				在Android下通过ExifInterface类操作图片的Exif信息			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/copy_yuan/article/details/51337204" target="_blank" >
+				什么是Exif
+
+　　先来了解什么是Exif。Exif是一种图像文件格式，它的数据存储于<em>JPEG</em>格式是完全相同的，实际上Exif格式就是<em>JPEG</em>格式头插入了 数码照片的信息，包括拍摄的光圈、快门、...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/copy_yuan" title="copy_yuan" target="_blank">
+					<img src="https://avatar.csdn.net/4/9/9/3_copy_yuan.jpg" alt="copy_yuan" class="avatar-pic">
+					<span class="name">copy_yuan</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-05-07 12:11:28</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1021</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/liu_jing_hui/article/details/62416876" target="_blank" strategy="BlogCommendFromQuerySearch_5">
+				Android中通过Exif-ExifInterface获取图片的相关信息，并且在图片上添加获取到的信息将图片展示出来			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/liu_jing_hui/article/details/62416876" target="_blank" >
+				1、Exif-ExifInterface简介 
+Exif是一种图像文件格式，它的数据存储与<em>JPEG</em>格式是完全相同的。实际上Exif格式就是在<em>JPEG</em>格式头部插入了数码照片的信息，包括拍摄时的光圈、快门...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/liu_jing_hui" title="liu_jing_hui" target="_blank">
+					<img src="https://avatar.csdn.net/2/5/3/3_liu_jing_hui.jpg" alt="liu_jing_hui" class="avatar-pic">
+					<span class="name">liu_jing_hui</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-03-16 09:31:14</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3818</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/winson_jason/article/details/41114099" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+				Android--操作图片Exif信息			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/winson_jason/article/details/41114099" target="_blank" >
+				﻿﻿
+
+
+承香墨影
+
+
+
+
+
+
+
+Android--操作图片Exif信息
+
+前言
+　　在Android系统中，图片文件在内存中以像素点的二维数组加载，存放像素信息，还会在开...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/winson_jason" title="winson_jason" target="_blank">
+					<img src="https://avatar.csdn.net/1/B/1/3_winson_jason.jpg" alt="winson_jason" class="avatar-pic">
+					<span class="name">winson_jason</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-11-14 10:06:51</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2972</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/chuyouyinghe/article/details/46672655" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+				Android:操作图片Exif信息			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/chuyouyinghe/article/details/46672655" target="_blank" >
+				什么是Exif
+
+　　先来了解什么是Exif。Exif是一种图像文件格式，它的数据存储于<em>JPEG</em>格式是完全相同的，实际上Exif格式就是<em>JPEG</em>格式头插入了数码照片的信息，包括拍摄的光圈、快门、平衡白...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/chuyouyinghe" title="chuyouyinghe" target="_blank">
+					<img src="https://avatar.csdn.net/3/4/9/3_chuyouyinghe.jpg" alt="chuyouyinghe" class="avatar-pic">
+					<span class="name">chuyouyinghe</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-06-28 17:16:54</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：293</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/cdnight/article/details/46457241" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+				利用exif js及脚本修正图片的orientation显示			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/cdnight/article/details/46457241" target="_blank" >
+				假如图片是ios及数码相机拍摄，那么它就会带有exif信息，其中一个叫orientation的方向信息，这个方向是你拍摄的方向，假如有这个方向的话，在pc，安卓及ios上面的显示都不一样。下面是两个对...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/cdnight" title="cdnight" target="_blank">
+					<img src="https://avatar.csdn.net/7/7/9/3_cdnight.jpg" alt="cdnight" class="avatar-pic">
+					<span class="name">cdnight</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-06-11 14:33:32</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：18916</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xjbclz/article/details/51471512" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+				APP开发实战29-HTTP头字段介绍			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xjbclz/article/details/51471512" target="_blank" >
+				7.5HTTP头字段介绍
+HTTP的头字段包括通用头，请求头，响应头和实体头四个部分。每个头字段由一个字段名，冒号(:)和字段值三部分组成。字段名是大小写无关的，域值前可以添加任何数量的空格符，头字段...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xjbclz" title="xjbclz" target="_blank">
+					<img src="https://avatar.csdn.net/B/0/1/3_xjbclz.jpg" alt="xjbclz" class="avatar-pic">
+					<span class="name">xjbclz</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-05-21 17:51:34</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：374</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12452991" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421501">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>2</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "MediaInfo源代码分析 5：JPEG解析代码分析";
+    var ChannelId = 16;
+    var articleId = "12452991";
+    var commentscount = 1;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12452991";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "exif+app2%E5%AD%97%E6%AE%B5";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"MediaInfo源代码分析 5：JPEG解析代码分析");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=exif+app2%E5%AD%97%E6%AE%B5"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

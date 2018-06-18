@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/42658139"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文汇总一下自己视音频编解码学习方面的开源项目。这些开源项目大体上可以分成专业领域程序，FFmpeg示例程序，FFmpeg移植程序，多媒体项目示例程序，视音频编解码原理学习工程几个类别。" />
+    <meta name="keywords" content="开源项目,ffmpeg" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>我的开源视音频项目汇总 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/42658139"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">我的开源视音频项目汇总</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+						<span class="c-gray">置顶</span>
+												<span class="time">2015年01月13日 01:17:34</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：72421</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <span style="white-space:pre;">	</span>本文汇总一下自己视音频编解码学习方面的开源项目。这些开源项目大体上可以分成专业领域程序，FFmpeg示例程序，FFmpeg移植程序，多媒体项目示例程序，视音频编解码原理学习工程几个类别。这些类别的详细含义如下所列。<br /><ul><li>专业领域程序：一些有专业性质的程序。</li><li>FFmpeg示例程序：FFmpeg的类库的各种示例程序。</li><li>FFmpeg移植程序：FFmpeg项目中移植到Windows的VC平台下的程序。</li><li>多媒体项目示例程序：除了FFmpeg之外其他多媒体项目的示例程序。</li><li>视音频编解码学习工程：用于学习视音频编解码原理的示例程序。</li></ul><span style="white-space:pre;">	</span>下面按照类别分别记录每个项目。每个程序的介绍分成“简介”，“文章”，“项目主页”三个部分：<br /><ul><li>“简介”使用几句简短的话介绍开源项目。</li><li>“文章”则是我自己写的有关该项目的文章。</li><li>“项目主页”则是该项目的主页地址。</li></ul><span style="white-space:pre;">	</span>此前一直以SourceForge作为各个项目的主页地址。后来受到不少人的建议，将代码在Github上也保存了一份；国内的开源中国的代码托管做的也不错，因此也在开源中国上保存了一份代码。此外，在SourceForge上做了一个简单的Wiki，在Github上做了一个简单的Blog，方便对这两个网站上的项目进行查找和访问。上述三个网站上的项目列表可以通过下列地址访问。<br /><ul><li>我的SourceForge主页：<a href="https://sourceforge.net/u/leixiaohua1020/wiki/">https://sourceforge.net/u/leixiaohua1020/wiki/</a></li><li>我的Github主页：<a href="http://leixiaohua1020.github.com/">http://leixiaohua1020.github.com/</a></li><li>我的开源中国主页：<a href="http://git.oschina.net/leixiaohua1020">http://git.oschina.net/leixiaohua1020</a></li></ul><br /><br /><h2>1.<span style="white-space:pre;">	</span>专业领域程序</h2><p><br /></p><p>专业领域程序指的是主要应用于科学实验方面的程序。这类程序并不是视音频技术开发必须的，主要用于研究工作。</p><h3>1.1<span style="white-space:pre;">	</span>VideoEye</h3><p><strong>简介</strong></p><p>VideoEye是一个开源的实时视频分析的软件。本软件可以播放和分析视频数据。它支持多种视频流输入方式：HTTP，RTMP，RTSP以及文件等等。该软件可以实时分析视频流并能以图形化的方式呈现其分析结果。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150113002415421" alt="" /><br /></p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/34553607">《开源实时视频码流分析软件：VideoEye》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/videoeye/">https://sourceforge.net/projects/videoeye/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/VideoEye">https://github.com/leixiaohua1020/VideoEye</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/VideoEye">http://git.oschina.net/leixiaohua1020/VideoEye</a></p><br /><h3>1.2<span style="white-space:pre;">	</span>TIandSI</h3><p><strong>简介</strong></p><p>本工具用于计算视频的时间信息（TI，也称为时间复杂度），以及空间信息（SI，也称为空间复杂度），以上两个指标取自于ITU-R BT.1788标准。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150113002456846" alt="" /><br /></p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/9056443">《视频特性TI（时间信息）和SI（空间信息）的计算工具：TIandSI》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/46276915">《视频特性TI（时间信息）和SI（空间信息）的计算工具：TIandSI-压缩码流版》</a><br /></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/tiandsi/">https://sourceforge.net/projects/tiandsi/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/TIandSI">https://github.com/leixiaohua1020/TIandSI</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/TIandSI">http://git.oschina.net/leixiaohua1020/TIandSI</a></p><br /><h2>2.<span style="white-space:pre;">	</span>FFmpeg示例程序</h2><p><br /></p><p>FFmpeg示例程序是我做的最多的一类程序。这些示例程序展示了利用FFmpeg的类库进行视音频程序开发的方法，比较适合新手学习FFmpeg。目前这些示例程序已经覆盖了从流媒体接收，解封装，解码，像素转换，编码，封装，流媒体发送所有这些流程。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150113002512243" alt="" /><br /></p>FFmpeg示例程序在视频处理的流程中的位置如下图所示。<br /><div style="text-align:center;"> <a href="https://my.csdn.net/leixiaohua1020/album/detail/1802409"><img src="https://img-blog.csdn.net/20150113125853150" alt="" /></a></div><p style="text-align:center;"><a href="https://my.csdn.net/leixiaohua1020/album/detail/1802409">单击查看更清晰的图片</a></p>图中显示了一个完整的视频处理流程。按照蓝色箭头指向的顺序，从外部协议接收下来的数据依次经过解协议，解封装，解码，像素转换，编码，封装，发送这几个步骤。这些步骤按照处理数据类型的不同，可以分成几个层次：<br /><ul><li>协议层（Protocol Layer）：该层处理的数据为符合特定流媒体协议规范的数据，例如http，rtmp，file等。</li><li>封装层（Format Layer）：该层处理的数据为符合特定封装格式规范的数据，例如mkv，mp4，flv，mpegts，avi等。</li><li>编码层（Codec Layer）：该层处理的数据为符合特定编码标准规范的数据，例如h264，h265，mpeg2，mpeg4等。</li><li>像素层（Pixel Layer）：该层处理的数据为符合特定像素格式规范的数据，例如yuv420p，yuv422p，yuv444p，rgb24等。</li></ul><p>下面我们上述几个层次对FFmpeg示例程序进行归类。</p><p><strong>协议层处理包含以下项目：</strong></p><p></p><ul><li>simplest ffmpeg device：使用FFmpeg读取设备中的媒体数据。</li><li>simplest ffmpeg mem handler：使用FFmpeg读取内存中的数据。</li><li>simplest ffmpeg streamer：使用FFmpeg发送流媒体数据。</li></ul><p></p><p><strong>封装层处理包含以下项目：</strong></p><p></p><ul><li>simplest ffmpeg format：使用FFmpeg分离音视频（demux），封装音视频（mux），转换封装格式（remux）。</li></ul><p></p><p><strong>编码层处理包含以下项目：</strong></p><p></p><ul><li>simplest ffmpeg player：使用FFmpeg解码播放视频数据。</li><li>simplest ffmpeg audio player：使用FFmpeg解码播放音频数据。</li><li>simplest ffmpeg video encoder：使用FFmpeg编码视频数据。</li><li>simplest ffmpeg audio encoder：使用FFmpeg编码音频数据。</li><li>simplest ffmpeg picture encoder：使用FFmpeg编码图片。</li></ul><p></p><p><strong>像素层处理包含以下项目：</strong></p><p></p><ul><li>simplest ffmpeg swscale：使用FFmpeg转换像素格式。</li><li>simplest ffmpeg video filter：使用FFmpeg给视频添加滤镜效果。</li></ul><p></p><p>《FFmpeg示例程序合集》可以通过Git批量获取：<br /></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/43898107"> FFmpeg示例程序合集-Git批量获取脚本</a><br /></p><p>《FFmpeg示例程序合集》也可以在VC++/CL.exe/MinGW/Linux GCC/Mac OS等多个平台上编译通过：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/43898125"> FFmpeg示例程序合集-批量编译脚本</a><br /></p><p>下面逐一列出这些项目的信息。</p><h3>2.1<span style="white-space:pre;">	</span>Simplest ffmpeg player</h3><p><em>最简单的基于FFMPEG的视频播放器</em></p><p><strong>简介</strong></p><p>本程序实现了视频文件的解码和显示。是最简单的FFmpeg视频解码方面的教程。通过学习本例子可以了解FFmpeg的解码流程。</p><p>项目包含6个工程：<br /></p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_player：标准版，FFmpeg学习的开始。</p><p>simplest_ffmpeg_player_su：SU（SDL Update）版，加入了简单的SDL的Event。</p><p>simplest_ffmpeg_decoder：一个包含了封装格式处理功能的解码器。使用了libavcodec和libavformat。</p><p>simplest_ffmpeg_decoder_pure：一个纯净的解码器。只使用libavcodec（没有使用libavformat）。</p><p>simplest_video_play_sdl2：使用SDL2播放YUV的例子。</p><p>simplest_ffmpeg_helloworld：输出FFmpeg类库的信息。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/8652605">《100行代码实现最简单的基于FFMPEG+SDL的视频播放器（SDL1.x）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/38868499">《最简单的基于FFMPEG+SDL的视频播放器 ver2 （采用SDL2.0）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42181571">《最简单的基于FFmpeg的解码器-纯净版（不包含libavformat）》</a></p><p></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/46889389">《最简单的基于FFMPEG+SDL的视频播放器：拆分-解码器和播放器》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/46889849">《最简单的基于FFMPEG的Helloworld程序》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegplayer/">https://sourceforge.net/projects/simplestffmpegplayer/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_player">https://github.com/leixiaohua1020/simplest_ffmpeg_player</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_player">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_player</a></p><br /><h3>2.2<span style="white-space:pre;">	</span>simplest ffmpeg audio player</h3><p><em>最简单的基于FFMPEG的音频播放器</em></p><p><strong>简介</strong></p><p>本程序实现了音频的解码和播放。是最简单的FFmpeg音频解码方面的教程。通过学习本例子可以了解FFmpeg的解码流程。</p><p>项目包含3个工程：<br /></p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_audio_player：基于FFmpeg+SDL的音频解码器</p><p>simplest_ffmpeg_audio_decoder：音频解码器。使用了libavcodec和libavformat。</p><p>simplest_audio_play_sdl2：使用SDL2播放PCM采样数据的例子。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/10528443">《最简单的基于FFMPEG+SDL的音频播放器》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/38979615">《最简单的基于FFMPEG+SDL的音频播放器 ver2 （采用SDL2.0）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/46890259">《最简单的基于FFMPEG+SDL的音频播放器：拆分-解码器和播放器》</a><br /></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegaudioplayer/">https://sourceforge.net/projects/simplestffmpegaudioplayer/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_audio_player">https://github.com/leixiaohua1020/simplest_ffmpeg_audio_player</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_audio_player">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_audio_player</a></p><br /><h3>2.3<span style="white-space:pre;">	</span>simplest ffmpeg picture encoder</h3><p><em>最简单的基于FFMPEG的图像编码器</em></p><p><strong>简介</strong></p><p>本程序实现了YUV420P像素数据编码为JPEG图片。是最简单的FFmpeg编码方面的教程。通过学习本例子可以了解FFmpeg的编码流程。</p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/25346147">《最简单的基于FFMPEG的图像编码器（YUV编码为JPEG）》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegpictureencoder/">https://sourceforge.net/projects/simplestffmpegpictureencoder/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_picture_encoder">https://github.com/leixiaohua1020/simplest_ffmpeg_picture_encoder</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_picture_encoder">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_picture_encoder</a></p><br /><h3>2.4<span style="white-space:pre;">	</span>simplest ffmpeg video encoder</h3><p><em>最简单的基于FFMPEG的视频编码器</em></p><p><strong>简介</strong></p><p>本程序实现了YUV像素数据编码为视频码流（H.265，H264，MPEG2，VP8等等）。是最简单的FFmpeg视频编码方面的教程。通过学习本例子可以了解FFmpeg的编码流程。</p><p>它包含以下两个子项目：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_video_encoder：普通版编码器。使用libavcodec和libavformat编码并且封装视频。</p><p>simplest_ffmpeg_video_encoder_pure：纯净版编码器。仅使用libavcodec编码视频，不使用libavformat。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/25430425">《最简单的基于FFMPEG的视频编码器（YUV编码为H.264）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39770947">《最简单的基于FFmpeg的视频编码器-更新版（YUV编码为HEVC(H.265)）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42181271">《最简单的基于FFmpeg的编码器-纯净版（不包含libavformat）》</a><br /></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegvideoencoder/">https://sourceforge.net/projects/simplestffmpegvideoencoder/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_video_encoder">https://github.com/leixiaohua1020/simplest_ffmpeg_video_encoder</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_video_encoder">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_video_encoder</a></p><br /><h3>2.5<span style="white-space:pre;">	</span>simplest ffmpeg audio encoder</h3><p><em>最简单的基于FFMPEG的音频编码器</em></p><p><strong>简介</strong></p><p>本程序实现了音频PCM采样数据编码为压缩码流（MP3，WMA，AAC等）。是最简单的FFmpeg音频编码方面的教程。通过学习本例子可以了解FFmpeg的编码流程。</p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/25430449">《最简单的基于FFMPEG的音频编码器（PCM编码为AAC）》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegaudioencoder/">https://sourceforge.net/projects/simplestffmpegaudioencoder/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_audio_encoder">https://github.com/leixiaohua1020/simplest_ffmpeg_audio_encoder</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_audio_encoder">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_audio_encoder</a></p><br /><h3>2.6<span style="white-space:pre;">	</span>simplest ffmpeg format</h3><p><em>最简单的基于FFMPEG的封装格式处理</em></p><p><strong>简介</strong></p><p>该解决方案包含了使用FFmpeg进行封装格式处理的各种例子：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_demuxer：视音频分离器。</p><p>simplest_ffmpeg_demuxer_simple：视音频分离器（简化版）。</p><p>simplest_ffmpeg_muxer：视音频复用器。</p><p>simplest_ffmpeg_remuxer：封装格式转换器。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39767055">《最简单的基于FFmpeg的封装格式处理：视音频分离器简化版（demuxer-simple）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39802819">《最简单的基于FFmpeg的封装格式处理：视音频分离器（demuxer）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39802913">《最简单的基于FFmpeg的封装格式处理：视音频复用器（muxer）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/25422685">《最简单的基于FFMPEG的封装格式处理：封装格式转换（remuxer）》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegformat/">https://sourceforge.net/projects/simplestffmpegformat/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_format">https://github.com/leixiaohua1020/simplest_ffmpeg_format</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_format">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_format</a></p><br /><h3>2.7<span style="white-space:pre;">	</span>simplest ffmpeg streamer</h3><p><em>最简单的基于FFmpeg的推流器（推送RTMP）</em></p><p><strong>简介</strong></p><p>本例子实现了推送本地视频至流媒体服务器（以RTMP为例）。是使用FFmpeg进行流媒体推送最简单的教程。</p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39803457">《最简单的基于FFmpeg的推流器（以推送RTMP为例）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/46890487">《最简单的基于FFMPEG的推流器附件：收流器》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegstreamer/">https://sourceforge.net/projects/simplestffmpegstreamer/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_streamer">https://github.com/leixiaohua1020/simplest_ffmpeg_streamer</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_streamer">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_streamer</a></p><br /><h3>2.8<span style="white-space:pre;">	</span>simplest ffmpeg video filter</h3><p><em>最简单的基于FFmpeg的AVfilter例子（水印叠加）</em></p><p><strong>简介</strong></p><p>本程序使用包含下面两个项目：<br />simplest_ffmpeg_video_filter：可以将一张PNG图片作为水印叠加到视频上，结合使用了libavfilter，libavcodec等类库。<br />simplest_ffmpeg_video_filter_pure：可以给YUV像素数据加特效，只用了libavfilter库。<br /></p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/29368911">《最简单的基于FFmpeg的AVfilter例子（水印叠加）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/50618190">《最简单的基于FFmpeg的AVfilter的例子-纯净版》</a><br /></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegvideofilter/">https://sourceforge.net/projects/simplestffmpegvideofilter/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_video_filter">https://github.com/leixiaohua1020/simplest_ffmpeg_video_filter</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_video_filter">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_video_filter</a></p><br /><h3>2.9<span style="white-space:pre;">	</span>simplest ffmpeg swscale</h3><p><em>最简单的基于FFmpeg的libswscale的示例</em></p><p><strong>简介</strong></p><p>本程序是最简单的基于FFmpeg的libswscale进行像素处理的示例。它包含了两个工程：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_swscale: 最简单的libswscale的教程。</p><p>simplest_pic_gen: 生成各种测试图片的工具。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42134965">《最简单的基于FFmpeg的libswscale的示例（YUV转RGB）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42135539">《最简单的基于FFmpeg的libswscale的示例附件：测试图片生成工具》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegswscale/">https://sourceforge.net/projects/simplestffmpegswscale/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_swscale">https://github.com/leixiaohua1020/simplest_ffmpeg_swscale</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_swscale">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_swscale</a></p><br /><h3>2.10<span style="white-space:pre;">	</span>simplest ffmpeg device</h3><p><em>最简单的基于FFmpeg的AVDevice例子</em></p><p><strong>简介</strong></p><p>本工程包含两个基于FFmpeg的libavdevice的例子：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_grabdesktop：屏幕录制。</p><p>simplest_ffmpeg_readcamera：读取摄像头。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39706721">《最简单的基于FFmpeg的AVDevice例子（屏幕录制）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39702113">《最简单的基于FFmpeg的AVDevice例子（读取摄像头）》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegdevice/">https://sourceforge.net/projects/simplestffmpegdevice/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_device">https://github.com/leixiaohua1020/simplest_ffmpeg_device</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_device">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_device</a></p><br /><h3>2.11<span style="white-space:pre;">	</span>simplest ffmpeg mem handler</h3><p><em>最简单的基于FFmpeg的内存读写例子</em></p><p><strong>简介</strong></p><p>本程序实现了对内存中的视频数据的读写。包含两个工程：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_mem_player：播放内存中视频数据的播放器。</p><p>simplest_ffmpeg_mem_transcoder：转码内存中数据的转码器。</p></blockquote><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39759163">《最简单的基于FFmpeg的内存读写的例子：内存播放器》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/39759623">《最简单的基于FFmpeg的内存读写的例子：内存转码器》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegmemhandler/">https://sourceforge.net/projects/simplestffmpegmemhandler/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_mem_handler">https://github.com/leixiaohua1020/simplest_ffmpeg_mem_handler</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mem_handler">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mem_handler</a></p><p><br /></p><p></p><h3>2.12<span style="white-space:pre;">	</span>simplest ffmpeg avutil</h3><p></p><p><em>最简单的基于FFmpeg的AVUtil例子 (AVLog, AVOption等)</em><br /></p><p><strong>简介</strong></p><p>本程序是FFmpeg中的libavutil的示例，目前包含：</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">AVLog<br />AVOption (AVClass)<p>AVDictionary</p><p>ParseUtil</p></blockquote><p></p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/46890739">《最简单的基于FFmpeg的AVUtil例子 (AVLog, AVOption等)》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestffmpegavutil/">https://sourceforge.net/projects/simplestffmpegavutil/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_avutil">https://github.com/leixiaohua1020/simplest_ffmpeg_avutil</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_avutil">http://git.oschina.net/leixiaohua1020/simplest_ffmpeg_avutil</a><br /><br /><br /></p><h3>2.12<span style="white-space:pre;">	</span>simplest ffmpeg mobile</h3><p></p><p></p><p><em>最简单的基于FFmpeg的移动端的例子</em><br /></p><p><strong>简介</strong></p>本解决方案包含了使用FFmpeg在移动端处理多媒体的各种例子：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">[Android]<br />simplest_android_player: 基于安卓接口的视频播放器<br />simplest_ffmpeg_android_helloworld: 安卓平台下基于FFmpeg的HelloWorld程序<br />simplest_ffmpeg_android_decoder: 安卓平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_android_decoder_onelib: 安卓平台下最简单的基于FFmpeg的视频解码器-单库版<br />simplest_ffmpeg_android_streamer: 安卓平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_android_transcoder: 安卓平台下移植的FFmpeg命令行工具<br />simplest_sdl_android_helloworld: 移植SDL到安卓平台的最简单程序<br />[IOS]<br />simplest_ios_player: 基于IOS接口的视频播放器<br />simplest_ffmpeg_ios_helloworld: IOS平台下基于FFmpeg的HelloWorld程序<br />simplest_ffmpeg_ios_decoder: IOS平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_ios_streamer: IOS平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_ios_transcoder: IOS平台下移植的ffmpeg.c命令行工具<br />simplest_sdl_ios_helloworld: 移植SDL到IOS平台的最简单程序<br />[Windows]<p>simplest_ffmpeg_windowsphone_helloworld: Windows Phone平台下基于FFmpeg的HelloWorld程序</p></blockquote><p></p><p><strong>文章</strong></p><p></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47008825">最简单的基于FFmpeg的移动端例子：Android HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47010637">最简单的基于FFmpeg的移动端例子：Android 视频解码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47011021">最简单的基于FFmpeg的移动端例子：Android 视频解码器-单个库版</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056051">最简单的基于FFmpeg的移动端例子：Android 推流器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056365">最简单的基于FFmpeg的移动端例子：Android 视频转码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47056733">最简单的基于FFmpeg的移动端例子附件：Android 自带播放器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47059553">最简单的基于FFmpeg的移动端例子附件：SDL Android HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47071547">最简单的基于FFmpeg的移动端例子：IOS HelloWorld</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072257">最简单的基于FFmpeg的移动端例子：IOS 视频解码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072519">最简单的基于FFmpeg的移动端例子：IOS 推流器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072673">最简单的基于FFmpeg的移动端例子：IOS 视频转码器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47072861">最简单的基于FFmpeg的移动端例子附件：IOS自带播放器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/47191283">最简单的基于FFmpeg的移动端例子：Windows Phone HelloWorld</a></p><p><strong>项目主页</strong></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_ffmpeg_mobile">https://github.com/leixiaohua1020/simplest_ffmpeg_mobile</a></p><p>开源中国：<a href="https://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mobile">https://git.oschina.net/leixiaohua1020/simplest_ffmpeg_mobile</a><br /></p><br /><br /><h2>3.<span style="white-space:pre;">	</span>FFmpeg移植程序</h2><p><br /></p><p>FFmpeg移植程序是将FFmpeg项目中的命令行工具“ffplay”和“ffmpeg”的源代码（ffplay.c和ffmpeg.c）移植到VC下后编写的程序。移植后的程序保留了原本命令行工具的大部分功能，并且使用MFC做了一套界面，使用起来相对方便一些。其实相比与实际应用来说，这两个工程更加适合作为学习材料。可以通过它们研究播放器，转码器的原理。</p><h3>3.1<span style="white-space:pre;">	</span>FFPLAY for MFC</h3><p><strong>简介</strong></p><p>本工程将ffmpeg项目中的ffplay播放器（ffplay.c）移植到了VC的环境下。并且使用MFC做了一套简单的界面。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150113004726154" alt="" /><br /></p><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/28685327">《ffplay播放器移植VC的工程：ffplay for MFC》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/ffplayformfc/">https://sourceforge.net/projects/ffplayformfc/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/ffplaymfc">https://github.com/leixiaohua1020/ffplaymfc</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/ffplay-for-MFC">http://git.oschina.net/leixiaohua1020/ffplay-for-MFC</a></p><br /><h3>3.2<span style="white-space:pre;">	</span>FFMPEG for MFC</h3><p><strong>简介</strong></p>本工程将ffmpeg工程中的ffmpeg转码器（ffmpeg.c）移植到了VC环境下。并且使用MFC做了一套简单的界面。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150113004841612" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/28744935">《ffmpeg转码器移植VC的工程：ffmpeg for MFC》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/ffmpegformfc/">https://sourceforge.net/projects/ffmpegformfc/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/ffmpegmfc">https://github.com/leixiaohua1020/ffmpegmfc</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/ffmpeg-for-MFC">http://git.oschina.net/leixiaohua1020/ffmpeg-for-MFC</a></p><br /><h2>4.<span style="white-space:pre;">	</span>多媒体项目示例程序</h2><p><br /></p><p>除了做了基于FFmpeg的多媒体程序之外，还做了一些基于其他多媒体项目的示例。如下文所列。</p><h3>4.1<span style="white-space:pre;">	</span>simplest media play</h3><p><em>最简单的视音频播放示例</em></p><p><strong>简介</strong></p><p>本工程包含了使用各种API（Direct3D，OpenGL，GDI，DirectSound，SDL2）播放多媒体例子。其中音频输入为PCM采样数据。输出至系统的声卡播放出来。视频输入为YUV/RGB像素数据。输出至显示器上的一个窗口播放出来。</p>通过本工程的代码初学者可以快速学习使用这几个API播放视频和音频的技术。一共包括了如下几个子工程：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_audio_play_directsound:使用DirectSound播放PCM音频采样数据。<br />simplest_audio_play_sdl2:使用SDL2播放PCM音频采样数据。<br />simplest_video_play_direct3d:使用Direct3D的Surface播放RGB/YUV视频像素数据。<br />simplest_video_play_direct3d_texture:使用Direct3D的Texture播放RGB视频像素数据。<br />simplest_video_play_gdi:使用GDI播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl:使用OpenGL播放RGB/YUV视频像素数据。<br />simplest_video_play_opengl_texture:使用OpenGL的Texture播放YUV视频像素数据。<br /><p>simplest_video_play_sdl2:使用SDL2播放RGB/YUV视频像素数据。</p></blockquote><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150113005330883" alt="" />                    <img src="https://img-blog.csdn.net/20150113005334627" alt="" /><br /></div><div style="text-align:center;"><br /></div><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150113005340508" alt="" />          <img src="https://img-blog.csdn.net/20150113005344362" alt="" /><br /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40246783">《最简单的视音频播放示例1：总述》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40266503">《最简单的视音频播放示例2：GDI播放YUV, RGB》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40279297">《最简单的视音频播放示例3：Direct3D播放YUV，RGB（通过Surface）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40301179">《最简单的视音频播放示例4：Direct3D播放RGB（通过Texture）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40333583">《最简单的视音频播放示例5：OpenGL播放RGB/YUV》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40379845">《最简单的视音频播放示例6：OpenGL播放YUV420P（通过Texture，使用Shader）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40525591">《最简单的视音频播放示例7：SDL2播放RGB/YUV》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40540147">《最简单的视音频播放示例8：DirectSound播放PCM》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/40544521">《最简单的视音频播放示例9：SDL2播放PCM》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestmediaplay/">https://sourceforge.net/projects/simplestmediaplay/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_media_play">https://github.com/leixiaohua1020/simplest_media_play</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_media_play">http://git.oschina.net/leixiaohua1020/simplest_media_play</a></p><br /><h3>4.2<span style="white-space:pre;">	</span>simplest encoder</h3><p><em>最简单的编码器例子</em></p><p><strong>简介</strong></p><p>该解决方案包含了几个常见的编码器的使用示例：</p><p>simplest_vpx_encoder：最简单的基于libvpx的视频编码器</p><p>simplest_x264_encoder：最简单的基于libx264的视频编码器</p><p>simplest_x265_encoder：最简单的基于libx265的视频编码器</p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150113005751107" alt="" />       <img src="https://img-blog.csdn.net/20150113005723953" alt="" />       <img src="https://img-blog.csdn.net/20150113005759781" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42069383">《最简单的视频编码器：编译（libx264，libx265，libvpx）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42078645">《最简单的视频编码器：基于libx264（编码YUV为H.264）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42079101">《最简单的视频编码器：基于libx265（编码YUV为H.265）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42079217">《最简单的视频编码器：基于libvpx（编码YUV为VP8）》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestencoder/">https://sourceforge.net/projects/simplestencoder/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_encoder">https://github.com/leixiaohua1020/simplest_encoder</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_encoder">http://git.oschina.net/leixiaohua1020/simplest_encoder</a></p><br /><h3>4.3<span style="white-space:pre;">	</span>simplest libRTMP example</h3><p><em>最简单的基于librtmp的示例</em></p><p><strong>简介</strong></p>本工程包含了LibRTMP的使用示例，包含如下子工程：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_librtmp_receive: 接收RTMP流媒体并在本地保存成FLV格式的文件。<br />simplest_librtmp_send_flv: 将FLV格式的视音频文件使用RTMP推送至RTMP流媒体服务器。<br /><p>simplest_librtmp_send264: 将内存中的H.264数据推送至RTMP流媒体服务器。</p></blockquote><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113005906890" alt="" /></div><strong>文章</strong><br /><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42104893">《最简单的基于librtmp的示例：接收（RTMP保存为FLV）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42104945">《最简单的基于librtmp的示例：发布（FLV通过RTMP发布）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42105049">《最简单的基于librtmp的示例：发布H.264（H.264通过RTMP发布）》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestlibrtmpexample/">https://sourceforge.net/projects/simplestlibrtmpexample/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_librtmp_example">https://github.com/leixiaohua1020/simplest_librtmp_example</a></p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_librtmp_example">http://git.oschina.net/leixiaohua1020/simplest_librtmp_example</a><br /><br /><h3>4.4<span style="white-space:pre;">	</span>simplest libVLC example</h3><p><em>最简单的基于libVLC的例子</em></p><p><strong>简介</strong></p><p>本工程是包含了一些基于libVLC的示例程序。一共包含了如下几个子程序。</p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">playerGUI: 最简单的基于libVLC的播放器-图形界面版。<br />simplest_libvlc_example: 最简单的基于libVLC的播放器。<br />simplest_libvlc_streamer: 最简单的基于libVLC的推流器。</blockquote><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113010059852" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42363079">《最简单的基于libVLC的例子：最简单的基于libVLC的视频播放器》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42363593">《最简单的基于libVLC的例子：最简单的基于libVLC的视频播放器（图形界面版）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42363701">《最简单的基于libVLC的例子：最简单的基于libVLC的推流器》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestlibvlcexample/">https://sourceforge.net/projects/simplestlibvlcexample/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_libvlc_example">https://github.com/leixiaohua1020/simplest_libvlc_example</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_libvlc_example">http://git.oschina.net/leixiaohua1020/simplest_libvlc_example</a></p><br /><h3>4.5<span style="white-space:pre;">	</span>simplest directshow example</h3><p><em>最简单的基于DirectShow的示例</em></p><p><strong>简介</strong></p>本程序包含了DirectShow开发的示例程序。适合DirectShow初学者进行学习。<br />它包含了以下几个子程序：<br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_directshow_player: 最简单的基于DirectShow的视频播放器。<br />simplest_directshow_player_custom: 最简单的基于DirectShow的视频播放器（Custom）。<br />playerGUI: 最简单的基于DirectShow的播放器-图形界面版。<br />simplest_directshow_info: 最简单的Directshow信息显示例子。<br />simplest_directshow_filter: 目前还未完成。</blockquote><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113010145484" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42372419">《最简单的基于DirectShow的示例：视频播放器》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42372631">《最简单的基于DirectShow的示例：视频播放器图形界面版》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42394509">《最简单的基于DirectShow的示例：视频播放器自定义版》</a></p><a href="http://blog.csdn.net/leixiaohua1020/article/details/42649379">《最简单的基于DirectShow的示例：获取Filter信息》</a><br /><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/simplestdirectshowexample/">https://sourceforge.net/projects/simplestdirectshowexample/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_directshow_example">https://github.com/leixiaohua1020/simplest_directshow_example</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_directshow_example">http://git.oschina.net/leixiaohua1020/simplest_directshow_example</a></p><br /><h2>5.<span style="white-space:pre;">	</span>视音频编解码学习工程</h2><p>视音频编解码学习工程主要用于学习编解码的原理。这几个工程都是简单的“码流分析”工具。他们可以分析不同格式的多媒体数据：TS封装格式，FLV封装格式，H.264码流，AAC码流，JPEG压缩图片。</p><p>这几个程序我完成的比较早，是我在学习视音频技术初期边看理论边实践着做出来的。因此功能上还有一些不足，一直也没有时间修正，有时间再把它们统一更新一下。</p><h3>5.1<span style="white-space:pre;">	</span>H264 Stream Analysis</h3><em>H.264分析器</em><br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150113010310109" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/17933821">《视音频编解码学习工程：H.264分析器》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/h264streamanalysis/">https://sourceforge.net/projects/h264streamanalysis/</a></p><p>Github：<a href="https://github.com/leixiaohua1020/h264_analysis">https://github.com/leixiaohua1020/h264_analysis</a></p><p>开源中国：<a href="http://git.oschina.net/leixiaohua1020/H264_Analysis">http://git.oschina.net/leixiaohua1020/H264_Analysis</a></p><br /><h3>5.2<span style="white-space:pre;">	</span>AAC Stream Analysis</h3><p><em>AAC格式分析器</em></p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113010429250" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/18155549">《视音频编解码学习工程：AAC格式分析器》</a></p><p><strong>项目主页</strong></p>SourceForge：<a href="https://sourceforge.net/projects/aacstreamanalysis/">https://sourceforge.net/projects/aacstreamanalysis/</a><br /><br /><h3>5.3<span style="white-space:pre;">	</span>FLV Format Analysis</h3><p><em>FLV封装格式分析器</em></p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113010544506" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/17934487">《视音频编解码学习工程：FLV封装格式分析器》</a></p><p><strong>项目主页</strong></p><p>SourceForge：<a href="https://sourceforge.net/projects/flvformatanalysis/">https://sourceforge.net/projects/flvformatanalysis/</a></p><br /><h3>5.4<span style="white-space:pre;">	</span>TS Format Analysis</h3><p><em>TS封装格式分析器</em></p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113010636547" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/17973587">《视音频编解码学习工程：TS封装格式分析器》</a></p><p><strong>项目主页</strong></p>SourceForge：<a href="https://sourceforge.net/projects/tsformatanalysis/">https://sourceforge.net/projects/tsformatanalysis/</a><br /><br /><h3>5.5<span style="white-space:pre;">	</span>JPEG Analysis</h3><p><em>JPEG分析器</em></p><div style="text-align:center;"> <img src="https://img-blog.csdn.net/20150113010640120" alt="" /></div><p><strong>文章</strong></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/18280253">《视音频编解码学习工程：JPEG分析器》</a></p><p><strong>项目主页</strong></p>SourceForge：<a href="https://sourceforge.net/projects/jpeganalysis/">https://sourceforge.net/projects/jpeganalysis/</a><br /><br /><p><br /></p><p></p><h2>6.<span style="white-space:pre;">	</span>其他语言工程</h2><p></p><p>一些不是使用C/C++写的流媒体相关的工程。</p><p><br /></p><h3>6.1<span style="white-space:pre;">	</span>Simplest Video Website</h3><em>最简单的视频网站（JavaEE+FFmpeg）</em><br /><p style="text-align:left;"><strong>简介</strong></p><p style="text-align:left;">本程序是一个最简单的视频网站系统。基于JavaEE的SSH (Strut2 + Spring + Hibernate)和FFmpeg。<br /></p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150530024500104" alt="" /><br /></p><p><strong>文章</strong><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/43870599">《最简单的视频网站（JavaEE+FFmpeg）》</a><br /><strong>项目主页</strong><br />开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_video_website">http://git.oschina.net/leixiaohua1020/simplest_video_website</a></p><p>Github：<a href="https://github.com/leixiaohua1020/simplest_video_website">https://github.com/leixiaohua1020/simplest_video_website</a></p><p>在线演示：<a href="http://www.velab.com.cn:8080/svw/">http://www.velab.com.cn:8080/svw/</a></p><p><br /></p><h3>6.2<span style="white-space:pre;">	</span>Simplest flashmedia example</h3><em> 最简单的基于Flash的流媒体示例</em><br /><p></p><p><strong>简介</strong></p><p>本程序是一个Flash流媒体示例的合集。其中包含了使用Actionscript编写的推流器和播放器，以及网页播放器。本工程包含如下基于Flash技术的流媒体的例子：<br /></p><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_as3_rtmp_player:  最简单的RTMP播放器（基于ActionScript）<br />simplest_as3_rtmp_streamer:最简单的RTMP推流器（基于ActionScript）<br />rtmp_sample_player_adobe: 从Adobe Flash Media Sever提取出来的测试播放器<br />rtmp_sample_player_wowza: 从Wowza服务器中提取出来的测试播放器<br />rtmp_sample_player_flowplayer: 基于FlowPlayer的RTMP/HTTP播放器（添加RTMP plugin）<br />rtmp_sample_player_videojs: 基于VideoJS的RTMP/HTTP播放器<br />rtmp_sample_player_jwplayer: 基于JWplayer的RTMP/HTTP播放器<br />hls_sample_player_flowplayer: 基于FlowPlayer的HLS播放器（添加HLS plugin）<br />hls_video_player_html5: 基于HTML5的HLS/HTTP播放器<p></p><p>activex_vlc_player:  基于VLC的ActiveX控件的播放器</p></blockquote><p></p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150530030038118" alt="" /><br /></p><p><strong>文章</strong><br /><a href="http://blog.csdn.net/leixiaohua1020/article/details/43936141">《最简单的基于Flash的流媒体示例：RTMP推送和接收（ActionScript）》</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/43936415">《最简单的基于Flash的流媒体示例：网页播放器（HTTP，RTMP，HLS）》</a><br /><br /><strong>项目主页</strong><br />SourceForge：<a href="https://sourceforge.net/projects/simplestflashmediaexample/">https://sourceforge.net/projects/simplestflashmediaexample/</a><br />Github：<a href="https://github.com/leixiaohua1020/simplest_flashmedia_example">https://github.com/leixiaohua1020/simplest_flashmedia_example</a><br />开源中国：<a href="http://git.oschina.net/leixiaohua1020/simplest_flashmedia_example">http://git.oschina.net/leixiaohua1020/simplest_flashmedia_example</a><br /></p><div><br /></div><br /><p><br /></p><h2>7.<span style="white-space:pre;">	</span>附录：程序汇总表</h2><br /><strong><span style="color:#3333ff;">1.<span style="white-space:pre;">	</span>专业领域程序</span></strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><strong><span style="color:#009900;">1.1<span style="white-space:pre;">	</span>VideoEye</span><br /><span style="color:#009900;">1.2<span style="white-space:pre;">	</span>TIandSI</span></strong></blockquote><strong><span style="color:#3333ff;">2.<span style="white-space:pre;">	</span>FFmpeg示例程序</span></strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>2.1<span style="white-space:pre;">	</span>Simplest ffmpeg player | 最简单的基于FFMPEG的视频播放器</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_player：标准版，FFmpeg学习的开始。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_player_su：SU（SDL Update）版，加入了简单的SDL的Event。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_decoder_pure：一个纯净的解码器只使用libavcodec（没有使用libavformat）。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>2.2<span style="white-space:pre;">	</span>simplest ffmpeg audio player | 最简单的基于FFMPEG的音频播放器<br />2.3<span style="white-space:pre;">	</span>simplest ffmpeg picture encoder | 最简单的基于FFMPEG的图像编码器<br />2.4<span style="white-space:pre;">	</span>simplest ffmpeg video encoder | 最简单的基于FFMPEG的视频编码器</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_video_encoder：普通版编码器。使用libavcodec和libavformat编码并且封装视频。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_video_encoder_pure：纯净版编码器。仅使用libavcodec编码视频，不使用libavformat。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>2.5<span style="white-space:pre;">	</span>simplest ffmpeg audio encoder | 最简单的基于FFMPEG的音频编码器<br />2.6<span style="white-space:pre;">	</span>simplest ffmpeg format | 最简单的基于FFMPEG的封装格式处理</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_demuxer：视音频分离器。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_demuxer_simple：视音频分离器（简化版）。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_muxer：视音频复用器。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_remuxer：封装格式转换器。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>2.7<span style="white-space:pre;">	</span>simplest ffmpeg streamer | 最简单的基于FFmpeg的推流器（推送RTMP）<br />2.8<span style="white-space:pre;">	</span>simplest ffmpeg video filter | 最简单的基于FFmpeg的AVfilter例子（水印叠加）<br />2.9<span style="white-space:pre;">	</span>simplest ffmpeg swscale | 最简单的基于FFmpeg的libswscale的示例</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_swscale: 最简单的libswscale的教程。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_pic_gen: 生成各种测试图片的工具。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>2.10 simplest ffmpeg device | 最简单的基于FFmpeg的AVDevice例子</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_grabdesktop：屏幕录制。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_readcamera：读取摄像头。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>2.11 simplest ffmpeg mem handler | 最简单的基于FFmpeg的内存读写例子</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_ffmpeg_mem_player：播放内存中视频数据的播放器。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>simplest_ffmpeg_mem_transcoder：转码内存中数据的转码器。</p></blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p><span style="color:rgb(0,153,0);"><strong>2.12 simplest ffmpeg avutil | 最简单的基于FFmpeg的AVUtil例子</strong></span></p><p><span style="color:rgb(0,153,0);"><strong>2.13 simplest ffmpeg mobile | 最简单的基于FFmpeg的移动端的例子</strong></span></p></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><p>本解决方案包含了使用FFmpeg在移动端处理多媒体的各种例子：<br />[Android]<br />simplest_android_player: 基于安卓接口的视频播放器<br />simplest_ffmpeg_android_helloworld: 安卓平台下基于FFmpeg的HelloWorld程序<br />simplest_ffmpeg_android_decoder: 安卓平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_android_decoder_onelib: 安卓平台下最简单的基于FFmpeg的视频解码器-单库版<br />simplest_ffmpeg_android_streamer: 安卓平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_android_transcoder: 安卓平台下移植的FFmpeg命令行工具<br />simplest_sdl_android_helloworld: 移植SDL到安卓平台的最简单程序<br />[IOS]<br />simplest_ios_player: 基于IOS接口的视频播放器<br />simplest_ffmpeg_ios_helloworld: IOS平台下基于FFmpeg的HelloWorld程序<br />simplest_ffmpeg_ios_decoder: IOS平台下最简单的基于FFmpeg的视频解码器<br />simplest_ffmpeg_ios_streamer: IOS平台下最简单的基于FFmpeg的推流器<br />simplest_ffmpeg_ios_transcoder: IOS平台下移植的ffmpeg.c命令行工具<br />simplest_sdl_ios_helloworld: 移植SDL到IOS平台的最简单程序<br />[Windows]<br />simplest_ffmpeg_windowsphone_helloworld: Windows Phone平台下基于FFmpeg的HelloWorld程序<br /></p></blockquote></blockquote><span style="color:rgb(51,51,255);"><strong>3.<span style="white-space:pre;">	</span>FFmpeg移植程序</strong></span><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>3.1<span style="white-space:pre;">	</span>FFPLAY for MFC<br />3.2<span style="white-space:pre;">	</span>FFMPEG for MFC</strong></span></blockquote><strong><span style="color:#3333ff;">4.<span style="white-space:pre;">	</span>多媒体项目示例程序</span></strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>4.1<span style="white-space:pre;">	</span>simplest media play | 最简单的视音频播放示例</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_audio_play_directsound:使用DirectSound播放PCM音频采样数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_audio_play_sdl2:使用SDL2播放PCM音频采样数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_video_play_direct3d:使用Direct3D的Surface播放RGB/YUV视频像素数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_video_play_direct3d_texture:使用Direct3D的Texture播放RGB视频像素数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_video_play_gdi:使用GDI播放RGB/YUV视频像素数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_video_play_opengl:使用OpenGL播放RGB/YUV视频像素数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_video_play_opengl_texture:使用OpenGL的Texture播放YUV视频像素数据。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_video_play_sdl2:使用SDL2播放RGB/YUV视频像素数据。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>4.2<span style="white-space:pre;">	</span>simplest encoder | 最简单的编码器例子</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_vpx_encoder：最简单的基于libvpx的视频编码器</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_x264_encoder：最简单的基于libx264的视频编码器</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_x265_encoder：最简单的基于libx265的视频编码器</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>4.3<span style="white-space:pre;">	</span>simplest libRTMP example | 最简单的基于librtmp的示例</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_librtmp_receive: 接收RTMP流媒体并在本地保存成FLV格式的文件。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_librtmp_send_flv: 将FLV格式的视音频文件使用RTMP推送至RTMP流媒体服务器。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_librtmp_send264: 将内存中的H.264数据推送至RTMP流媒体服务器。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>4.4<span style="white-space:pre;">	</span>simplest libVLC example | 最简单的基于libVLC的例子</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">playerGUI: 最简单的基于libVLC的播放器-图形界面版。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_libvlc_example: 最简单的基于libVLC的播放器。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_libvlc_streamer: 最简单的基于libVLC的推流器。</blockquote></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>4.5<span style="white-space:pre;">	</span>simplest directshow example | 最简单的基于DirectShow的示例</strong></span><br /></blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">包括了如下几个子工程：</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_directshow_player: 最简单的基于DirectShow的视频播放器。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_directshow_player_custom: 最简单的基于DirectShow的视频播放器（Custom）。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">playerGUI: 最简单的基于DirectShow的播放器-图形界面版。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_directshow_info: 最简单的Directshow信息显示例子。</blockquote><blockquote style="margin:0 0 0 40px;border:none;padding:0px;">simplest_directshow_filter: 目前还未完成。</blockquote></blockquote><strong><span style="color:#3333ff;">5.视音频编解码学习工程</span></strong><br /><blockquote style="margin:0 0 0 40px;border:none;padding:0px;"><span style="color:#009900;"><strong>5.1<span style="white-space:pre;">	</span>H264 Stream Analysis | H.264分析器<br />5.2<span style="white-space:pre;">	</span>AAC Stream Analysis | AAC格式分析器<br />5.3<span style="white-space:pre;">	</span>FLV Format Analysis | FLV封装格式分析器<br />5.4<span style="white-space:pre;">	</span>TS Format Analysis | TS封装格式分析器<br />5.5<span style="white-space:pre;">	</span>JPEG Analysis | JPEG分析器</strong></span></blockquote><strong><span style="color:rgb(51,51,255);">6.其他语言工程</span></strong><br /><blockquote style="margin:0px 0px 0px 40px;border:none;padding:0px;"><span style="color:rgb(0,153,0);"><strong>6.1<span style="white-space:pre;">	</span>Simplest Video Website | 最简单的视频网站（JavaEE+FFmpeg）<br />6.2<span style="white-space:pre;">	</span>Simplest flashmedia example | 最简单的基于Flash的流媒体示例</strong></span></blockquote><br /><div><p><br /></p></div>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/42658139		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=开源项目&t=blog" target="_blank">开源项目						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=ffmpeg&t=blog" target="_blank">ffmpeg						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=VLC&t=blog" target="_blank">VLC						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=视频&t=blog" target="_blank">视频						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=解码&t=blog" target="_blank">解码						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div data-track-view='{"mod":"popu_625","con": ",https://blog.csdn.net/leixiaohua1020/article/details/42658139,from_360"}' style="margin-top: 8px;padding: 20px;background-color: #fff;overflow: hidden;" id="adt0"></div>
+                            <script>
+                                var adWidth = $("div.blog-content-box").outerWidth() - 40;
+                                NEWS_FEED({
+                                    w: adWidth,
+                                    h : 130,
+                                    showid : "s02a31",
+                                    placeholderId: "adt0",
+                                    inject : "define",
+                                    define : {
+                                    imagePosition : "right",
+                                    imageBorderRadius : 0,
+                                    imageWidth: 231,
+                                    imageHeight: 130,
+                                    imageFill : "clip",
+                                    displayImage : true,
+                                    displayTitle : true,
+                                    titleFontSize: 20,
+                                    titleFontColor: "#333",
+                                    titleFontFamily : "Microsoft Yahei",
+                                    titleFontWeight: "bold",
+                                    titlePaddingTop : 0,
+                                    titlePaddingRight : 0,
+                                    titlePaddingBottom : 10,
+                                    titlePaddingLeft : 0,
+                                    displayDesc : true,
+                                    descFontSize: 14,
+                                    descFontColor: "#6b6b6b",
+                                    descFontFamily : "Microsoft Yahei",
+                                    paddingTop : 0,
+                                    paddingRight : 0,
+                                    paddingBottom : 0,
+                                    paddingLeft : 0,
+                                    backgroundColor: "#fff",
+                                    hoverColor: "#ca0c16"
+                                    }
+                                })
+                            </script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/42658139#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/ShareUs/article/details/72794645" target="_blank" strategy="BlogCommendFromBaidu_0">
+				音视频框架Opencore(PacketVideo) /Stagefright-【OpenMAX】;DRM，TinyAlsa			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/ShareUs/article/details/72794645" target="_blank" >
+				&amp;gt; 音频框架
+音视频<em>开源</em>App你值得收藏- http://blog.csdn.net/androidstarjack/article/details/68954614?locationNum=9...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/ShareUs" title="ShareUs" target="_blank">
+					<img src="https://avatar.csdn.net/1/4/2/3_shareus.jpg" alt="ShareUs" class="avatar-pic">
+					<span class="name">ShareUs</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-28 20:46:29</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：562</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qq944639839/article/details/77851942" target="_blank" strategy="BlogCommendFromBaidu_1">
+				这些优秀的音视频<em>开源</em>框架你值得收藏			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq944639839/article/details/77851942" target="_blank" >
+				音视频播放器第三方框架
+1.一个基于IJKplayer 的多功能视频播放器
+
+视频播放器（IJKplayer）的有点：
+
+
+HTTPS支持
+
+支持弹幕
+
+支持基本的拖动，声音、亮度...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qq944639839" title="qq944639839" target="_blank">
+					<img src="https://avatar.csdn.net/A/8/6/3_qq944639839.jpg" alt="qq944639839" class="avatar-pic">
+					<span class="name">qq944639839</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-09-05 15:20:45</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：146</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/moonpure/article/details/78294835" target="_blank" strategy="BlogCommendFromBaidu_2">
+				目前流行的<em>开源</em>监控框架有哪些			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/moonpure/article/details/78294835" target="_blank" >
+				<em>开源</em>的推荐三个吧：
+一、Zabbix
+优点：
+1. 支持多平台的企业级分布式<em>开源</em>监控软件;
+2. 安装部署简单、管理方便;
+3. 功能强大，监控灵活，可实现复杂多条件告警;
+4. 多种数据...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/moonpure" title="moonpure" target="_blank">
+					<img src="https://avatar.csdn.net/3/A/D/3_moonpure.jpg" alt="moonpure" class="avatar-pic">
+					<span class="name">moonpure</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-10-20 14:12:53</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1887</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u012211748/article/details/53991814" target="_blank" strategy="BlogCommendFromBaidu_4">
+				资讯：主流<em>开源</em>视频编解码			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u012211748/article/details/53991814" target="_blank" >
+				1.概述
+
+vlc/mplayer/mpc
+
+gstreamer/directshow/openmax
+
+ffmpeg/ffshow
+
+2.1 播放器(直接可用软件)
+
+1）vlc，插件机制的播放器，...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u012211748" title="u012211748" target="_blank">
+					<img src="https://avatar.csdn.net/B/0/4/3_u012211748.jpg" alt="u012211748" class="avatar-pic">
+					<span class="name">u012211748</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-01-03 09:57:25</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：754</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/aiyh0202/article/details/52815374" target="_blank" strategy="BlogCommendFromBaidu_5">
+				音频转码（压缩）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/aiyh0202/article/details/52815374" target="_blank" >
+				这里为大家讲述，48K采样率，128比特率的WAV音频转MP3，当然也是支持其他采样率音频转码的，需要你自己修改下本地方法，内置了完整的Lame转码库，懂C的完全可以做出一个全能的音频格式转换器，这里...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/aiyh0202" title="aiyh0202" target="_blank">
+					<img src="https://avatar.csdn.net/7/7/3/3_aiyh0202.jpg" alt="aiyh0202" class="avatar-pic">
+					<span class="name">aiyh0202</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-10-14 13:56:50</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1155</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zqf_office/article/details/50985203" target="_blank" strategy="BlogCommendFromBaidu_6">
+				FFmpeg滤镜使用指南			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zqf_office/article/details/50985203" target="_blank" >
+				1. FFmpeg滤镜文档
+2. 示例
+  2.1 缩放
+  2.2 视频加速
+  2.3 滤镜图，链和滤镜关系
+  2.4 多个输入覆盖同一个2x2 网格
+  2.5 转义字符
+  2...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zqf_office" title="zqf_office" target="_blank">
+					<img src="https://avatar.csdn.net/2/F/9/3_zqf_office.jpg" alt="zqf_office" class="avatar-pic">
+					<span class="name">zqf_office</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-03-26 08:14:58</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：449</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dancing_night/article/details/53080385" target="_blank" strategy="BlogCommendFromBaidu_7">
+				利用ffmpeg的filter混音			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dancing_night/article/details/53080385" target="_blank" >
+				概述
+流程介绍
+流程如下
+线程之间数据走向如下
+代码
+下载地址概述一个简单的混音demo，把文件a和文件b的音频混为一个音频流输出并存为文件，只处理每个文件的第一个音频流 
+注：源代码是网友Larry...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dancing_night" title="dancing_night" target="_blank">
+					<img src="https://avatar.csdn.net/E/8/3/3_dancing_night.jpg" alt="dancing_night" class="avatar-pic">
+					<span class="name">dancing_night</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-11-08 11:25:05</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3744</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/Nil88/article/details/62885439" target="_blank" strategy="BlogCommendFromBaidu_8">
+				FFmpeg提取第一个视频合并第二个视频的音频同时加2个水印			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/Nil88/article/details/62885439" target="_blank" >
+				ffmpeg -i ~/Movies/objectC/facebook.mp4 -i ~/Movies/rangzidanfei.mkv -i ~/Pictures/SACC.jpg -i ~/Pic...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/Nil88" title="Nil88" target="_blank">
+					<img src="https://avatar.csdn.net/0/A/F/3_nil88.jpg" alt="Nil88" class="avatar-pic">
+					<span class="name">Nil88</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-03-17 12:05:13</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：405</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/evsqiezi/article/details/52329309" target="_blank" strategy="BlogCommendFromBaidu_9">
+				ffmpeg音频滤镜			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/evsqiezi/article/details/52329309" target="_blank" >
+				音频滤镜
+分离声道
+
+1 转码（源文件没问题可以省略） ffmpeg -i jy.ts  -vcodec h264  -acodec aac jy1.ts
+2 取一个声道 ffmpeg -i ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/evsqiezi" title="evsqiezi" target="_blank">
+					<img src="https://avatar.csdn.net/D/0/5/3_evsqiezi.jpg" alt="evsqiezi" class="avatar-pic">
+					<span class="name">evsqiezi</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-08-26 15:58:55</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3314</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/Lyman_Ye/article/details/80415627" target="_blank" strategy="BlogCommendFromBaidu_10">
+				FFmpeg命令行滤镜使用			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/Lyman_Ye/article/details/80415627" target="_blank" >
+				对视频的滤镜处理还是很有吸引力的，因为可以做出各种比较炫酷的视频效果。这篇学习使用FFmpeg命令行来简单的操作制作视频的滤镜效果。
+
+
+
+Filter
+
+Filter的参数排列格式为： 
+[输入流或...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/Lyman_Ye" title="Lyman_Ye" target="_blank">
+					<img src="https://avatar.csdn.net/0/9/6/3_lyman_ye.jpg" alt="Lyman_Ye" class="avatar-pic">
+					<span class="name">Lyman_Ye</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-05-25 14:01:56</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：31</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/42658139" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421111">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>107</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "我的开源视音频项目汇总";
+    var ChannelId = 16;
+    var articleId = "42658139";
+    var commentscount = 261;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/42658139";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "%E8%A7%86%E9%9F%B3%E9%A2%91%E5%A4%84%E7%90%86+%E5%BC%80%E6%BA%90";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"我的开源视音频项目汇总");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=%E8%A7%86%E9%9F%B3%E9%A2%91%E5%A4%84%E7%90%86+%E5%BC%80%E6%BA%90"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

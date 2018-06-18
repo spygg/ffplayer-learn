@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/17934487"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文介绍一个自己的开源小项目：FLV封装格式分析器。FLV全称是Flash Video，是互联网上使用极为广泛的视频封装格式。像Youtube，优酷这类视频网站，都使用FLV封装视频。我这个项目规模不大，主要可以用来学习FLV封装格式结构。此外它还支持分离FLV中的视频流和音频流。使用VC 2010的MFC开发完成。在对FLV进行视音频分离的过程中，用到了一个Github开源小工程：flvparse。在此插一句：我发现Github上优秀的东西真的还是挺多的，许多零散的小工程，效果都很不错。这个flvpars" />
+    <meta name="keywords" content="flv,封装格式" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>视音频编解码学习工程：FLV封装格式分析器 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/17934487"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">视音频编解码学习工程：FLV封装格式分析器</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2014年01月12日 00:01:19</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：38334</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p>=====================================================</p><p>视音频编解码学习工程系列文章列表：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/17933821">视音频编解码学习工程：H.264分析器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/18155549">视音频编解码学习工程：AAC格式分析器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/17934487">视音频编解码学习工程：FLV封装格式分析器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/17973587">视音频编解码学习工程：TS封装格式分析器</a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/18280253">视音频编解码学习工程：JPEG分析器</a><br /></p><p>=====================================================</p><p>本文介绍一个自己的开源小项目：FLV封装格式分析器。FLV全称是Flash Video，是互联网上使用极为广泛的视频封装格式。像Youtube，优酷这类视频网站，都使用FLV封装视频。我这个项目规模不大，主要可以用来学习FLV封装格式结构。此外它还支持分离FLV中的视频流和音频流。使用VC 2010的MFC开发完成。在对FLV进行视音频分离的过程中，用到了一个Github开源小工程：flvparse。在此插一句：我发现Github上优秀的东西真的还是挺多的，许多零散的小工程，效果都很不错。这个flvparse做的就不错。</p><p>软件的exe以及源代码已经上传到了SourceForge上。和之前的H.264码流分析器一样，增加了一个英文界面，紧跟国际潮流~</p><p>项目地址：<a href="https://sourceforge.net/projects/flvformatanalysis/">https://sourceforge.net/projects/flvformatanalysis/</a></p><p>CSDN下载地址（程序+源代码）：<a href="http://download.csdn.net/detail/leixiaohua1020/6838805">http://download.csdn.net/detail/leixiaohua1020/6838805</a></p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20140708232705606" alt="" /><br /></p><p></p><p>更新记录==============================</p><p>1.1版（2014.7.8）</p><p> * 更换了界面</p><p> * 原工程支持Unicode编码</p><p> * 支持中英文切换</p><p>CSDN源代码：<a href="http://download.csdn.net/detail/leixiaohua1020/7767613">http://download.csdn.net/detail/leixiaohua1020/7767613</a></p><div>PUDN源代码：<a href="http://www.pudn.com/downloads644/sourcecode/multimedia/detail2605189.html">http://www.pudn.com/downloads644/sourcecode/multimedia/detail2605189.html</a></div><p><br /></p><p>新版（2016.1.1）</p><p> * 精简了代码，使之更通俗易懂</p><p> * 修改了少量界面UI</p><p> * 修正了少量解析错误</p><p> * 添加了对TagData首字节的解析</p><p>已经更新至SourceForge上</p><p><br /></p><p><span style="font-size:18px;"><strong>软件使用介绍</strong></span></p><p>软件的使用相当简单。软件运行后，首先打开一个FLV文件。单击“开始”，可以解析出一系列Tag，列表显示在软件右侧。不同种类的Tag被标记成了不同的颜色。列表中包含了每个Tag的类型、大小、时间戳、StreamID、TagData首字节。软件的左侧，显示了FLV文件头信息。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118102636175" alt="" /><br /></p><p>此外软件做了一个英文界面，如下所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20160118102649368" alt="" /><br /></p><p><span style="font-family:'FangSong_GB2312';">注：如果勾选上“输出视频”，“输出音频”的话，可以输出分离后的视频流和音频流。在这里要注意的是音频支持MP3格式，AAC格式貌似有点问题。</span></p><p><br /></p><p><span style="font-size:18px;"><strong>软件源代码简析</strong></span></p><p>源代码方面和普通的MFC程序差不太多，懂得MFC的人应该很快就能看懂。唯一比较特殊的地方，就在于对开源项目flvparse进行了一些改动，在此就不细说了。注释方面还是很充分的。</p><p><br /></p><h2>FLV封装原理</h2><div>FLV格式的封装原理，贴上来辅助学习之用。</div><div><br /></div><div><br /></div><div><p>FLV（Flash Video）是Adobe公司设计开发的一种流行的流媒体格式，由于其视频文件体积轻巧、封装简单等特点，使其很适合在互联网上进行应用。此外，FLV可以使用Flash Player进行播放，而Flash Player插件已经安装在全世界绝大部分浏览器上，这使得通过网页播放FLV视频十分容易。目前主流的视频网站如优酷网，土豆网，乐视网等网站无一例外地使用了FLV格式。FLV封装格式的文件后缀通常为“.flv”。</p><p>总体上看，FLV包括文件头（File Header）和文件体（File Body）两部分，其中文件体由一系列的Tag组成。因此一个FLV文件是如图1结构。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20140812104854882" alt="" /><br /></p><p align="center">图1.文件结构（简图）</p><p>其中，每个Tag前面还包含了Previous Tag Size字段，表示前面一个Tag的大小。Tag的类型可以是视频、音频和Script，每个Tag只能包含以上三种类型的数据中的一种。图2展示了FLV文件的详细结构。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150402014048465" alt="" /><br /></p><p align="center">图2.FLV文件结构（详图）</p><p>下面详细介绍一下三种Tag的Tag Data部分的结构。</p><p>(a)Audio Tag Data结构（音频Tag）</p><p>音频Tag开始的第1个字节包含了音频数据的参数信息，从第2个字节开始为音频流数据。结构如图3所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20140812104812062" alt="" /><br /></p><p align="center"><span>图3.</span>Audio Tag Data结构</p><p>第1个字节的前4位的数值表示了音频编码类型。如表1所示。</p><p align="center">表1.音频编码类型</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>0 </p></td>  <td valign="top"><p> Linear PCM，platform endian</p></td> </tr><tr><td valign="top"><p>1 </p></td>  <td valign="top"><p> ADPCM</p></td> </tr><tr><td valign="top"><p>2 </p></td>  <td valign="top"><p> MP3</p></td> </tr><tr><td valign="top"><p>3 </p></td>  <td valign="top"><p> Linear PCM，little endian</p></td> </tr><tr><td valign="top"><p>4 </p></td>  <td valign="top"><p> Nellymoser 16-kHz mono</p></td> </tr><tr><td valign="top"><p>5 </p></td>  <td valign="top"><p> Nellymoser 8-kHz mono</p></td> </tr><tr><td valign="top"><p>6 </p></td>  <td valign="top"><p> Nellymoser</p></td> </tr><tr><td valign="top"><p>7 </p></td>  <td valign="top"><p> G.711 A-law logarithmic PCM</p></td> </tr><tr><td valign="top"><p>8 </p></td>  <td valign="top"><p> G.711 mu-law logarithmic PCM</p></td> </tr><tr><td valign="top"><p>9 </p></td>  <td valign="top"><p> reserved</p></td> </tr><tr><td valign="top"><p>10 </p></td>  <td valign="top"><p> AAC</p></td> </tr><tr><td valign="top"><p>14 </p></td>  <td valign="top"><p> MP3 8-Khz</p></td> </tr><tr><td valign="top"><p>15 </p></td>  <td valign="top"><p> Device-specific sound</p></td> </tr></tbody></table></div><p>第1个字节的第5-6位的数值表示音频采样率。如表2所示。</p><p align="center">表2.音频采样率</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>0 </p></td>  <td valign="top"><p> 5.5kHz</p></td> </tr><tr><td valign="top"><p>1 </p></td>  <td valign="top"><p> 11KHz</p></td> </tr><tr><td valign="top"><p>2 </p></td>  <td valign="top"><p> 22 kHz</p></td> </tr><tr><td valign="top"><p>3 </p></td>  <td valign="top"><p> 44 kHz</p></td> </tr></tbody></table></div><p>PS：从上表可以发现，FLV封装格式并不支持48KHz的采样率。</p><p>第1个字节的第7位表示音频采样精度。如表3所示。</p><p align="center"><span>表3.</span>音频采样精度</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>0 </p></td>  <td valign="top"><p> 8bits</p></td> </tr><tr><td valign="top"><p>1 </p></td>  <td valign="top"><p> 16bits</p></td> </tr></tbody></table></div><p>第1个字节的第8位表示音频类型。</p><p align="center"><span>表4.</span> 音频类型</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>0 </p></td>  <td valign="top"><p> sndMono</p></td> </tr><tr><td valign="top"><p>1 </p></td>  <td valign="top"><p> sndStereo</p></td> </tr></tbody></table></div><p>(b)Video Tag Data结构（视频Tag）</p><p>视频Tag也用开始的第1个字节包含视频数据的参数信息，从第2个字节为视频流数据。结构如图4所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20140812105200522" alt="" /><br /></p><p align="center">图4.Video Tag Data结构</p><p>第1个字节的前4位的数值表示帧类型。如表5所示。</p><p align="center">表5.帧类型</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>1 </p></td>  <td valign="top"><p> keyframe （for AVC，a seekable frame）</p></td> </tr><tr><td valign="top"><p>2 </p></td>  <td valign="top"><p> inter frame （for AVC，a nonseekable frame）</p></td> </tr><tr><td valign="top"><p>3 </p></td>  <td valign="top"><p> disposable inter frame （H.263  only）</p></td> </tr><tr><td valign="top"><p>4 </p></td>  <td valign="top"><p> generated keyframe （reserved  for server use）</p></td> </tr><tr><td valign="top"><p>5 </p></td>  <td valign="top"><p> video info/command frame</p></td> </tr></tbody></table></div><p>第1个字节的后4位的数值表示视频编码类型。如表6所示。</p><p align="center">表6.视频编码类型</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>1 </p></td>  <td valign="top"><p> JPEG （currently unused）</p></td> </tr><tr><td valign="top"><p>2 </p></td>  <td valign="top"><p> Sorenson H.263</p></td> </tr><tr><td valign="top"><p>3 </p></td>  <td valign="top"><p> Screen video</p></td> </tr><tr><td valign="top"><p>4 </p></td>  <td valign="top"><p> On2 VP6</p></td> </tr><tr><td valign="top"><p>5 </p></td>  <td valign="top"><p> On2 VP6 with alpha channel</p></td> </tr><tr><td valign="top"><p>6 </p></td>  <td valign="top"><p> Screen video version 2</p></td> </tr><tr><td valign="top"><p>7 </p></td>  <td valign="top"><p> AVC</p></td> </tr></tbody></table></div><p>(c)Script Tag Data结构（控制帧）</p><p>该类型Tag又通常被称为Metadata Tag，会放一些关于FLV视频和音频的元数据信息如：duration、width、height等。通常该类型Tag会跟在File Header后面作为第一个Tag出现，而且只有一个。结构如图5所示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20140812105312610" alt="" /><br /></p><p align="center">图5.Script Tag Data结构</p><p>第一个AMF包：</p><p>第1个字节表示AMF包类型，一般总是0x02，表示字符串。第2-3个字节为UI16类型值，标识字符串的长度，一般总是0x000A（“onMetaData”长度）。后面字节为具体的字符串，一般总为“onMetaData”（6F,6E,4D,65,74,61,44,61,74,61）。</p><p>第二个AMF包：</p><p>第1个字节表示AMF包类型，一般总是0x08，表示数组。第2-5个字节为UI32类型值，表示数组元素的个数。后面即为各数组元素的封装，数组元素为元素名称和值组成的对。常见的数组元素如表7所示。</p><p align="center">表7.常见MetaData</p><div align="center"><table border="1" cellspacing="0" cellpadding="0" width="400"><tbody><tr><td valign="top" width="25%"><p>值</p></td>  <td valign="top" width="75%"><p>含义</p></td> </tr><tr><td valign="top"><p>duration</p></td>  <td valign="top"><p> 时长</p></td> </tr><tr><td valign="top"><p>width</p></td>  <td valign="top"><p> 视频宽度</p></td> </tr><tr><td valign="top"><p>height</p></td>  <td valign="top"><p> 视频高度</p></td> </tr><tr><td valign="top"><p>videodatarate</p></td>  <td valign="top"><p> 视频码率</p></td> </tr><tr><td valign="top"><p>framerate</p></td>  <td valign="top"><p> 视频帧率</p></td> </tr><tr><td valign="top"><p>videocodecid</p></td>  <td valign="top"><p> 视频编码方式</p></td> </tr><tr><td valign="top"><p>audiosamplerate</p></td>  <td valign="top"><p> 音频采样率</p></td> </tr><tr><td valign="top"><p>audiosamplesize</p></td>  <td valign="top"><p> 音频采样精度</p></td> </tr><tr><td valign="top"><p>stereo</p></td>  <td valign="top"><p> 是否为立体声</p></td> </tr><tr><td valign="top"><p>audiocodecid</p></td>  <td valign="top"><p> 音频编码方式</p></td> </tr><tr><td valign="top"><p>filesize</p></td>  <td valign="top"><p> 文件大小</p></td> </tr></tbody></table></div><p> </p><br /></div><div><br /></div><div><br /></div><div><br /></div>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/17934487		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=flv&t=blog" target="_blank">flv						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=封装格式&t=blog" target="_blank">封装格式						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=解析&t=blog" target="_blank">解析						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=开源项目&t=blog" target="_blank">开源项目						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1843731"  target="_blank">我的开源项目						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div data-track-view='{"mod":"popu_625","con": ",https://blog.csdn.net/leixiaohua1020/article/details/17934487,from_360"}' style="margin-top: 8px;padding: 20px;background-color: #fff;overflow: hidden;" id="adt0"></div>
+                            <script>
+                                var adWidth = $("div.blog-content-box").outerWidth() - 40;
+                                NEWS_FEED({
+                                    w: adWidth,
+                                    h : 130,
+                                    showid : "s02a31",
+                                    placeholderId: "adt0",
+                                    inject : "define",
+                                    define : {
+                                    imagePosition : "right",
+                                    imageBorderRadius : 0,
+                                    imageWidth: 231,
+                                    imageHeight: 130,
+                                    imageFill : "clip",
+                                    displayImage : true,
+                                    displayTitle : true,
+                                    titleFontSize: 20,
+                                    titleFontColor: "#333",
+                                    titleFontFamily : "Microsoft Yahei",
+                                    titleFontWeight: "bold",
+                                    titlePaddingTop : 0,
+                                    titlePaddingRight : 0,
+                                    titlePaddingBottom : 10,
+                                    titlePaddingLeft : 0,
+                                    displayDesc : true,
+                                    descFontSize: 14,
+                                    descFontColor: "#6b6b6b",
+                                    descFontFamily : "Microsoft Yahei",
+                                    paddingTop : 0,
+                                    paddingRight : 0,
+                                    paddingBottom : 0,
+                                    paddingLeft : 0,
+                                    backgroundColor: "#fff",
+                                    hoverColor: "#ca0c16"
+                                    }
+                                })
+                            </script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/17934487#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/50535082" target="_blank" strategy="BlogCommendFromGuangxin_0">
+				视音频数据处理入门：<em>FLV</em><em>封装格式</em>解析			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/50535082" target="_blank" >
+				前两篇文章介绍了音频码流处理程序和视频码流处理程序，本文介绍将他们打包到一起后的数据——<em>封装格式</em>数据的处理程序。<em>封装格式</em>数据在视频播放器中的位置如下所示。本文中的程序是一个<em>FLV</em><em>封装格式</em>解析程序。该程...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-01-31 18:57:10</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：56140</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/spygg/article/details/53896179" target="_blank" strategy="BlogCommendFromGuangxin_1">
+				也说<em>FLV</em>格式分析（C语言从0开始，详解，完整版）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/spygg/article/details/53896179" target="_blank" >
+				也说<em>FLV</em>格式分析（C语言完整版）
+
+
+
+
+最近想写一个在线视频播放软件，经研究得知某视频网站会将一个视频成很多段来投放从而方便在线缓冲，以及加Ad之类的目的。下载后大概如下图所示（星哥的九品芝麻官）...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/spygg" title="spygg" target="_blank">
+					<img src="https://avatar.csdn.net/5/D/2/3_spygg.jpg" alt="spygg" class="avatar-pic">
+					<span class="name">spygg</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-27 16:09:30</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2594</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/mm792261167/article/details/69396493" target="_blank" strategy="BlogCommendFromGuangxin_2">
+				流媒体-<em>FLV</em>格式详解及数据分析			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/mm792261167/article/details/69396493" target="_blank" >
+				一、<em>FLV</em>文件格式
+
+<em>FLV</em>包括文件头（File Header）和文件体（File Body）两部分。文件结构如图所示：
+
+
+
+
+
+
+二、<em>FLV</em>文件头
+
+header部分记录了<em>flv</em>的类型、版本等信息...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/mm792261167" title="mm792261167" target="_blank">
+					<img src="https://avatar.csdn.net/4/F/E/3_mm792261167.jpg" alt="mm792261167" class="avatar-pic">
+					<span class="name">mm792261167</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-04-06 17:08:12</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6330</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/y_z_hyangmo/article/details/79208275" target="_blank" strategy="BlogCommendFromGuangxin_3">
+				<em>FLV</em> <em>封装格式</em>解析			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/y_z_hyangmo/article/details/79208275" target="_blank" >
+				<em>FLV</em>　实例分析
+
+
+<em>FLV</em>(Flash Video) 是一种非常流行的多媒体<em>封装格式</em>。它可以以文件的方式存储，也可以承载在RTMP协议之上。作为网络传输的一种<em>封装格式</em>。像我们现在大部分的视频网站，或...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/y_z_hyangmo" title="y_z_hyangmo" target="_blank">
+					<img src="https://avatar.csdn.net/0/A/F/3_y_z_hyangmo.jpg" alt="y_z_hyangmo" class="avatar-pic">
+					<span class="name">y_z_hyangmo</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-01-31 14:10:02</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：3534</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/chgaowei/article/details/51243345" target="_blank" strategy="BlogCommendFromGuangxin_4">
+				<em>FLV</em>文件格式官方规范详解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/chgaowei/article/details/51243345" target="_blank" >
+				——如果要<em>学习</em>一个新的知识点，官方手册可能是最快的途径。查看网上其他人的总结也许入门更快，但是要准确，深入，完整，还是要看官方手册。以下内容来自对官方文档Video File Format Speci...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/chgaowei" title="chgaowei" target="_blank">
+					<img src="https://avatar.csdn.net/F/2/D/3_chgaowei.jpg" alt="chgaowei" class="avatar-pic">
+					<span class="name">chgaowei</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-04-25 16:41:27</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：19065</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/yeyumin89/article/details/7932368" target="_blank" strategy="BlogCommendFromBaidu_5">
+				将h.264视频流封装成<em>flv</em>格式文件（一.<em>flv</em>格式）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/yeyumin89/article/details/7932368" target="_blank" >
+				<em>flv</em>文件的格式其实网上资料还是不少，但是怎么封装成<em>flv</em>却不多。看了不少资料，找到了一个觉得还比较靠谱的：http://www.cnblogs.com/chef/archive/2012/07/18...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/yeyumin89" title="yeyumin89" target="_blank">
+					<img src="https://avatar.csdn.net/8/5/4/3_yeyumin89.jpg" alt="yeyumin89" class="avatar-pic">
+					<span class="name">yeyumin89</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2012-09-01 15:56:37</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：19403</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+				<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/leixiaohua1020/6838805" target="_blank" strategy="BlogCommendFromBaidu_6">
+						<em>FLV</em><em>封装格式</em><em>分析器</em>（程序+源代码）					</a>
+				</h4>
+				<p>
+					<span class="data">2014年01月12日 </span>
+					<span class="size">1.57MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/leixiaohua1020/6838805" target="_blank" strategy="BlogCommendFromBaidu_6">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/unkonw.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/nvniaobi/article/details/49966227" target="_blank" strategy="BlogCommendFromBaidu_7">
+				多媒体<em>封装格式</em><em>学习</em>：H264封装成<em>FLV</em>（一）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/nvniaobi/article/details/49966227" target="_blank" >
+				搞了好几天的<em>FLV</em>封装，话说封装真是个苦力活，有时候思路不是很清晰的时候，真心有点乱。
+         网上关于H264封装成<em>FLV</em>的文档，都分析的很详细了，但是有几个点没有考虑到，一会在下面我会...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/nvniaobi" title="nvniaobi" target="_blank">
+					<img src="https://avatar.csdn.net/A/B/7/3_nvniaobi.jpg" alt="nvniaobi" class="avatar-pic">
+					<span class="name">nvniaobi</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-11-21 17:37:43</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4127</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/nvniaobi/article/details/49978935" target="_blank" strategy="BlogCommendFromBaidu_8">
+				多媒体<em>封装格式</em><em>学习</em>：H264封装成<em>FLV</em>（二）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/nvniaobi/article/details/49978935" target="_blank" >
+				之前也看过很多人写的博客或者是技术贴，基本上都忽略了一些问题，也就是一个Tag中应该封装H264码流文件中多少码流呢，是一个Nalu单元还是几个？经过多次的研究和试验，我发现大部分的Tag中可以只存放...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/nvniaobi" title="nvniaobi" target="_blank">
+					<img src="https://avatar.csdn.net/A/B/7/3_nvniaobi.jpg" alt="nvniaobi" class="avatar-pic">
+					<span class="name">nvniaobi</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-11-22 16:46:07</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1446</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/hejjunlin/article/details/73322063" target="_blank" strategy="BlogCommendFromBaidu_9">
+				H.264标准（二）<em>FLV</em><em>封装格式</em>详解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/hejjunlin/article/details/73322063" target="_blank" >
+				首先用工具分析一个<em>flv</em>文件，<em>flv</em>是一种<em>封装格式</em>，是adobe公司推出的。官方文档可以参考：video_file_format_spec_v10_1，本文根据官方文档总结。
+
+http://img....			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/hejjunlin" title="hejjunlin" target="_blank">
+					<img src="https://avatar.csdn.net/9/5/0/3_hejjunlin.jpg" alt="hejjunlin" class="avatar-pic">
+					<span class="name">hejjunlin</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-06-16 10:27:05</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1301</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/17934487" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421303">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>57</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "视音频编解码学习工程：FLV封装格式分析器";
+    var ChannelId = 16;
+    var articleId = "17934487";
+    var commentscount = 24;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/17934487";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "flvparse";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"视音频编解码学习工程：FLV封装格式分析器");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=flvparse"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

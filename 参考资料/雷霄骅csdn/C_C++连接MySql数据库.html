@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/12753367"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文叙述了使用C/C++连接MySql数据库的方法。
+
+
+
+一、VS2008工程设置工作
+由于我们要使用Mysql的API，并且我们机子上肯定安装了Mysql数据库，所以我们要将工程的头文件路径指向Mysql安装目录的同文件mysql.h所在的位置，将连接库路径指向libmysql.lib所在的路径，在我的机子上，Mysql 的安装路径为：C:\Program Files\MySQL\M" />
+    <meta name="keywords" content="C++,MySQL" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>C/C++连接MySql数据库 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12753367"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-2 float-left">转</span>		<h1 class="title-article">C/C++连接MySql数据库</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月15日 18:45:50</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：7923</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                
+<p><strong>一、VS2008工程设置工作</strong></p>
+<p>由于我们要使用Mysql的API，并且我们机子上肯定安装了Mysql数据库，所以我们要将工程的头文件路径指向Mysql安装目录的同文件mysql.h所在的位置，将连接库路径指向libmysql.lib所在的路径，在我的机子上，Mysql 的安装路径为：C:\Program Files\MySQL\MySQL Server 5.1</p>
+<p><img alt="" src="https://img-blog.csdn.net/20131015181929093?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p><img alt="" src="https://img-blog.csdn.net/20131015181935031?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>我们需要把VS2008的工程中的头文件路径和连接库路径指向上面的两个地方：<br /><br />
+将项目属性页的C/C++-&gt;常规-&gt;附加包含目录指向：C:\Program Files\MySQL\MySQL Server 5.1\include<br /></p>
+<p><img width="745" height="405" alt="" src="https://img-blog.csdn.net/20131015181952593?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p>将项目属性页的链接器-&gt;常规-&gt;附加库目录指向:C:\Program Files\MySQL\MySQL Server 5.1\lib\opt<br /></p>
+<p><img width="743" height="427" alt="" src="https://img-blog.csdn.net/20131015181956687?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p>
+<p><span style="font-family:Verdana, Arial, Helvetica, sans-serif;line-height:19px;font-size:13px;background-color:rgb(254,254,242);">将链接器-&gt;输入-&gt;附加依赖项中添加libmysql.lib</span><br /></p>
+<p><span style="font-family:Verdana, Arial, Helvetica, sans-serif;line-height:19px;font-size:13px;background-color:rgb(254,254,242);"><img width="752" height="548" alt="" src="https://img-blog.csdn.net/20131015181947140?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></span></p>
+<p><span style="font-family:Verdana, Arial, Helvetica, sans-serif;line-height:19px;font-size:13px;background-color:rgb(254,254,242);">这样就OK了。</span></p>
+<p><span style="font-family:Verdana, Arial, Helvetica, sans-serif;line-height:19px;font-size:13px;background-color:rgb(254,254,242);"><br /></span></p>
+<p><span style="font-family:Verdana, Arial, Helvetica, sans-serif;line-height:19px;font-size:13px;background-color:rgb(254,254,242);"></span></p>
+<h4>二、连接Mysql和从MySql中取出数据的API介绍</h4>
+<h3>2.1 mysql_real_connect()</h3>
+<h2>2.1.1 函数原型：</h2>
+<p></p>
+<p>MYSQL *mysql_real_connect(MYSQL *mysql, const char *host, const char *user, const char *passwd, const char *db, unsigned int port, const char *unix_socket, unsigned int client_flag)</p>
+<h2>2.1.2 参数说明：</h2>
+<p>• 第一个参数应该是一个现存MYSQL结构的地址。在调用mysql_real_connect()之前，你必须调用mysql_init()初始化MYSQL结构。见下面的例子。</p>
+<p>• host值可以是一个主机名或一个IP地址。如果host是NULL或字符串"localhost"，假定是到本地主机的一个连接。如果OS支持套接字(Unix)或命名管道(Win32)，使用他们而不是TCP/IP与服务器连接。</p>
+<p>• user参数包含用户的MySQL登录ID。如果user是NULL，假定是当前用户。在Unix下，它是当前登录名。在Windows ODBC下，必须明确地指定当前用户名字。见16.4 怎样填写ODBC管理程序中各种域。</p>
+<p>• passwd参数为user包含口令。如果passwd是NULL，只有在user表中对于有一个空白口令字段的用户的条目将被检查一个匹配。这允许数据库主管设置MySQL权限，使用户获得不同的口令，取决于他们是否已经指定一个口令。注意：不要试图在调用mysql_real_connect()前加密口令；口令加密自动被客户API处理。</p>
+<p>• db是数据库名。如果db不是NULL，连接将缺省数据库设置为这个值。</p>
+<p>• 如果port不是0，值对于TCP/IP连接将用作端口号。注意host参数决定连接的类型。</p>
+<p>• 如果unix_socket不是NULL，字符串指定套接字或应该被使用的命名管道。注意host参数决定连接的类型。</p>
+<p>• client_flag值通常是0，但是在很特殊的情况下可以被设置为下列标志的组合：</p>
+<p>标志名字 意味着的标志</p>
+<p>CLIENT_FOUND_ROWS 返回找到的(匹配的)行数，不是受到影响的行数。</p>
+<p>CLIENT_NO_SCHEMA 不允许db_name.tbl_name.col_name语法。这是为了ODBC；如果你使用该语法，导致语法分析器产生一个错误，它是为在一些ODBC程序捕捉错误是有用的。</p>
+<p>CLIENT_COMPRESS 使用压缩协议。</p>
+<p>CLIENT_ODBC 客户是一个ODBC客户。这使mysqld变得对ODBC更友好。</p>
+<h2>2.1.3 返回值</h2>
+<p>如果连接成功，一个 MYSQL*连接句柄。如果连接失败，NULL。对一个成功的连接，返回值与第一个参数值相同，除非你传递NULL给该参数。</p>
+<h2>2.1.4 错误</h2>
+<p>CR_CONN_HOST_ERROR </p>
+<p>不能连接MySQL服务器。</p>
+<p>CR_CONNECTION_ERROR </p>
+<p>不能连接本地MySQL服务器。</p>
+<p>CR_IPSOCK_ERROR </p>
+<p>不能创建一个IP套接字。</p>
+<p>CR_OUT_OF_MEMORY </p>
+<p>内存溢出。</p>
+<p>CR_SOCKET_CREATE_ERROR </p>
+<p>不能创建一个Unix套接字。</p>
+<p>CR_UNKNOWN_HOST </p>
+<p>不能找到主机名的IP地址。</p>
+<p>CR_VERSION_ERROR </p>
+<p>由于试图使用一个不同协议版本的一个客户库与一个服务器连接导致的一个协议失配。如果你使用一个非常老的客户库连接一个没有使用--old-protocol选项启动的新服务器，这就能发生。</p>
+<p>CR_NAMEDPIPEOPEN_ERROR; </p>
+<p>不能在 Win32 上创建一个命名管道。</p>
+<p>CR_NAMEDPIPEWAIT_ERROR; </p>
+<p>不能在 Win32 上等待一个命名管道。</p>
+<p>CR_NAMEDPIPESETSTATE_ERROR; </p>
+<p>不能在 Win32 上得到一个管道处理器。</p>
+<h3>2.2  mysql_select_db()</h3>
+<h2>2.2.1 函数原型</h2>
+<p>int mysql_select_db(MYSQL *mysql, const char *db) </p>
+<h2>2.2.2 参数说明</h2>
+<p>使得由db指定的数据库成为 在由mysql指定的连接上的缺省(当前)数据库。在随后的查询中，这个数据库对于不包括一个显式的数据库指定符的表的引用是缺省数据库。</p>
+<p>除非连接的用户能被认证允许使用数据库，否则mysql_select_db()失败。</p>
+<h2>2.2.3 返回值</h2>
+<p>成功，零。如果发生一个错误，非零。</p>
+<h2>2.2.4  错误</h2>
+<p>CR_COMMANDS_OUT_OF_SYNC </p>
+<p>命令以一个不适当的次序被执行。</p>
+<p>CR_SERVER_GONE_ERROR </p>
+<p>MySQL服务器关闭了。</p>
+<p>CR_SERVER_LOST </p>
+<p>对服务器的连接在查询期间失去。</p>
+<p>CR_UNKNOWN_ERROR </p>
+<p>发生一个未知的错误。</p>
+<p> </p>
+<h3>2.3 mysql_real_query</h3>
+<h2>2.3.1 函数原型 </h2>
+<p>int mysql_real_query(MYSQL *mysql, const char *query, unsigned int length) </p>
+<h2>2.3.2 参数说明</h2>
+<p>执行由query指向的SQL查询，它应该是一个length个字节的字符串。查询必须由一个单个的SQL语句组成。你不应该在语句后增加一个终止的分号(“;”)或\g。</p>
+<p>对于包含二进制数据的查询，你必须使用mysql_real_query()而不是mysql_query()，因为二进制代码数据可能包含“\0”字符，而且，mysql_real_query()比mysql_query()更快，因为它对查询字符串调用strlen()。</p>
+<h2>2.3.3 返回值</h2>
+<p>如果查询成功，零。如果发生一个错误，非零。</p>
+<h2>2.3.4  错误</h2>
+<p>CR_COMMANDS_OUT_OF_SYNC </p>
+<p>命令以一个不适当的次序被执行。</p>
+<p>CR_SERVER_GONE_ERROR </p>
+<p>MySQL服务器关闭了。</p>
+<p>CR_SERVER_LOST </p>
+<p>对服务器的连接在查询期间失去。</p>
+<p>CR_UNKNOWN_ERROR </p>
+<p>发生一个未知的错误。</p>
+<p> </p>
+<h3>2.4 mysql_store_result</h3>
+<h2>2.4.1 函数原型</h2>
+<p><code>MYSQL_RES *mysql_store_result(MYSQL *mysql)</code></p>
+<h2>2.4.2 返回值</h2>
+<p>A <code>MYSQL_RES</code> result structure with the results. <code>NULL</code> (0) if an error occurred.</p>
+<h3><span style="font-size:18px;">2.5  <code>mysql_fetch_row()</code></span></h3>
+<h6><a name="id1183101"></a>Description </h6>
+<p>Retrieves the next row of a result set. When used after <a href="http://dev.mysql.com/mysql-store-result.html">
+<code>mysql_store_result()</code></a>, <a href="http://dev.mysql.com/mysql-fetch-row.html">
+<code>mysql_fetch_row()</code></a> returns <code>NULL</code> when there are no more rows to retrieve. When used after<a href="http://dev.mysql.com/mysql-use-result.html"><code>mysql_use_result()</code></a>,<a href="http://dev.mysql.com/mysql-fetch-row.html"><code>mysql_fetch_row()</code></a>
+ returns<code>NULL</code> when there are no more rows to retrieve or if an error occurred.</p>
+<p>The number of values in the row is given by <a href="http://dev.mysql.com/mysql-num-fields.html">
+<code>mysql_num_fields(result)</code></a>. If <code>row</code> holds the return value from a call to<a href="http://dev.mysql.com/mysql-fetch-row.html"><code>mysql_fetch_row()</code></a>, pointers to the values are accessed as<code>row[0]</code>
+ to <code>row[mysql_num_fields(result)-1]</code>. <code>NULL</code> values in the row are indicated by<code>NULL</code> pointers.</p>
+<p>The lengths of the field values in the row may be obtained by calling <a href="http://dev.mysql.com/mysql-fetch-lengths.html">
+<code>mysql_fetch_lengths()</code></a>. Empty fields and fields containing <code>
+NULL</code> both have length 0; you can distinguish these by checking the pointer for the field value. If the pointer is<code>NULL</code>, the field is<code>NULL</code>; otherwise, the field is empty.</p>
+<h6><a name="id1183229"></a>Return Values </h6>
+<p>A <code>MYSQL_ROW</code> structure for the next row. <code>NULL</code> if there are no more rows to retrieve or if an error occurred.</p>
+<h6><a name="id1183249"></a>Errors </h6>
+<p>Note that error is not reset between calls to <a href="http://dev.mysql.com/mysql-fetch-row.html">
+<code>mysql_fetch_row()</code></a></p>
+<ul><li>
+<p><a href="http://dev.mysql.com/error-messages-client.html#error_cr_server_lost"><code>CR_SERVER_LOST</code></a></p>
+<p>The connection to the server was lost during the query. </p>
+</li><li>
+<p><a href="http://dev.mysql.com/error-messages-client.html#error_cr_unknown_error"><code>CR_UNKNOWN_ERROR</code></a></p>
+<p>An unknown error occurred. </p>
+</li></ul><p>参考资料：<a title="http://dev.mysql.com/doc/refman/5.6/en/index.html" href="http://dev.mysql.com/doc/refman/5.6/en/index.html">http://dev.mysql.com/doc/refman/5.6/en/index.html</a></p>
+<p> </p>
+<h4>三、利用Mysql库提供的API编写连接Mysql和从Mysql中取出数据的代码</h4>
+<pre class="cpp">#include &lt;windows.h&gt;
+#include "stdio.h"
+#include "winsock.h" 
+#include "mysql.h" 
+ 
+ 
+int main()
+{
+ 
+MYSQL * con; //= mysql_init((MYSQL*) 0); 
+MYSQL_RES *res;
+MYSQL_ROW row;
+ 
+ 
+char tmp[400];
+ 
+//database configuartion
+char dbuser[30]="root"; 
+char dbpasswd[30]="apple";
+char dbip[30]="localhost";
+char dbname[50]="excel";
+char tablename[50]="test";
+char *query=NULL;
+ 
+ 
+int x;
+int y;
+int rt;//return value
+unsigned int t;
+ 
+int count = 0;
+ 
+ 
+printf("input x,y\n");
+scanf("%d,%d",&amp;x,&amp;y);
+fflush(stdin);
+printf("input over\n");
+con = mysql_init((MYSQL*) 0); 
+ 
+ 
+if ( con !=NULL &amp;&amp; mysql_real_connect(con,dbip,dbuser,dbpasswd,dbname,3306/*TCP IP端口*/,NULL/*Unix Socket 连接类型*/,0/*运行成ODBC数据库标志*/) ) 
+{ 
+    if (!mysql_select_db(con,dbname)) 
+    { 
+        printf("Select successfully the database!\n"); 
+        
+        con -&gt;reconnect = 1; 
+ 
+        query = "set names \'GBK\'";
+        //mysql_query(con,"set names \'GBK\'"); 
+        
+        rt=mysql_real_query(con,query,strlen(query));
+        if (rt)
+        {
+            printf("Error making query: %s !!!\n",mysql_error(con));
+        }
+        else
+        {
+            printf("query %s succeed!\n",query);
+        }
+        
+    }
+}
+ 
+else
+{
+    MessageBoxA(NULL,"Unable to connect the database,check your configuration!","",NULL);
+ 
+}
+ 
+    //sprintf(tmp,"update %s set 商品=\'%s\',卖出=%d,成交=%d,涨跌=%d,买进=%d,总量=%d,涨幅=%f,时间=\'%s\' where  %s",tablename,goods,sold,deal,fluctuate,buy,total,delta,time,UpdateCon);
+    sprintf(tmp,"insert into %s values(%s,%d,%d)",tablename,"null",x,y); //注意如何向具有自增字段的数据库中插入记录
+    //MessageBoxA(NULL,tmp,tmp,MB_OK);
+    //mysql_query(con,tmp);
+ 
+    rt=mysql_real_query(con,tmp,strlen(tmp));
+    if (rt)
+    {
+        printf("Error making query: %s !!!\n",mysql_error(con));
+    }
+    else
+    {
+        printf("%s executed!!!\n",tmp);
+    }
+    
+    sprintf(tmp,"select * from %s",tablename);
+    
+    rt=mysql_real_query(con,tmp,strlen(tmp));
+    if (rt)
+    {
+        printf("Error making query: %s !!!\n",mysql_error(con));
+    } 
+    else
+    {
+        printf("%s executed!!!\n",tmp);
+    }
+    
+    res = mysql_store_result(con);//将结果保存在res结构体中
+ 
+    while(row = mysql_fetch_row(res))  
+    {  
+        /** 
+        * MYSQL_ROW STDCALL mysql_fetch_row(MYSQL_RES *result); 
+         * 检索行 
+        */  
+ 
+       for(t=0;t&lt;mysql_num_fields(res);t++)  
+        {  
+            printf("%s  ",row[t]);  
+        }  
+        printf(".............\n");  
+        count ++;
+    }  
+   printf("number of rows %d\n",count);
+    printf("mysql_free_result...\n");  
+    mysql_free_result(res);  
+ 
+    mysql_close(con);
+    return 0;
+ 
+}
+</pre><br /><br /><p><span style="font-family:Verdana, Arial, Helvetica, sans-serif;line-height:19px;font-size:13px;background-color:rgb(254,254,242);"></span></p>
+<h4>四、运行结果</h4>
+<p><img alt="" src="https://img-blog.csdn.net/20131015183611343?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /></p>
+<p><br /></p>
+<p></p>
+<h4>五、数据库脚本</h4>
+<pre class="sql">SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for `test`
+-- ----------------------------
+DROP TABLE IF EXISTS `test`;
+CREATE TABLE `test` (
+  `x` bigint(4) NOT NULL AUTO_INCREMENT,
+  `y` int(4) DEFAULT NULL,
+  `z` int(4) DEFAULT NULL,
+  PRIMARY KEY (`x`)
+) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=latin1;
+ 
+-- ----------------------------
+-- Records of test
+-- ----------------------------
+INSERT INTO `test` VALUES ('95', '12432', '4334');
+INSERT INTO `test` VALUES ('96', '213', '321');
+INSERT INTO `test` VALUES ('97', '213', '213');
+INSERT INTO `test` VALUES ('98', '123', '231');
+INSERT INTO `test` VALUES ('99', '321', '231');
+INSERT INTO `test` VALUES ('100', '123', '32132');
+INSERT INTO `test` VALUES ('101', '777', '32213');
+INSERT INTO `test` VALUES ('102', '123', '213');
+INSERT INTO `test` VALUES ('103', '21', '321');
+INSERT INTO `test` VALUES ('104', '324', '432');
+INSERT INTO `test` VALUES ('105', '132', '231');
+INSERT INTO `test` VALUES ('106', '324', '342');
+INSERT INTO `test` VALUES ('107', '23', '23');
+INSERT INTO `test` VALUES ('108', '12', '21');
+INSERT INTO `test` VALUES ('109', '231', '321');
+INSERT INTO `test` VALUES ('110', '123', '231');
+INSERT INTO `test` VALUES ('111', '123', '231');
+INSERT INTO `test` VALUES ('112', '123', '123');
+INSERT INTO `test` VALUES ('113', '312', '231');
+INSERT INTO `test` VALUES ('114', '312', '321');
+INSERT INTO `test` VALUES ('115', '23', '3');
+INSERT INTO `test` VALUES ('116', '213', '312');
+INSERT INTO `test` VALUES ('117', '2', '3');
+ 
+-- ----------------------------
+-- Table structure for `xqdata`
+-- ----------------------------
+DROP TABLE IF EXISTS `xqdata`;
+CREATE TABLE `xqdata` (
+  `代码` varchar(20) NOT NULL DEFAULT '',
+  `商品` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
+  `卖出` bigint(20) DEFAULT NULL,
+  `成交` bigint(20) DEFAULT NULL,
+  `涨跌` bigint(20) DEFAULT NULL,
+  `买进` bigint(20) DEFAULT NULL,
+  `总量` bigint(20) DEFAULT NULL,
+  `涨幅` double DEFAULT NULL,
+  `时间` time DEFAULT NULL,
+  PRIMARY KEY (`代码`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ 
+-- ----------------------------
+-- Records of xqdata
+-- ----------------------------
+INSERT INTO `xqdata` VALUES ('FITX*1', '商品', '34', '43', '23', '34', '0', '1.4', '13:23:08');
+</pre><br />
+原文地址：<a href="http://www.cnblogs.com/justinzhang/archive/2011/09/23/2185963.html">http://www.cnblogs.com/justinzhang/archive/2011/09/23/2185963.html</a>
+<p></p>
+<p></p>
+            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=C++&t=blog" target="_blank">C++						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=MySQL&t=blog" target="_blank">MySQL						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=数据库&t=blog" target="_blank">数据库						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=连接&t=blog" target="_blank">连接						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/1647545"  target="_blank">纯编程						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12753367#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/dreamback1987/article/details/8473558" target="_blank" strategy="BlogCommendFromGuangxin_0">
+				【C/<em>C++</em>】<em>C++</em><em>连接</em><em>mysql数据库</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/dreamback1987/article/details/8473558" target="_blank" >
+				<em>C++</em><em>连接</em>mysql可以有两种方法实现，第一种方法是利用ADO<em>连接</em>，第二种方法是利用mysql自己的API函数<em>连接</em>。不管用哪种方法，首先需要安装<em>mysql数据库</em>，最好安装一个Navicat for m...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/dreamback1987" title="dreamback1987" target="_blank">
+					<img src="https://avatar.csdn.net/0/D/F/3_dreamback1987.jpg" alt="dreamback1987" class="avatar-pic">
+					<span class="name">dreamback1987</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-01-06 16:31:29</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1072</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/caisini_vc/article/details/38271991" target="_blank" strategy="BlogCommendFromGuangxin_1">
+				MySQL简介、安装、函数接口和Linux C\<em>C++</em>操作MySQL实例详解			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/caisini_vc/article/details/38271991" target="_blank" >
+				1.<em>MySQL数据库</em>简介 
+MySQL是一个开源码的小型关系数据库管理系统，体积小，速度快，总体成本低，开源。MySQL有以下特性: 
+(1) 使用C和<em>C++</em>编写，并使用了多种编译器进行测试，保证...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/caisini_vc" title="caisini_vc" target="_blank">
+					<img src="https://avatar.csdn.net/0/C/5/3_caisini_vc.jpg" alt="caisini_vc" class="avatar-pic">
+					<span class="name">caisini_vc</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-07-29 16:06:58</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：7344</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/xiaojuliet/article/details/47721741" target="_blank" strategy="BlogCommendFromGuangxin_2">
+				Linux 数据库学习---mysql创建数据库、表			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/xiaojuliet/article/details/47721741" target="_blank" >
+				MYSQL *mysql_init(MYSQL *mysql)  
+描述
+  分配或初始化与mysql_real_connect()相适应的MYSQL对象。
+如果mysql是NULL指针，该函数将分配...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/xiaojuliet" title="xiaojuliet" target="_blank">
+					<img src="https://avatar.csdn.net/B/2/F/3_xiaojuliet.jpg" alt="xiaojuliet" class="avatar-pic">
+					<span class="name">xiaojuliet</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-08-18 09:32:24</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1705</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/to_Baidu/article/details/53819829" target="_blank" strategy="BlogCommendFromGuangxin_3">
+				C/<em>C++</em><em>连接</em><em>MySQL数据库</em>“经典”例子！			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/to_Baidu/article/details/53819829" target="_blank" >
+				废话不多说，直接撸代码！！！
+
+
+//下面的代码是一个实现<em>C++</em><em>连接</em><em>MYSQL数据库</em>的很好的例子
+//这里用了建表，插入，检索，删表等常用功能
+//我用V<em>C++</em>6.0生成，已经成功<em>连接</em>了。
+//在VC...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/to_Baidu" title="to_Baidu" target="_blank">
+					<img src="https://avatar.csdn.net/4/D/A/3_to_baidu.jpg" alt="to_Baidu" class="avatar-pic">
+					<span class="name">to_Baidu</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-22 20:47:53</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4240</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/baodi_z/article/details/44960259" target="_blank" strategy="BlogCommendFromGuangxin_4">
+				<em>C++</em><em>连接</em><em>mysql数据库</em>的两种方法(ADO<em>连接</em>和mysql api<em>连接</em>)			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/baodi_z/article/details/44960259" target="_blank" >
+				【原文 http://www.jb51.net/article/44262.htm 】
+现在正做一个接口，通过不同的<em>连接</em>字符串操作不同的数据库。要用到<em>mysql数据库</em>，<em>C++</em><em>连接</em>mysql有2种方法...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/baodi_z" title="baodi_z" target="_blank">
+					<img src="https://avatar.csdn.net/8/9/8/3_baodi_z.jpg" alt="baodi_z" class="avatar-pic">
+					<span class="name">baodi_z</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-04-09 15:02:28</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：14050</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/to_Baidu/article/details/53819766" target="_blank" strategy="BlogCommendFromBaidu_5">
+				mysql_real_query()使用说明！			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/to_Baidu/article/details/53819766" target="_blank" >
+				函数原型：
+int mysql_real_query(MYSQL *mysql, const char *query, unsigned int length)
+
+
+说明：
+执行由query...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/to_Baidu" title="to_Baidu" target="_blank">
+					<img src="https://avatar.csdn.net/4/D/A/3_to_baidu.jpg" alt="to_Baidu" class="avatar-pic">
+					<span class="name">to_Baidu</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-22 20:42:39</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：4223</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/foreverlove111/article/details/80077722" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+				MySQL报错代码汇总			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/foreverlove111/article/details/80077722" target="_blank" >
+				本章列出了当你用任何主机语言调用MySQL时可能出现的错误。首先列出了服务器错误消息。其次列出了客户端程序消息。  B.1. 服务器错误代码和消息服务器错误信息来自下述源文件：·         错误...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/foreverlove111" title="foreverlove111" target="_blank">
+					<img src="https://avatar.csdn.net/3/C/D/3_foreverlove111.jpg" alt="foreverlove111" class="avatar-pic">
+					<span class="name">foreverlove111</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2018-04-25 13:04:18</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：74</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/cr0831/article/details/78094562" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+				客户端检测			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/cr0831/article/details/78094562" target="_blank" >
+				欢迎使用Markdown编辑器写博客本Markdown编辑器使用StackEdit修改而来，用它写博客，将会带来全新的体验哦：
+Markdown和扩展Markdown简洁的语法
+代码块高亮
+图片链接和...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/cr0831" title="cr0831" target="_blank">
+					<img src="https://avatar.csdn.net/E/E/C/3_cr0831.jpg" alt="cr0831" class="avatar-pic">
+					<span class="name">cr0831</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-09-26 14:03:34</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：37</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/fanyun_01/article/details/52794814" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+				C/<em>C++</em><em>连接</em><em>MySql数据库</em>使用总结			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/fanyun_01/article/details/52794814" target="_blank" >
+				C/<em>C++</em><em>连接</em><em>MySql数据库</em>
+
+
+
+
+本文对如何使用MySql的API<em>连接</em><em>MySql数据库</em>，开发环境为VS2008.
+ 
+一、VS2008工程设置工作
+首先，建立一个windows应用程序的工程，将...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/fanyun_01" title="fanyun_01" target="_blank">
+					<img src="https://avatar.csdn.net/9/F/8/3_fanyun_01.jpg" alt="fanyun_01" class="avatar-pic">
+					<span class="name">fanyun_01</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-10-30 20:46:10</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1788</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/LUAOHAN/article/details/38663123" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+				C 语言 MYSQL  API			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/LUAOHAN/article/details/38663123" target="_blank" >
+				C API函数概述
+
+
+重要的函数：
+
+
+1，mysql_init( )   
+
+2，mysql_real_connect(  )   
+
+3，mysql_real_query( ...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/LUAOHAN" title="LUAOHAN" target="_blank">
+					<img src="https://avatar.csdn.net/5/8/F/3_luaohan.jpg" alt="LUAOHAN" class="avatar-pic">
+					<span class="name">LUAOHAN</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-08-18 17:02:24</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：569</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/12753367" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421488">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62879">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>0</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "C/C++连接MySql数据库";
+    var ChannelId = 16;
+    var articleId = "12753367";
+    var commentscount = 1;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/12753367";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "cr_unknown_error+int%E5%80%BC";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"C/C++连接MySql数据库");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=cr_unknown_error+int%E5%80%BC"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

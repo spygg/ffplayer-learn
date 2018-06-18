@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/43882955"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文简单记录一下自己学习《通信原理》的时候调试的一个仿真DVB-C（Cable，数字有线电视）系统中QAM调制和解调的程序。自己一直是研究“信源”方面的东西，所以对“信道”这方面的知识进行实践的机会一直不是很多，做这个小程序的过程中也熟悉了不少相关的知识。在这个程序中，每执行一步操作，都会画出时域信号图和频域信号图，同时会在控制台打印出有关变量的取值，对于理解QAM调制与解调有一定的帮助。" />
+    <meta name="keywords" content="QAM,解调" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>DVB-C系统中QAM调制与解调仿真 - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/43882955"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">DVB-C系统中QAM调制与解调仿真</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2015年02月21日 21:48:59</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：10241</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                本文简单记录一下自己学习《通信原理》的时候调试的一个仿真DVB-C（Cable，数字有线电视）系统中QAM调制和解调的程序。自己一直是研究“信源”方面的东西，所以对“信道”这方面的知识进行实践的机会一直不是很多，做这个小程序的过程中也熟悉了不少相关的知识。在这个程序中，每执行一步操作，都会画出时域信号图和频域信号图，同时会在控制台打印出有关变量的取值，对于理解QAM调制与解调有一定的帮助。<br /><br /><h2>一．DVB-C中QAM的调制与解调</h2><p>简单介绍DVB-C系统中的QAM的调制与解调。DVB系列标准是数字电视领域最重要的标准，它是一个完整的数字广播解决方案，涉及数字电视广播的方方面面。DVB 规范了数字电视的系统结构和信号处理方式，各厂商可以开发各自的 DVB设备，只要该设备能够正确接收和处理信号并满足规范中所规定的性能指标就可以了。我国的卫星数字电视采用了DVB-S标准，地面广播数字电视采用了自主的DTMB标准，有线数字电视传输标准采用了DVB-C 标准。本文主要分析有线数字电视传输中的DVB-C标准。</p><br /><h3>1.DVB-C发送端和接收端</h3>下面简单介绍DVB-C系统的发送端和接收端。DVB-C 标准描述了有线数字电视的帧结构，信道编码和调制。主要用于传送电视中的视频和音频信号。DVB-C 描述的有线数字电视前端与接收端的原理框图如图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219164129729?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">有线前端与接收端的原理框图</div><br />下面简单说明有线前端每个部分的功能：<br />（1）基带接口：该单元将数据结构与信号源格式匹配，帧结构应与包含同步字节的 MPEG-2 TS 流一致。<br />（2）SYNC1反转和随机化。该单元将依据 MPEG-2 帧结构转换 SYNC1字节；同时为了频谱成形，对数据流进行随机化。<br />（3）RS编码器。将每一个TS包送入RS编码器进行RS(204,188)信道编码。<br />（4）卷积交织器。完成深度 I=12 的卷积交织信道编码。<br />（5）字节变换到 m 比特符号。将字节变换为 QAM 符号。<br />（6）差分编码。为了获得旋转不变星座图，将每符号两个最高有效位进行差分编码。<br />（7）基带成形。将差分编码的符号映射到I、Q分量。此外对 I 和 Q 信号进行平方根升余弦滚降滤波。<br />（8）QAM 调制和物理接口。完成 QAM 调制。之后，它将 QAM 已调制信号连接到有线射频信道。<br />接收端的功能不再详细叙述。接收端只要按照前端的处理顺序进行逆处理就可以得到基带信号。<br /><br /><h3>2.QAM 信号的调制和解调</h3><p>正交振幅调制（QAM）数字传输系统因为其高的频带利用率而被确定为DVB-C 标准。下面简单介绍QAM的调制和解调的步骤。QAM调制的步骤可以由下图表示。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150219164200599?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><div style="text-align:center;">QAM调制原理图</div><p><br /></p><p>如图所示，输入的码元数据首先经过“串并转换”形成两路数据信号，转换之后，每个码元的持续时间变成原先的2倍；然后经过“2-L电平变换”转换成为多进制的QAM符号；然后将这2路QAM多进制信号分别和2路正交载波相乘；最后再将这2路调制后的信号相加，就形成了调制后的QAM信号。</p>QAM信号解调的步骤与调制的步骤正好相反，如下图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219164216011?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">QAM解调原理图</div><div style="text-align:left;"><br /></div><div style="text-align:left;">如图所示，QAM信号首先分别使用2路正交的相干载波进行解调；然后经过“多电平判决”电路获得2路多进制的QAM符号；接着经过“L-2电平变换”转换成2路码元数据；最后经过“串并转换”将2路码元数据合并后形成完整的码元数据。</div><p><br /></p><p><br /></p><h2>二．仿真</h2><p>下面介绍仿真实验。本文做了3个仿真实验。第1个实验仿真了16QAM的调制与解调；第2个实验在第一个实验的基础上，仿真了16QAM信号传输过程中信噪比与误码率之间的关系；第3个实验仿真了2FSK,2PSK,4PSK,16PSK,16QAM的信噪比(S/N)与误码率之间的关系对比图。</p><p><br /></p><h3>1. QAM的调制与解调</h3><p>本实验利用Matlab软件，完成如下图所示的一个基本的基于16QAM的数字通信系统。整个系统可以分成信源、信道和信宿三个部分。信号源产生二进制（0和1）的随机信号，经过调制后形成2路QAM符号（取值-3，-1，1和3）。2路QAM符号分别经过平方根升余弦滤波器，形成等待调制到高频的信号。随后通过给这两路信号添加高斯白噪声的方法，模拟信道的传输环境。然后通过匹配滤波器（平方根升余弦滤波器）。最后经过采样，判决，和解调得到二进制信号。本系统可以从Matlab控制台输出整个过程中关键信号的取值，并且可以在最后统计误码信息。</p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20150219164327241?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></p><div style="text-align:center;">QAM的调制和解调过程原理图</div><p><br /></p><p>下文将会按照上图所示的信号传递的顺序详细介绍每个步骤。</p><h4>(a)二进制信号的生成</h4><p>使用randsrc()函数生成随机二进制序列。本程序默认序列长度为240，其中“1”出现的概率为0.5。代码如下所示。</p><p></p><pre class="plain">%====定义待仿真序列的长度 N
+global N
+N=240;
+%====定义产生‘1’的概率为 p
+global p
+p=0.5;
+%==============================
+%首先产生随机二进制序列
+source=randsrc(1,N,[1,0;p,1-p]);
+%画出序列波形
+h=figure(1);
+stairs(source);
+ylim([-1,2]);
+set(h,'name','随机二进制序列');</pre>该步骤运行完成后生成的二进制序列如图所示。<p></p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219164443915?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">随机二进制序列</div><br /><h4>(b)    调制</h4><p></p><p>调制步骤将二进制的码元序列转换成为2路QAM符号。该部分的功能在单独定义的modulate_sig()函数中完成。该函数完成了以下几个步骤：<br />(1)     串并转换。该部分将输入的码元序列中序号为奇数的码元选择出来形成一组数据，然后再将剩下的序号为偶数的码元选择出来形成另一组数据。为了描述方便，下文中称第一组数据称为“I路”，第二组数据称为“Q路”。下文中仅描述I路信号的处理，Q路信号的处理和I路是一模一样的。<br />(2)     格雷码映射。将I路数据中每两个码元作为一个单元，按照格雷码的映射规则进行映射。格雷码的映射规则如下表所示。<br /><br /></p><div style="text-align:center;">格雷码映射规则</div><div style="text-align:center;"><div align="center"><table border="1" cellspacing="0" cellpadding="0"><tbody><tr><td valign="top"><p align="center">映射前（二进制码）</p></td>  <td valign="top"><p align="center">映射后（QAM符号）</p></td> </tr><tr><td valign="top"><p align="center">0 0</p></td>  <td valign="top"><p align="center">-3</p></td> </tr><tr><td valign="top"><p align="center">0 1</p></td>  <td valign="top"><p align="center">-1</p></td> </tr><tr><td valign="top"><p align="center">1 1</p></td>  <td valign="top"><p align="center">1</p></td> </tr><tr><td valign="top"><p align="center">1 0</p></td>  <td valign="top"><p align="center">3</p></td></tr></tbody></table></div></div><em>注：上述映射规则可以有个简单的记法：第一个比特位代表符号，“1”代表“+”，第二个比特位代表取值，“1”代表“3”。</em><br /><br />经过上述两个步骤处理之后，内容为“0101”的二进制码元序列调制成了内容包含-3，-1，1，3的2路QAM符号。该步骤运行完成后生成的2路QAM符号如下图所示。<p></p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171157272?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">QAM符号序列</div><br />将上图中的QAM符号中的I路取值作为x坐标，Q路取值作为y坐标，可以画图得到16QAM符号的“星座图”，如下图所示。<p></p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171219034?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">QAM符号星座图</div><br />将该QAM符号进行DTFT变换后的频域波形如下图所示。x轴的单位是π。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171252668?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">QAM符号DTFT频域图</div><br />该部分的代码如下所示。<br /><pre class="plain">%对产生的二进制序列进行QAM调制
+function [y1,y2]=modulate_sig(x)
+%=====首先进行串并转换，将原二进制序列转换成两路信号
+N=length(x);
+a=1:2:N;
+fprintf('串并转换\n第一路：第1,3,5,7...元素\n第二路：第2,4,6,8...元素\n');
+y1=x(a);
+y2=x(a+1);
+%=====分别对两路信号进行QPSK调制
+%======对两路信号分别进行2－4电平变换
+a=1:2:N/2;
+temp1=y1(a);
+temp2=y1(a+1);
+y11=temp1*2+temp2;
+temp1=y2(a);
+temp2=y2(a+1);
+y22=temp1*2+temp2;
+%=======对两路信号分别进行相位调制
+a=1:N/4;
+y1=(y11*2-1-4)*1.*cos(2*pi*a);
+y2=(y22*2-1-4)*1.*cos(2*pi*a);
+%格雷码映射
+fprintf('格雷码映射\n');
+fprintf('－－－－－－－－－\n');
+fprintf('二进制码　|　格雷码\n');
+fprintf(' 00    　|　-3\n');
+fprintf(' 01    　|　-1\n');
+fprintf(' 11    　|　 1\n');
+fprintf(' 10    　|　 3\n');
+fprintf('－－－－－－－－－\n');
+fprintf('注：前一位是符号，0代表+，后一位是取值，0代表3；\n');
+y1(find(y11==0))=-3;
+y1(find(y11==1))=-1;
+y1(find(y11==3))=1;
+y1(find(y11==2))=3;
+y2(find(y22==0))=-3;
+y2(find(y22==1))=-1;
+y2(find(y22==3))=1;
+y2(find(y22==2))=3;</pre><br /><h4>(c)     插值</h4><p></p><p>插值步骤在QAM符号之间插入一些0点。这一步和后面的低通滤波联合起来的作用是模拟信号高频调制之后的频谱。该步骤的实现位于自定义的函数insert_value ()中。具体的方式是分别在信号的I路和Q路中，相邻的两个码字之间添加7个0。经过该步骤处理后，2路QAM符号如下图所示。<br /></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171403754?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">差值后两路信号的波形图</div><br />上图所示信号进行DTFT变换后的频域波形如下图所示。从图中可以看出，时域信号的差值会造成频域信号的收缩。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171414893?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">插值QAM符号DTFT频域图</div><br />该部分的代码如下所示。<br /><pre class="plain">%x是待插值的序列，ratio是插值的比例。
+function y=insert_value(x,ratio)
+%两路信号进行插值
+y=zeros(1,ratio*length(x));
+a=1:ratio:length(y);
+y(a)=x;<span style="font-family:Arial, Helvetica, sans-serif;"> </span></pre><h4>(d)    低通</h4><p></p><p>低通步骤主要用于调整QAM符号的波形，也可以称为“波形成形”。该部分的实现位于自定义的函数rise_cos()中。上述几个步骤中的方波是在本地数字信号处理时常见的波形，但在实际传输时这种方波并不合适，因为使用方波的话会导致相邻传输信号之间的串扰。根据奈奎斯特第一准则，在实际通信系统中一般均使接收波形为升余弦滚降信号。这一过程由发送端的基带成形滤波器和接收端的匹配滤波器两个环节共同实现，因此这两个环节都需要进行平方根升余弦滚降滤波。下面简单介绍平方根余弦滤波器。<br />平方根升余弦滤波器具有以下定义的理论函数：</p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171429325" alt="" />            <img src="https://img-blog.csdn.net/20150219171502317" alt="" /></div>其中：<img src="https://img-blog.csdn.net/20150219171609150" alt="" />是奈奎斯特平率，<img src="https://img-blog.csdn.net/20150219171620710" alt="" />是滚降系数。<br />平方根升余弦滤波器的冲击响应如下图所示。<p></p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171540118?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><div style="text-align:center;">平方根升余弦滤波器的冲激响应曲线</div><p></p><p><br />经过该步骤处理后，2路QAM符号如下图所示。</p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171806272?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">通过低通滤波器后两路信号波形图</div><br />上图所示信号进行DTFT变换后的频域波形如下图所示。从图中可以看出，经过低通滤波器之后，频域中高频部分被滤除，保留了低频的信号。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171836926?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">通过低通滤波器后两路信号波形图</div><br />该部分的代码如下所示。<br /><pre class="plain">%x1、x2是两路输入信号，fd是信号信息位的频率，fs是信号的采样频率
+function [y1,y2]=rise_cos(x1,x2,fd,fs)
+%生成平方根升余弦滤波器
+[yf, tf]=rcosine(fd,fs, 'fir/sqrt');
+%对两路信号进行滤波
+[yo1, to1]=rcosflt(x1, fd,fs,'filter/Fs',yf);
+[yo2, to2]=rcosflt(x2, fd,fs,'filter/Fs',yf);
+y1=yo1;
+y2=yo2;<span style="font-family:Arial, Helvetica, sans-serif;"> </span></pre><h4>(e)     加载频</h4><p></p><p>加载频在该仿真中属于一个“附加”步骤。该部分主要用于呈现调制到载波之后的波形图，它的实现位于自定义的函数modulate_to_high()中。本程序将通过成形滤波器后的信号调制到10倍于原频率的载波上。由于在仿真的过程中，只能用离散的点来模拟连续信号，因而为了能够显示出一个正弦曲线，至少需要在一个正弦周期内采样到4个以上的点，这里，我们在一个周期内采10个点。假设最初的0、1信号的频率是1Hz，那么I路和Q路符号传输的频率是1/4Hz，而10倍频是建立在I路或Q路符号频率的基础上，也就是说，载频的频率是2.5Hz。调制后的信号就是I路和Q路线性叠加，符合以下公式。<br /></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171857817" alt="" /></div>其中，fc为载波频率。<p></p><p>该步骤运行后，两路QAM符号合成一路信号，如下图所示。</p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219171943479?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><div style="text-align:center;">基带信号调制到高频之后的波形图</div><br />该部分的代码如下所示。<br /><pre class="plain">%x1,x2代表两路输入信号，f是输入信号的频率，hf是载波的频率
+function [t,y]=modulate_to_high(x1,x2,f,hf)
+%产生两个中间变量，用来存储插值后的输入信号
+yo1=zeros(1,length(x1)*hf/f*10);
+yo2=zeros(1,length(x2)*hf/f*10);
+n=1:length(yo1);
+%对输入信号分别进行插值，相邻的两个点之间加入9个点，且这9个点的值同第0个点的值相同
+yo1(n)=x1(floor((n-1)/(hf/f*10))+1);
+yo2(n)=x1(floor((n-1)/(hf/f*10))+1);
+%生成输出输出信号的时间向量
+t=(1:length(yo1))/hf*f/10;
+%生成载波调制信号
+y=yo1.*cos(2*pi*hf*t)-yo2.*sin(2*pi*hf*t);<span style="font-family:Arial, Helvetica, sans-serif;"> </span></pre><h4>(f)      加噪声</h4><p></p><p>加噪声用于模拟实际的信道中的噪声。本程序设定信道具有高斯白噪声的干扰。该步骤的实现位于自定义的函数generate_noise()中。加入白噪声的2路信号如下图所示。</p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172030635?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><div style="text-align:center;">加入高斯白噪声之后的波形图</div><br />上图所示信号进行DTFT变换后的频域波形如下图所示。从图中可以看出，由于白噪声在整个频域上是均匀分布的，所以整个频域范围内都增加了一些噪声。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172056892?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">加入高斯白噪声之后DTFT频域图</div><br />该部分的代码如下所示。<br /><pre class="plain">%对输入的两路信号加高斯白噪声，返回处理后的两路信号
+function [y1,y2]=generate_noise(x1,x2,snr)
+%符号信噪比
+snr1=snr+10*log10(4);
+%所有信号的平均功率
+ss=var(x1+i*x2,1);
+%加入高斯白噪声
+y=awgn([x1+j*x2],snr1+10*log10(ss/10),'measured');
+y1=real(y);
+y2=imag(y);<span style="font-family:Arial, Helvetica, sans-serif;"> </span></pre><h4>(g)     匹配滤波</h4><p></p><p>匹配滤波用于从信道中接收QAM信号。这一步骤和前面的“低通”步骤是成对出现的。前面步骤的滤波器用于频谱成型，而这一步骤的滤波器主要用于滤除噪声。接收端的匹配滤波与发送端的成形滤波共同实现了数字通信系统的最佳接收。它与成形滤波器共同构成了一个奈奎斯特滤波器。该步骤的实现与“低通”步骤一样，位于generate_noise()函数中。<br />经过匹配滤波期之后的信号如下图所示。<br /></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172138732?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">经过匹配滤波器之后的波形图</div><br />上图所示信号进行DTFT变换后的频域波形如下图所示。从图中可以看出，信号高频部分的白噪声在经过低通滤波器之后，已经被消除掉了。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172204378?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /></div><div style="text-align:center;">经过匹配滤波器之后DTFT频域图</div><br /><h4>(h)    采样</h4><p></p><p>采样步骤用于还原前面插值步骤处理之前的QAM符号序列。经过前面的插值步骤之后，序列的点数是原本序列的8倍，因此需要去除这些冗余的点。该步骤的具体实现位于自定义的pick_sig()函数中，代码如下所示。<br /></p><pre class="plain">function [y1,y2]=pick_sig(x1,x2,ratio)
+y1=x1(ratio*3*2+1:ratio:(length(x1)-ratio*3*2));
+y2=x2(ratio*3*2+1:ratio:(length(x1)-ratio*3*2));</pre> <br />(i)       判决解调<br />解调步骤用于还原QAM符号序列为二进制码原序列。该步骤的实现位于自定义的demodulate_sig()函数中。经过上述几步骤后，已经可以得到2路QAM16的符号序列，该序列的星座图如下图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172400362?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">接收的QAM符号星座图</div><br />从图中可以看出，原先整齐的星座图经过信道干扰的影响之后之后已经变得有些散乱。这2路QAM符号序列如下图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172359787?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">接收的QAM符号序列</div><br />上图所示信号进行DTFT变换后的频域波形如下图所示。从图中可以看出，时域的抽样造成了频域的扩张。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172411019?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">接收的QAM符号序列</div><br />对于这样的QAM符号序列，需要做以下几步处理：<br />(a)     判决。这里可以通过根据最大后验概率（MAP）准则，得到最小检测距离。具体到本仿真中，可以根据下表所示的的规则进行判决。<p></p><p><br /></p><div style="text-align:center;">判决电平对应表</div><div style="text-align:center;"><div align="center"><table border="1" cellspacing="0" cellpadding="0"><tbody><tr><td valign="top"><p align="center">判决前的信号的幅度</p></td>  <td valign="top"><p align="center">对应的判决后的幅度</p></td> </tr><tr><td valign="top"><p align="center">A&lt;-2</p></td>  <td valign="top"><p align="center">－3</p></td> </tr><tr><td valign="top"><p align="center">-2&lt;=A&lt;=0</p></td>  <td valign="top"><p align="center">－1</p></td> </tr><tr><td valign="top"><p align="center">0&lt;=A&lt;2</p></td>  <td valign="top"><p align="center">1</p></td> </tr><tr><td valign="top"><p align="center">A&gt;=2</p></td>  <td valign="top"><p align="center">3</p></td> </tr></tbody></table></div></div><br />(b)     格雷码映射。按照前文所述的格雷码映射规则，将QAM符号重新转换为二进制码原序列。<br />(c)     并串转换。将2路二进制码原序列重新合并为1路二进制码原序列。合并的规则和前文所述是一样的，即I路信号作为还原后信号中序号为奇数的码元，Q路则作为还原后信号中序号为偶数的码元。<br />经过上述步骤后，就可以得到解码后的二进制码元序列了，如下图所示。<br /><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172809416?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">恢复的二进制序列</div><br />该步骤的代码如下所示。<br /><pre class="plain">function y=demodulate_sig(x1,x2)
+%对x1路信号进行判决
+xx1(find(x1&gt;=2))=3;
+xx1(find((x1&lt;2)&amp;(x1&gt;=0)))=1;
+xx1(find((x1&gt;=-2)&amp;(x1&lt;0)))=-1;
+xx1(find(x1&lt;-2))=-3;
+%对x2路信号进行判决
+xx2(find(x2&gt;=2))=3;
+xx2(find((x2&lt;2)&amp;(x2&gt;=0)))=1;
+xx2(find((x2&gt;=-2)&amp;(x2&lt;0)))=-1;
+xx2(find(x2&lt;-2))=-3;
+%将x1路信号按格雷码规则还原成0、1信号
+temp1=zeros(1,length(xx1)*2);
+temp1(find(xx1==-1)*2)=1;
+temp1(find(xx1==1)*2-1)=1;
+temp1(find(xx1==1)*2)=1;
+temp1(find(xx1==3)*2-1)=1;
+%将x2路信号按格雷码规则还原成0、1信号
+temp2=zeros(1,length(xx2)*2);
+temp2(find(xx2==-1)*2)=1;
+temp2(find(xx2==1)*2-1)=1;
+temp2(find(xx2==1)*2)=1;
+temp2(find(xx2==3)*2-1)=1;
+%将两路0、1信号合成一路
+y=zeros(1,length(temp1)*2);
+y(1:2:length(y))=temp1;
+y(2:2:length(y))=temp2;</pre><p></p><h4>(j)      误码率统计</h4><p>误码率统计步骤用于统计上述整个环节中产生误码的情况。该步骤相对比较简单，使用biterr()函数对比发送端输入的二进制码元序列和接收端得到的二进制码元，就可以得到整个系统的误码率情况。</p><h4>(k)     程序主干代码</h4><p>程序主干代码如下所示，位于plot_qam16.m文件中。<br /></p><pre class="plain">% QAM16的调制与解调示例程序
+%
+% 雷霄骅
+% 中国传媒大学/数字电视技术
+% leixiaohua1020@126.com
+%
+% 本程序演示了QAM的调制与解调过程。
+% 程序输出了上述过程中的图形，并且在控制台中输出了相关的信息。
+%
+%
+clear;
+%关闭窗口
+close all;
+%白色背景
+set(0,'defaultfigurecolor','w');
+%====定义待仿真序列的长度 N
+global N
+N=240;
+%====定义产生‘1’的概率为 p
+global p
+p=0.5;
+%==============================
+%首先产生随机二进制序列
+source=randsrc(1,N,[1,0;p,1-p]);
+%画出序列波形
+h=figure(1);
+stairs(source);
+ylim([-1,2]);
+set(h,'name','随机二进制序列');
+%==============================
+%对产生的二进制序列进行QAM调制
+[source1,source2]=modulate_sig(source);
+%==============================
+%画出序列波形
+h=figure(2);
+plot_2way_stair(source1,source2);
+set(h,'name','QAM符号序列');
+%输出坐标
+fprintf('\nQAM符号的坐标：\n');
+for i=1:length(source1);
+    if mod(i,10)==0
+        fprintf('\n');
+    end
+    fprintf('(%.3f,%.3f);',source1(i),source2(i));
+end;
+fprintf('\n');
+%===============================
+%画出星座图
+h=figure(3);
+plot_astrology(source1,source2);
+set(h,'name','QAM符号星座图');
+%===============================
+%画出频域图
+h=figure(4);
+plot_2way_f_dtft(source1,source2);
+set(h,'name','QAM符号DTFT频域图');
+%plot_2way_f_dft(source1,source2,50);
+%set(h,'name','QAM符号DFT频域图');
+%===============================
+%两路信号进行插值
+sig_insert1=insert_value(source1,8);
+sig_insert2=insert_value(source2,8);
+%===============================
+%画出两路信号的波形图
+h=figure(5);
+plot_2way(sig_insert1,sig_insert2,length(sig_insert1),0.5);
+set(h,'name','插值后两路信号的波形图');
+%===============================
+%画出频域图
+h=figure(6);
+plot_2way_f_dtft(sig_insert1,sig_insert2);
+set(h,'name','插值QAM符号DTFT频域图');
+%plot_2way_f_dft(sig_insert1,sig_insert2,50);
+%set(h,'name','插值QAM符号DFT频域图');
+%===============================
+%通过低通滤波器
+[sig_rcos1,sig_rcos2]=rise_cos(sig_insert1,sig_insert2,0.25,2);
+%===============================
+%画出两路信号的波形图
+h=figure(7);
+plot_2way(sig_rcos1,sig_rcos2,length(sig_rcos1)/4,0.5);
+set(h,'name','通过低通滤波器后两路信号波形图');
+%===============================
+%画出频域图
+h=figure(8);
+plot_2way_f_dtft(sig_rcos1',sig_rcos2');
+set(h,'name','通过低通滤波器后DTFT频域图');
+%===============================
+%====将基带信号调制到高频上
+[t,sig_modulate]=modulate_to_high(sig_rcos1,sig_rcos2,0.25,2.5);
+h=figure(9);
+%plot(t(1:500),sig_modulate(1:500));
+plot(t,sig_modulate);
+set(h,'name','基带信号调制到高频之后的波形图');
+%===============================
+ 
+%====加入高斯白噪声
+snr=10;
+[x1,x2]=generate_noise(sig_rcos1,sig_rcos2,snr);
+sig_noise1=x1';
+sig_noise2=x2';
+h=figure(10);
+plot_2way(sig_noise1,sig_noise2,length(sig_noise1)/4,0.5);
+set(h,'name','加入高斯白噪声之后的波形图');
+%===============================
+%画出频域图
+h=figure(11);
+plot_2way_f_dtft(sig_noise1,sig_noise2);
+set(h,'name','加入高斯白噪声之后DTFT频域图');
+ 
+%====经过匹配滤波器
+[sig_match1,sig_match2]=rise_cos(sig_noise1,sig_noise2,0.25,2);
+h=figure(12);
+plot_2way(sig_match1,sig_match2,length(sig_match1)/4,0.5);
+set(h,'name','经过匹配滤波器之后的波形图');
+%===============================
+%画出频域图
+h=figure(13);
+plot_2way_f_dtft(sig_match1',sig_match2');
+set(h,'name','经过匹配滤波器之后DTFT频域图');
+%采样
+[x1,x2]=pick_sig(sig_match1,sig_match2,8);
+sig_pick1=x1;
+sig_pick2=x2;
+%画出星座图
+h=figure(14);
+plot_astrology(sig_pick1,sig_pick2);
+set(h,'name','接收的QAM符号星座图');
+%画出序列波形
+h=figure(15);
+plot_2way_stair(sig_pick1,sig_pick2);
+set(h,'name','接收的QAM符号序列');
+%输出坐标
+fprintf('\nQAM符号的坐标（接收）：\n');
+for i=1:length(source1);
+    if mod(i,10)==0
+        fprintf('\n');
+    end
+    fprintf('(%.3f,%.3f);',sig_pick1(i),sig_pick2(i));
+end;
+fprintf('\n');
+%===============================
+%画出频域图
+h=figure(16);
+plot_2way_f_dtft(sig_pick1',sig_pick2');
+set(h,'name','接收的QAM符号序列DTFT频域图');
+%解调
+signal=demodulate_sig(sig_pick1,sig_pick2);
+h=figure(17);
+stairs(signal);
+ylim([-1,2]);
+set(h,'name','恢复的二进制序列');
+%误码率
+[number,Pe] = biterr(source,signal);
+fprintf('误码数以及误码率：\n');
+fprintf('%d,%f;\n',number,Pe);
+hold on</pre><br /><h3>2. QAM传输过程中信噪比与误码率之间的关系</h3><p></p><p>本实验在前一个实验的基础上，仿真了16QAM传输过程中信噪比与误码率之间的关系。本仿真的大部分代码与前一个实验是一样的，主要的不同点在于它计算了QAM理论的误码率，并且与实际的误码率进行了对比，整个程序的流程简单描述如下：<br />(a)     设定信噪比<br />(b)     计算16QAM该信噪比下的误码率<br />(c)     仿真16QAM该信噪比下的误码率<br />(d)     重新设定信噪比，重复（2）（3）步骤<br />该仿真实验选择了1-11dB的信噪比对16QAM进行了仿真，仿真的结果如下图所示。<br /></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172919055?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">16QAM信噪比与误码率之间的关系的仿真结果</div><br />从仿真结果图来看，仿真的误码率十分贴近理论的误码率。程序的代码位于plot_qam16_ber.m文件中，代码的内容和前一个实验是类似的，关键代码大致如下。<br /><pre class="plain">% QAM16的信噪比(S/N)与误码率关系图
+%
+% 雷霄骅
+% 中国传媒大学/数字电视技术
+% leixiaohua1020@126.com
+%
+% 本程序可以得到QAM调制中信噪比(S/N)与误码率之间的关系图
+%
+%
+clear;
+close all;
+%白色背景
+set(0,'defaultfigurecolor','w');
+%用来仿真QAM的误bit率
+snr=1:1:11;
+%先来计算理论误bit率
+error_theory=(1-(1-(2*(1-1/sqrt(16))*1/2*erfc(1/sqrt(2)*sqrt(3*4*10.^(snr/10)/(16-1))))).^2)/4;
+%用理论的误bit率来决定需要仿真的点数
+N=floor(1./error_theory)*100+100;
+%最少5000点
+N(find(N&lt;5000))=5000;
+ 
+for i=1:length(N);
+         %一次仿真，代码略
+end
+figure(4);
+%画出图形
+semilogy(snr,error_bit,'bs-','LineWidth',2);
+hold on
+semilogy(snr,error_theory,'ms-','LineWidth',2)
+legend('仿真','理论');
+xlabel('S/N, dB');
+ylabel('Bit Error Rate (BER)');
+title('信噪比和误码率之间的关系');</pre> <br /><h3>3. 2FSK,2PSK,4PSK,16PSK,16QAM的信噪比与误码率之间的关系对比</h3><p></p><p>上个实验仿真了16QAM传输过程中信噪比与误码率之间的关系。为了能和其他调制方式做一个对比，本实验仿真了2FSK，2PSK，4PSK，16PSK，16QAM传输过程中信噪比与误码率之间的关系。与前两个实验不同之处在于，本实验没有使用自行编写的程序完成这几种调制方式的仿真，而是使用Matlab的接口函数完成了仿真，实验的结果如下图所示。</p><p></p><div style="text-align:center;"><img src="https://img-blog.csdn.net/20150219172952751?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="" /><br /></div><div style="text-align:center;">2FSK,2PSK,4PSK,16PSK,16QAM的信噪比与误码率之间的关系对比的仿真结果</div><p></p><p><br />从图中可以看出，在相同信噪比的前提下，不同调制技术之间的误码率关系如下所示：</p><p></p><div style="text-align:center;"><em>2PSK &lt; 4PSK &lt; 2FSK &lt; 16QAM &lt; 16PSK</em></div><br />程序的源代码如下。<br /> <br /><pre class="plain">% 2FSK,2PSK,4PSK,16PSK,16QAM的
+% 信噪比(S/N)与误码率之间的关系对比图
+%
+% 雷霄骅
+% 中国传媒大学/数字电视技术
+% leixiaohua1020@126.com
+%
+% 本程序可以计算得到2FSK,2PSK,4PSK,16PSK,16QAM信噪比
+% 与误码率之间的关系图
+%
+%
+clear;
+close all;
+%白色背景
+set(0,'defaultfigurecolor','w');
+M2=2;
+M4=4;
+M16=16;
+k2=log2(M2);
+k4=log2(M4);
+k16=log2(M16);
+ 
+ 
+Fs = 16;
+nsamp = 17;
+freq_sep = 8;
+x = randint(10000,1);
+%mod
+y_2fsk = fskmod(x,M2,freq_sep,nsamp,Fs);
+y_2psk = pskmod(x,M2);
+x4 = bi2de(reshape(x,k4,length(x)/k4).','left-msb');
+y_4psk = pskmod(x4,4);
+x16 = bi2de(reshape(x,k16,length(x)/k16).','left-msb');
+y_16psk = pskmod(x16,16);
+y_16qam = qammod(x16,16);
+ 
+N=10;
+for j=1:N
+    SNR=j; 
+    %[],'dB'
+    y_2fsk_noise = awgn(y_2fsk,SNR-10*log10(Fs),'measured');
+    y_2psk_noise = awgn(y_2psk,SNR,'measured');
+    y_4psk_noise = awgn(y_4psk,SNR,'measured');
+    y_16psk_noise = awgn(y_16psk,SNR,'measured');
+    y_16qam_noise = awgn(y_16qam,SNR,'measured');
+    %demod
+    z_2fsk = fskdemod(y_2fsk_noise,M2,freq_sep,nsamp,Fs);
+    z_2psk = pskdemod(y_2psk_noise,M2);
+    z_4psk = pskdemod(y_4psk_noise,M4);
+    z_16psk = pskdemod(y_16psk_noise,M16);
+    z_16qam = qamdemod(y_16qam_noise,M16);
+    %x = [1 1 1 1 1];
+    %y = [0 0 0 0 1];
+    %[number,ratio]=biterr(x,y)得到 number=4，ratio=0.8
+    [num_2fsk(j),ber_2fsk(j)] = biterr(x,z_2fsk);
+    [num_2psk(j),ber_2psk(j)] = biterr(x,z_2psk);
+    [num_4psk(j),ber_4psk(j)] = biterr(x4,z_4psk);
+    [num_16psk(j),ber_16psk(j)] = biterr(x16,z_16psk);
+    [num_16qam(j),ber_16qam(j)] = biterr(x16,z_16qam);
+end
+ 
+%theoryBer = (1/k)*3/2*erfc(sqrt(k*0.1*(10.^(EbNo/10))));
+%semilogy(EbNo,theoryBer,'ms-');
+%hold on;
+semilogy(1:N,ber_2fsk,'-*b');
+hold on;
+semilogy(1:N,ber_2psk,'--dg');
+hold on;
+semilogy(1:N,ber_4psk,'-.dr');
+hold on;
+semilogy(1:N,ber_16psk,'--xk');
+hold on;
+semilogy(1:N,ber_16qam,'-.sk');
+title('不同信噪比下2FSK,2PSK,4PSK,16PSK,16QAM误码性能仿真');
+legend('2FSK','2PSK','4PSK','16PSK','16QAM',3);
+xlabel('S/N,dB');
+ylabel('Bit Error Rate (BER)')
+hold off</pre><p></p><p><br /></p><br /><h2>三．下载</h2> <br /><p>QAM调制与解调仿真（Matlab程序）</p><p>CSDN下载地址：<a href="http://download.csdn.net/detail/leixiaohua1020/8453115">http://download.csdn.net/detail/leixiaohua1020/8453115</a></p><p><br /></p>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/43882955		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=QAM&t=blog" target="_blank">QAM						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=解调&t=blog" target="_blank">解调						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=调制&t=blog" target="_blank">调制						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=DVB-C&t=blog" target="_blank">DVB-C						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=滤波&t=blog" target="_blank">滤波						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2899497"  target="_blank">数字电视网络						</a>
+		</div>
+					</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/43882955#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/zhangfuliang123/article/details/78486790" target="_blank" strategy="BlogCommendFromBaidu_0">
+				<em>QAM</em><em>调制</em><em>解调</em>的原理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhangfuliang123/article/details/78486790" target="_blank" >
+				<em>QAM</em>是正交幅度<em>调制</em>
+
+随着现代通信技术的发展，特别是移动通信技术高速发展，新的需求层出不穷，促使新的业务不断产生，因而导致频率资源越来越紧张。在有限的带宽里要传输大量的多媒体数据，频谱利用率成为...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/zhangfuliang123" title="zhangfuliang123" target="_blank">
+					<img src="https://avatar.csdn.net/0/4/8/3_zhangfuliang123.jpg" alt="zhangfuliang123" class="avatar-pic">
+					<span class="name">zhangfuliang123</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-11-09 10:41:47</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：7662</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/yt2054/article/details/51172527" target="_blank" strategy="BlogCommendFromBaidu_1">
+				16<em>QAM</em>原理说明			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/yt2054/article/details/51172527" target="_blank" >
+				1.<em>调制</em>
+(1).首先，一串二进制序列进入串/并变换中，进行4比特划分后再进行2比特划分成一组，按照奇数送同相路，偶数送入正交路。
+(2).进入2/L电平变换，就是说二进制数变成4个十进制数，而4...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/yt2054" title="yt2054" target="_blank">
+					<img src="https://avatar.csdn.net/F/A/7/3_yt2054.jpg" alt="yt2054" class="avatar-pic">
+					<span class="name">yt2054</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-04-17 11:50:41</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5057</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/TvPolya/article/details/39234291" target="_blank" strategy="BlogCommendFromBaidu_2">
+				<em>QAM</em><em>调制</em>原理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/TvPolya/article/details/39234291" target="_blank" >
+							</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/TvPolya" title="TvPolya" target="_blank">
+					<img src="https://avatar.csdn.net/1/0/4/3_tvpolya.jpg" alt="TvPolya" class="avatar-pic">
+					<span class="name">TvPolya</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2014-09-12 20:05:21</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：868</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u011605208/article/details/12655453" target="_blank" strategy="BlogCommendFromBaidu_4">
+				数字有线机顶盒锁频流程			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u011605208/article/details/12655453" target="_blank" >
+				本文所介绍的高频头以<em>DVB-c</em> tuner（数字有线电视）为例
+一、硬件解析（对硬件原理不熟悉，只能说个大概）
+高频头（tuner），也称之为调频器，主要有三个功能：
+1）选择频道即选台，在硬件上应该...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u011605208" title="u011605208" target="_blank">
+					<img src="https://avatar.csdn.net/5/4/3/3_u011605208.jpg" alt="u011605208" class="avatar-pic">
+					<span class="name">u011605208</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-14 09:24:31</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2971</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/datamining2005/article/details/53764673" target="_blank" strategy="BlogCommendFromBaidu_5">
+				DVB信道编解码与<em>调制</em><em>解调</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/datamining2005/article/details/53764673" target="_blank" >
+				DVB信道编解码与<em>调制</em><em>解调</em>(一) 
+经过信源编码和<em>系统</em>复接后生成的节目传送码流，通常需要通过某种传输媒介才能到达用户接收机。传输媒介可以是广播电视<em>系统</em>（如地面电视广播<em>系统</em>、卫星电视广播<em>系统</em>或有线电视...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/datamining2005" title="datamining2005" target="_blank">
+					<img src="https://avatar.csdn.net/E/7/6/3_datamining2005.jpg" alt="datamining2005" class="avatar-pic">
+					<span class="name">datamining2005</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-20 16:23:21</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1779</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/SdustLiYang/article/details/6729384" target="_blank" strategy="BlogCommendFromBaidu_6">
+				DVB机顶盒工作原理			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/SdustLiYang/article/details/6729384" target="_blank" >
+				一、DVB-STB的概念与分类
+  机顶盒(STB,Set Top Box)，是指利用网络（电视网络或信息网络）作为传输平台，以电视机作为用户终端，用来增强或扩展电视机功能的一种信息设备。由于人们通...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/SdustLiYang" title="SdustLiYang" target="_blank">
+					<img src="https://avatar.csdn.net/9/F/3/3_sdustliyang.jpg" alt="SdustLiYang" class="avatar-pic">
+					<span class="name">SdustLiYang</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2011-08-29 15:01:49</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：9533</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+			<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/simonjay2007/article/details/50081469" target="_blank" strategy="BlogCommendFromBaidu_7">
+				64-<em>QAM</em>和256-<em>QAM</em>两种<em>调制</em>方式			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/simonjay2007/article/details/50081469" target="_blank" >
+				目前应用的比较广泛的是基于有线电视网络的Cable Modem<em>系统</em>，其基本架构如图2所示。有线电视网络通过Cable Modem终端<em>系统</em>（CMTS）与互联网络连接。用户通过二路分离器将从CMTS得到的...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/simonjay2007" title="simonjay2007" target="_blank">
+					<img src="https://avatar.csdn.net/B/7/9/3_simonjay2007.jpg" alt="simonjay2007" class="avatar-pic">
+					<span class="name">simonjay2007</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-11-28 08:59:33</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：13033</span>
+			</p>
+		</div>
+	</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/dwyers/7889529" target="_blank" strategy="BlogCommendFromBaidu_8">
+						bpsk qpsk 16<em>qam</em> 64<em>qam</em><em>调制</em><em>解调</em> 包括误码率曲线，眼图和星座图					</a>
+				</h4>
+				<p>
+					<span class="data">2014年09月10日 </span>
+					<span class="size">17KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/dwyers/7889529" target="_blank" strategy="BlogCommendFromBaidu_8">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/u014182411/article/details/50858898" target="_blank" strategy="BlogCommendFromBaidu_9">
+				星座图映射			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/u014182411/article/details/50858898" target="_blank" >
+				星座图映射
+一、基本概念
+1.数字<em>调制</em>
+数字信号的传输方式分为基带传输和带通传输。大多数的信道因为具有带通性而无法传播基带信号，这是由于基带信号具有丰富的低频特性。故而需要用数字基带信号对载波进...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/u014182411" title="u014182411" target="_blank">
+					<img src="https://avatar.csdn.net/8/7/B/3_u014182411.jpg" alt="u014182411" class="avatar-pic">
+					<span class="name">u014182411</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-03-11 21:23:49</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：10564</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/qcyfred/article/details/72529013" target="_blank" strategy="BlogCommendFromBaidu_10">
+				通信<em>系统</em><em>仿真</em>速成第3天：16<em>QAM</em><em>调制</em>与<em>解调</em>（实验）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/qcyfred/article/details/72529013" target="_blank" >
+				无记忆信源的线性<em>调制</em>，本质上有什么区别吗？<em>调制</em>就是 z = x + iy;<em>解调</em>就是 x = dot(z,(1,0)); y = dot(z,(0,1))。正交基，内积……。发送端。%%
+% 单载波16...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/qcyfred" title="qcyfred" target="_blank">
+					<img src="https://avatar.csdn.net/2/9/E/3_qcyfred.jpg" alt="qcyfred" class="avatar-pic">
+					<span class="name">qcyfred</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2017-05-19 14:52:08</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：1200</span>
+			</p>
+		</div>
+	</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/43882955" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421212">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>2</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "DVB-C系统中QAM调制与解调仿真";
+    var ChannelId = 7;
+    var articleId = "43882955";
+    var commentscount = 2;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/43882955";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "64qam%E8%B0%83%E5%88%B6%E8%A7%A3%E8%B0%83%E4%BB%BF%E7%9C%9F%E5%9B%BE";
+    var needInsertBaidu = false;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"DVB-C系统中QAM调制与解调仿真");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+<script src="https://csdnimg.cn/search/baidu_search-1.1.2@js?v=201802071056&autorun=true&install=true&keyword=64qam%E8%B0%83%E5%88%B6%E8%A7%A3%E8%B0%83%E4%BB%BF%E7%9C%9F%E5%9B%BE"  type="text/javascript"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

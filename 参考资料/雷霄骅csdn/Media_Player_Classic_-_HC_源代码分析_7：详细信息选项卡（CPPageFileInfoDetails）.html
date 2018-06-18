@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/leixiaohua1020/article/details/13297621"/> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta name="description" content="本文分析一下mpc-hc的详细信息选项卡。在播放视频的时候，右键点击视频-&gt;选择“属性”后默认打开的就是该选项卡。一般情况下，该选项卡给出了正在播放的视频文件的一些基本参数：视频大小，分辨率，时长等。注意：详细信息选项卡和MediaInfo选项卡获得视频参数的原理是不一样的。详细信息选项卡是通过调用DirectShow函数接口而获得的视频的参数。而MediaInfo选项卡则是通过调用MediaInfo类库而获得视频的参数。" />
+    <meta name="keywords" content="mpc-hc,源代码" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <script src="https://csdnimg.cn/release/phoenix/vendor/tingyun/tingyun-rum-blog@js"></script>
+
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>Media Player Classic - HC 源代码分析 7：详细信息选项卡（CPPageFileInfoDetails） - CSDN博客</title>
+    
+            <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-60a2c245da.min.css">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-88717cedf2.min.css">
+
+    <script type="text/javascript">
+        var username = "leixiaohua1020";
+        var blog_address = "https://blog.csdn.net/leixiaohua1020";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/13297621"
+        var blogUrl = "https://blog.csdn.net/";
+        var curSkin = "skin3-template";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm@js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min@js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6@js"></script>
+    <!-- 新版上报 -->
+    <script src="//g.csdnimg.cn/track/1.0.0/track@js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+            <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.3/css/sandalstrap.min.css"> 
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<body>    
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    
+    <script src="https://csdnimg.cn/public/sandalstrap/1.3/fonts/csdnc/csdnc@js"></script><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed@js"></script>
+
+<header style="display: none;">
+	<div class="container d-flex clearfix">
+		<div class="title-box">
+			<h2 class="title-blog">
+				<a href="https://blog.csdn.net/leixiaohua1020">雷霄骅(leixiaohua1020)的专栏</a>
+			</h2>
+			<p class="description">一个广院工科生的视音频技术笔记</p>
+		</div>
+		<div class="opt-box d-flex justify-content-end">
+			<a class="btn btn-sm" href="https://blog.csdn.net/leixiaohua1020/rss/list">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#csdnc-rss"></use>
+					</svg>RSS订阅</a>
+					</div>
+	</div>
+</header><script src="https://dup.baidustatic.com/js/ds@js"></script>
+<div class="container clearfix pt0" id="mainBox">
+    <main style="width: 100%;">
+        <div class="blog-content-box">
+	<div class="article-title-box">
+			<span class="article-type type-1 float-left">原</span>		<h1 class="title-article">Media Player Classic - HC 源代码分析 7：详细信息选项卡（CPPageFileInfoDetails）</h1>
+	</div>
+	<div class="article-info-box">
+		<div class="article-bar-top d-flex">
+												<span class="time">2013年10月31日 00:33:25</span>
+			<div class="float-right">
+				<span class="read-count" style="display:none;">阅读数：5680</span>
+											</div>
+		</div>
+	</div>
+	<article>
+		<div id="article_content" class="article_content_dummy clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/htmledit_views-0a60691e80.css" />
+            <div class="htmledit_views">
+                <p></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;">=====================================================</span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;">Media Player Classic - HC 源代码分析系列文章列表：</span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13280659">Media Player Classic - HC 源代码分析 1：整体结构</a></span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13290345">Media Player Classic - HC 源代码分析 2：核心类 （CMainFrame）（1）</a></span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297291">Media Player Classic - HC 源代码分析 3：核心类 （CMainFrame）（2）</a></span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13298397">Media Player Classic - HC 源代码分析 4：核心类 （CMainFrame）（3）</a></span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297555">Media Player Classic - HC 源代码分析 5：关于对话框 （CAboutDlg）</a></span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297589">Media Player Classic - HC 源代码分析 6：MediaInfo选项卡 （CPPageFileMediaInfo）</a></span></p><p><span style="font-family:Arial;font-size:14px;color:rgb(51,51,51);line-height:26px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297621">Media Player Classic - HC 源代码分析 7：详细信息选项卡（CPPageFileInfoDetails）</a><br /></span></p><p><span style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">=====================================================</span></p><span style="color:#660000;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297621" style="line-height:30px;font-family:Arial;text-decoration:none;"></a></span><p style="text-align:center;"><br /></p><p style="text-align:center;"><img src="https://img-blog.csdn.net/20140616104650781" alt="" /><br /></p><p>前几篇文章分析了Media Player Classic - HC（mpc-hc）的核心类（CMainFrame）：</p><p><span></span></p><p style="color:rgb(51,51,51);line-height:26px;font-family:Arial;"><span><span style="font-size:14px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13290345" style="color:rgb(51,102,153);text-decoration:none;">Media Player Classic - HC 源代码分析 2：核心类 （CMainFrame）（1）</a><br /></span></span></p><p style="color:rgb(51,51,51);line-height:26px;font-family:Arial;"><span><span style="font-size:14px;"><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297291" style="color:rgb(51,102,153);text-decoration:none;">Media Player Classic - HC 源代码分析 3：核心类 （CMainFrame）（2）</a><br /></span></span></p><p style="color:rgb(51,51,51);line-height:26px;font-family:Arial;"><span><a href="http://blog.csdn.net/leixiaohua1020/article/details/13298397" style="color:rgb(51,102,153);text-decoration:none;"><span style="font-size:14px;">Media Player Classic - HC 源代码分析 4：核心类 （CMainFrame）（3）</span></a></span></p><p>核心类分析完之后，分析了其他几个重要的类：</p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297555"><span style="font-size:14px;">Media Player Classic - HC 源代码分析 5：关于对话框 （CAboutDlg）</span></a></p><p><a href="http://blog.csdn.net/leixiaohua1020/article/details/13297589"><span style="font-size:14px;">Media Player Classic - HC 源代码分析 5：MediaInfo选项卡 （CPPageFileMediaInfo）</span></a><br /></p><p>本文分析一下mpc-hc的详细信息选项卡。在播放视频的时候，右键点击视频-&gt;选择“属性”后默认打开的就是该选项卡。一般情况下，该选项卡给出了正在播放的视频文件的一些基本参数：视频大小，分辨率，时长等。注意：详细信息选项卡和MediaInfo选项卡获得视频参数的原理是不一样的。详细信息选项卡是通过调用DirectShow函数接口而获得的视频的参数。而MediaInfo选项卡则是通过调用MediaInfo类库而获得视频的参数。</p><p>先看看选项卡长什么样子：</p><p align="center"><img alt="" src="https://img-blog.csdn.net/20131028232434203?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGVpeGlhb2h1YTEwMjA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" /><br /></p><p><span style="font-family:Arial;font-size:14px;color:#333333;line-height:26px;">先来看看详细信息选项卡类的定义是什么样的吧。该类的定义位于PPageFileInfoDetails.h文件中。</span><br /></p><p></p><pre class="cpp">/* 雷霄骅 
+ * 中国传媒大学/数字电视技术 
+ * leixiaohua1020@126.com 
+ * 
+ */  
+/*
+ * (C) 2003-2006 Gabest
+ * (C) 2006-2012 see Authors.txt
+ *
+ * This file is part of MPC-HC.
+ *
+ * MPC-HC is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MPC-HC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ *
+ */
+
+#pragma once
+
+#include "../SubPic/ISubPic.h"
+#include &lt;afxwin.h&gt;
+
+//取得一些基本信息
+// CPPageFileInfoDetails dialog
+
+class CPPageFileInfoDetails : public CPropertyPage
+{
+    DECLARE_DYNAMIC(CPPageFileInfoDetails)
+
+private:
+    CComPtr&lt;IFilterGraph&gt; m_pFG;
+    CComPtr&lt;ISubPicAllocatorPresenter&gt; m_pCAP;
+
+    HICON m_hIcon;
+
+    void InitEncoding();
+
+public:
+    CPPageFileInfoDetails(CString fn, IFilterGraph* pFG, ISubPicAllocatorPresenter* pCAP);
+    virtual ~CPPageFileInfoDetails();
+
+    // Dialog Data
+    enum { IDD = IDD_FILEPROPDETAILS };
+
+    CStatic m_icon;
+    CString m_fn;
+    CString m_type;
+    CString m_size;
+    CString m_time;
+    CString m_res;
+    CString m_created;
+    CEdit   m_encoding;
+
+protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual BOOL OnInitDialog();
+    virtual BOOL OnSetActive();
+    virtual LRESULT OnSetPageFocus(WPARAM wParam, LPARAM lParam);
+
+    DECLARE_MESSAGE_MAP()
+
+public:
+};
+</pre><br />该类的定义和普通的MFC对话框类差不多，有以下几点是需要注意的：<p></p><p>1.以下两个变量是用于获得对话框上显示的相关的信息的：</p><blockquote style="margin:0px 0px 0px 40px;padding:0px;border:;"><p>CComPtr&lt;IFilterGraph&gt; m_pFG;    </p><p>CComPtr&lt;ISubPicAllocatorPresenter&gt; m_pCAP;</p></blockquote><p>2.有一系列的字符串变量：m_fn， m_type， m_size， m_time等用于存储获得的信息</p><p><span style="font-family:Arial;font-size:14px;color:#333333;line-height:26px;">详细信息</span><span style="font-family:Arial;font-size:14px;color:#333333;line-height:26px;">选项卡类的实现位于</span><span style="font-family:Arial;font-size:14px;color:#333333;line-height:26px;">PPageFileInfoDetails.cpp</span><span style="font-family:Arial;font-size:14px;color:#333333;line-height:26px;">文件中。</span><br /></p><p></p><pre class="cpp">/* 雷霄骅 
+ * 中国传媒大学/数字电视技术 
+ * leixiaohua1020@126.com 
+ * 
+ */  
+/*
+ * (C) 2003-2006 Gabest
+ * (C) 2006-2013 see Authors.txt
+ *
+ * This file is part of MPC-HC.
+ *
+ * MPC-HC is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MPC-HC is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ *
+ */
+//取得一些基本信息
+#include "stdafx.h"
+#include "mplayerc.h"
+#include "PPageFileInfoDetails.h"
+#include &lt;atlbase.h&gt;
+#include "DSUtil.h"
+#include "text.h"
+#include &lt;d3d9.h&gt;
+#include &lt;vmr9.h&gt;
+#include "moreuuids.h"
+
+
+// CPPageFileInfoDetails dialog
+
+IMPLEMENT_DYNAMIC(CPPageFileInfoDetails, CPropertyPage)
+CPPageFileInfoDetails::CPPageFileInfoDetails(CString fn, IFilterGraph* pFG, ISubPicAllocatorPresenter* pCAP)
+    : CPropertyPage(CPPageFileInfoDetails::IDD, CPPageFileInfoDetails::IDD)
+    , m_fn(fn)
+    , m_pFG(pFG)
+    , m_pCAP(pCAP)
+    , m_hIcon(nullptr)
+    , m_type(ResStr(IDS_AG_NOT_KNOWN))
+    , m_size(ResStr(IDS_AG_NOT_KNOWN))
+    , m_time(ResStr(IDS_AG_NOT_KNOWN))
+    , m_res(ResStr(IDS_AG_NOT_KNOWN))
+    , m_created(ResStr(IDS_AG_NOT_KNOWN))
+{
+}
+
+CPPageFileInfoDetails::~CPPageFileInfoDetails()
+{
+    if (m_hIcon) {
+        DestroyIcon(m_hIcon);
+    }
+}
+
+void CPPageFileInfoDetails::DoDataExchange(CDataExchange* pDX)
+{
+    __super::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_DEFAULTICON, m_icon);
+    DDX_Text(pDX, IDC_EDIT1, m_fn);
+    DDX_Text(pDX, IDC_EDIT4, m_type);
+    DDX_Text(pDX, IDC_EDIT3, m_size);
+    DDX_Text(pDX, IDC_EDIT2, m_time);
+    DDX_Text(pDX, IDC_EDIT5, m_res);
+    DDX_Text(pDX, IDC_EDIT6, m_created);
+    DDX_Control(pDX, IDC_EDIT7, m_encoding);
+}
+
+#define SETPAGEFOCUS (WM_APP + 252) // arbitrary number, can be changed if necessary
+
+BEGIN_MESSAGE_MAP(CPPageFileInfoDetails, CPropertyPage)
+    ON_MESSAGE(SETPAGEFOCUS, OnSetPageFocus)
+END_MESSAGE_MAP()
+
+// CPPageFileInfoDetails message handlers
+
+static bool GetProperty(IFilterGraph* pFG, LPCOLESTR propName, VARIANT* vt)
+{
+    BeginEnumFilters(pFG, pEF, pBF) {
+        if (CComQIPtr&lt;IPropertyBag&gt; pPB = pBF)
+            if (SUCCEEDED(pPB-&gt;Read(propName, vt, nullptr))) {
+                return true;
+            }
+    }
+    EndEnumFilters;
+
+    return false;
+}
+
+static CString FormatDateTime(FILETIME tm)
+{
+    SYSTEMTIME st;
+    FileTimeToSystemTime(&amp;tm, &amp;st);
+    TCHAR buff[256];
+    GetDateFormat(LOCALE_USER_DEFAULT, DATE_LONGDATE, &amp;st, nullptr, buff, _countof(buff));
+    CString ret(buff);
+    ret += _T(" ");
+    GetTimeFormat(LOCALE_USER_DEFAULT, 0, &amp;st, nullptr, buff, _countof(buff));
+    ret += buff;
+    return ret;
+}
+
+BOOL CPPageFileInfoDetails::OnInitDialog()
+{
+    __super::OnInitDialog();
+
+    if (m_fn.IsEmpty()) {
+        BeginEnumFilters(m_pFG, pEF, pBF) {
+            CComQIPtr&lt;IFileSourceFilter&gt; pFSF = pBF;
+            if (pFSF) {
+                LPOLESTR pFN = nullptr;
+                AM_MEDIA_TYPE mt;
+                if (SUCCEEDED(pFSF-&gt;GetCurFile(&amp;pFN, &amp;mt)) &amp;&amp; pFN &amp;&amp; *pFN) {
+                    m_fn = CStringW(pFN);
+                    CoTaskMemFree(pFN);
+                }
+                break;
+            }
+        }
+        EndEnumFilters;
+    }
+
+    CString ext = m_fn.Left(m_fn.Find(_T("://")) + 1).TrimRight(':');
+    if (ext.IsEmpty() || !ext.CompareNoCase(_T("file"))) {
+        ext = _T(".") + m_fn.Mid(m_fn.ReverseFind('.') + 1);
+    }
+
+    m_hIcon = LoadIcon(m_fn, false);
+    if (m_hIcon) {
+        m_icon.SetIcon(m_hIcon);
+    }
+
+    if (!LoadType(ext, m_type)) {
+        m_type.LoadString(IDS_AG_NOT_KNOWN);
+    }
+
+    CComVariant vt;
+    if (::GetProperty(m_pFG, L"CurFile.TimeCreated", &amp;vt)) {
+        if (V_VT(&amp;vt) == VT_UI8) {
+            ULARGE_INTEGER uli;
+            uli.QuadPart = V_UI8(&amp;vt);
+
+            FILETIME ft;
+            ft.dwLowDateTime = uli.LowPart;
+            ft.dwHighDateTime = uli.HighPart;
+
+            m_created = FormatDateTime(ft);
+        }
+    }
+
+    WIN32_FIND_DATA wfd;
+    HANDLE hFind = FindFirstFile(m_fn, &amp;wfd);
+    if (hFind != INVALID_HANDLE_VALUE) {
+        FindClose(hFind);
+
+        __int64 size = (__int64(wfd.nFileSizeHigh) &lt;&lt; 32) | wfd.nFileSizeLow;
+        const int MAX_FILE_SIZE_BUFFER = 65;
+        WCHAR szFileSize[MAX_FILE_SIZE_BUFFER];
+        StrFormatByteSizeW(size, szFileSize, MAX_FILE_SIZE_BUFFER);
+        CString szByteSize;
+        szByteSize.Format(_T("%I64d"), size);
+        m_size.Format(_T("%s (%s bytes)"), szFileSize, FormatNumber(szByteSize));
+
+        if (m_created.IsEmpty()) {
+            m_created = FormatDateTime(wfd.ftCreationTime);
+        }
+    }
+	//获取时常
+    REFERENCE_TIME rtDur = 0;
+    CComQIPtr&lt;IMediaSeeking&gt; pMS = m_pFG;
+    if (pMS &amp;&amp; SUCCEEDED(pMS-&gt;GetDuration(&amp;rtDur)) &amp;&amp; rtDur &gt; 0) {
+        m_time = ReftimeToString2(rtDur);
+    }
+
+    CSize wh(0, 0), arxy(0, 0);
+	//获取宽和高
+    if (m_pCAP) {
+        wh = m_pCAP-&gt;GetVideoSize(false);
+        arxy = m_pCAP-&gt;GetVideoSize(true);
+    } else {
+        if (CComQIPtr&lt;IBasicVideo&gt; pBV = m_pFG) {
+            if (SUCCEEDED(pBV-&gt;GetVideoSize(&amp;wh.cx, &amp;wh.cy))) {
+                if (CComQIPtr&lt;IBasicVideo2&gt; pBV2 = m_pFG) {
+                    pBV2-&gt;GetPreferredAspectRatio(&amp;arxy.cx, &amp;arxy.cy);
+                }
+            } else {
+                wh.SetSize(0, 0);
+            }
+        }
+
+        if (wh.cx == 0 &amp;&amp; wh.cy == 0) {
+            BeginEnumFilters(m_pFG, pEF, pBF) {
+                if (CComQIPtr&lt;IBasicVideo&gt; pBV = pBF) {
+                    pBV-&gt;GetVideoSize(&amp;wh.cx, &amp;wh.cy);
+                    if (CComQIPtr&lt;IBasicVideo2&gt; pBV2 = pBF) {
+                        pBV2-&gt;GetPreferredAspectRatio(&amp;arxy.cx, &amp;arxy.cy);
+                    }
+                    break;
+                } else if (CComQIPtr&lt;IVMRWindowlessControl&gt; pWC = pBF) {
+                    pWC-&gt;GetNativeVideoSize(&amp;wh.cx, &amp;wh.cy, &amp;arxy.cx, &amp;arxy.cy);
+                    break;
+                } else if (CComQIPtr&lt;IVMRWindowlessControl9&gt; pWC9 = pBF) {
+                    pWC9-&gt;GetNativeVideoSize(&amp;wh.cx, &amp;wh.cy, &amp;arxy.cx, &amp;arxy.cy);
+                    break;
+                }
+            }
+            EndEnumFilters;
+        }
+    }
+
+    if (wh.cx &gt; 0 &amp;&amp; wh.cy &gt; 0) {
+        m_res.Format(_T("%dx%d"), wh.cx, wh.cy);
+
+        int gcd = GCD(arxy.cx, arxy.cy);
+        if (gcd &gt; 1) {
+            arxy.cx /= gcd;
+            arxy.cy /= gcd;
+        }
+
+        if (arxy.cx &gt; 0 &amp;&amp; arxy.cy &gt; 0 &amp;&amp; arxy.cx * wh.cy != arxy.cy * wh.cx) {
+            CString ar;
+            ar.Format(_T(" (AR %d:%d)"), arxy.cx, arxy.cy);
+            m_res += ar;
+        }
+    }
+
+    m_fn.TrimRight('/');
+    m_fn.Replace('\\', '/');
+    m_fn = m_fn.Mid(m_fn.ReverseFind('/') + 1);
+
+    UpdateData(FALSE);
+
+    InitEncoding();
+
+    m_pFG = nullptr;
+    m_pCAP = nullptr;
+
+    return TRUE;  // return TRUE unless you set the focus to a control
+    // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+BOOL CPPageFileInfoDetails::OnSetActive()
+{
+    BOOL ret = __super::OnSetActive();
+    PostMessage(SETPAGEFOCUS, 0, 0L);
+    return ret;
+}
+
+LRESULT CPPageFileInfoDetails::OnSetPageFocus(WPARAM wParam, LPARAM lParam)
+{
+    CPropertySheet* psheet = (CPropertySheet*) GetParent();
+    psheet-&gt;GetTabControl()-&gt;SetFocus();
+    return 0;
+}
+
+void CPPageFileInfoDetails::InitEncoding()
+{
+    CAtlList&lt;CString&gt; sl;
+
+    BeginEnumFilters(m_pFG, pEF, pBF) {
+        CComPtr&lt;IBaseFilter&gt; pUSBF = GetUpStreamFilter(pBF);
+
+        if (GetCLSID(pBF) == CLSID_NetShowSource) {
+            continue;
+        } else if (GetCLSID(pUSBF) != CLSID_NetShowSource) {
+            if (IPin* pPin = GetFirstPin(pBF, PINDIR_INPUT)) {
+                CMediaType mt;
+                if (FAILED(pPin-&gt;ConnectionMediaType(&amp;mt)) || mt.majortype != MEDIATYPE_Stream) {
+                    continue;
+                }
+            }
+
+            if (IPin* pPin = GetFirstPin(pBF, PINDIR_OUTPUT)) {
+                CMediaType mt;
+                if (SUCCEEDED(pPin-&gt;ConnectionMediaType(&amp;mt)) &amp;&amp; mt.majortype == MEDIATYPE_Stream) {
+                    continue;
+                }
+            }
+        }
+
+        BeginEnumPins(pBF, pEP, pPin) {
+            CMediaTypeEx mt;
+            PIN_DIRECTION dir;
+            if (FAILED(pPin-&gt;QueryDirection(&amp;dir)) || dir != PINDIR_OUTPUT
+                    || FAILED(pPin-&gt;ConnectionMediaType(&amp;mt))) {
+                continue;
+            }
+
+            CString str = mt.ToString();
+
+            if (!str.IsEmpty()) {
+                if (mt.majortype == MEDIATYPE_Video) { // Sort streams, set Video streams at head
+                    bool found_video = false;
+                    for (POSITION pos = sl.GetTailPosition(); pos; sl.GetPrev(pos)) {
+                        CString Item = sl.GetAt(pos);
+                        if (!Item.Find(_T("Video:"))) {
+                            sl.InsertAfter(pos, str + CString(L" [" + GetPinName(pPin) + L"]"));
+                            found_video = true;
+                            break;
+                        }
+                    }
+                    if (!found_video) {
+                        sl.AddHead(str + CString(L" [" + GetPinName(pPin) + L"]"));
+                    }
+                } else {
+                    sl.AddTail(str + CString(L" [" + GetPinName(pPin) + L"]"));
+                }
+            }
+        }
+        EndEnumPins;
+    }
+    EndEnumFilters;
+
+    CString text = Implode(sl, '\n');
+    text.Replace(_T("\n"), _T("\r\n"));
+    m_encoding.SetWindowText(text);
+}
+</pre><br />从代码中可以看出，CPPageFileInfoDetails的功能是在OnInitDialog()中完成的。通过调用DirectShow相应的接口，分别获取了视频的宽高，时长等信息。<p></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p>            </div>
+                </div>
+				<div style="display:none;" class="hide-article-box text-center csdn-tracking-statistics tracking-click" data-mod="popu_376">
+			<a class="btn btn-red-hollow" id="btn-readmore">阅读更多</a>
+		</div>
+        	</article>
+	
+		<div class="article-bar-bottom">
+				<div class="article-copyright">
+			版权声明：本文为博主原创文章，未经博主允许不得转载。			https://blog.csdn.net/leixiaohua1020/article/details/13297621		</div>
+						<div class="tags-box artic-tag-box">
+			<span class="label">文章标签：</span>
+						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=mpc-hc&t=blog" target="_blank">mpc-hc						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=源代码&t=blog" target="_blank">源代码						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=directshow&t=blog" target="_blank">directshow						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=开源&t=blog" target="_blank">开源						<a class="tag-link" href="http://so.csdn.net/so/search/s.do?q=播放器&t=blog" target="_blank">播放器						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">个人分类：</span>
+						<a class="tag-link" href="https://blog.csdn.net/leixiaohua1020/article/category/2286581"  target="_blank">MPC-HC						</a>
+		</div>
+						<div class="tags-box">
+			<span class="label">所属专栏：</span>
+						<a class="tag-link" href="https://blog.csdn.net/column/details/osmedia.html" target="_blank">开源多媒体项目源代码分析</a>
+						</a>
+		</div>
+			</div>
+	
+	<!-- !empty($pre_next_article[0]) -->
+		</div>
+<script>
+    $(".MathJax").remove();
+</script>
+
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax@js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+			"HTML-CSS": {
+					linebreaks: { automatic: true, width: "94%container" },
+					imageFont: null
+			},
+			tex2jax: {
+				preview: "none"
+			},
+			mml2jax: {
+				preview: 'none'
+			}
+	});
+</script>
+<script>
+	(function(){
+		var btnReadmore = $("#btn-readmore");
+		if(btnReadmore.length>0){
+			var winH = $(window).height();
+			var articleBox = $("div.article_content");
+			var artH = articleBox.height();
+			if(artH > winH*2){
+				articleBox.css({
+					'height':winH*2+'px',
+					'overflow':'hidden'
+				})
+				btnReadmore.click(function(){
+					articleBox.removeAttr("style");
+					$(this).parent().remove();
+				})
+			}else{
+				btnReadmore.parent().remove();
+			}
+		}
+	})()
+</script>        <div class="edu-promotion"></div>
+<script type="text/javascript">
+	var edu_ad_is_big_data = 0;
+	var edu_ad_id_mapping = {"0":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"1":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"8":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"2":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"3":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"6":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"12":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"14":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcweb","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"15":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcjg","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"16":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"28":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcai","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"29":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"30":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"32":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcaq"],"33":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gccxrs","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1"],"35":["https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"37":["https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1"],"7":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=web1","https:\/\/edu.csdn.net\/sp\/blog.php?type=618"],"17":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1"],"34":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcbt"],"36":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=ai1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"31":["https:\/\/edu.csdn.net\/sp\/blog.php?type=python1","https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"19":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"],"20":["https:\/\/edu.csdn.net\/sp\/blog.php?type=bigdata1","https:\/\/edu.csdn.net\/sp\/blog.php?type=gcit"]};
+</script>        <a id="commentBox"></a>
+<div class="comment-box" style="display:none;">
+	  	<div class="unlogin-box text-center">
+		想对作者说点什么？
+		<!-- $curl 当前地址 -->
+		<a href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/13297621#commentBox" class="btn btn-sm btn-red">我来说一句</a>
+	</div>
+			<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<button class="btn btn-sm btn-link-blue" id="btnMoreComment"></button>
+		</div>
+	</div>
+</div>        <div class="recommend-box" style="display:none;">
+            		<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13297555" target="_blank" strategy="BlogCommendFromGuangxin_0">
+				<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 5：关于对话框 （CAboutDlg）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13297555" target="_blank" >
+				前几篇文章分析了<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em>（mpc-<em>hc</em>）的核心类（CMainFrame）：
+<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 2：核心类 （CM...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-30 00:18:19</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6548</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/huixingshao/article/details/46561603" target="_blank" strategy="BlogCommendFromGuangxin_1">
+				<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em>			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/huixingshao/article/details/46561603" target="_blank" >
+				﻿﻿
+VC2010 编译 <em>Media</em> <em>Player</em> <em>Classic</em> - Home Cinema (mpc-<em>hc</em>)
+
+<em>Media</em> <em>Player</em> <em>Classic</em> - Home Cinema (mpc...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/huixingshao" title="huixingshao" target="_blank">
+					<img src="https://avatar.csdn.net/D/E/6/3_huixingshao.jpg" alt="huixingshao" class="avatar-pic">
+					<span class="name">huixingshao</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2015-06-19 15:09:17</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：2455</span>
+			</p>
+		</div>
+	</div>
+								<div class="recommend-item-box recommend-ad-box" id="ad1"></div>
+				<script>
+				  var width = $("div.recommend-box").outerWidth() - 48;
+					NEWS_FEED({
+						w: width,
+						h : 90,
+						showid : 'GNKXx7',
+						placeholderId: "ad1",
+						inject : 'define',
+						define : {
+							imagePosition : 'right',
+							imageBorderRadius : 0,
+							imageWidth: 120,
+							imageHeight: 90,
+							imageFill : 'clip',
+							displayImage : true,
+							displayTitle : true,
+							titleFontSize: 20,
+							titleFontColor: '#333',
+							titleFontFamily : 'Microsoft Yahei',
+							titleFontWeight: 'bold',
+							titlePaddingTop : 0,
+							titlePaddingRight : 0,
+							titlePaddingBottom : 10,
+							titlePaddingLeft : 0,
+							displayDesc : true,
+							descFontSize: 14,
+							descFontColor: '#6b6b6b',
+							descFontFamily : 'Microsoft Yahei',
+							paddingTop : 0,
+							paddingRight : 0,
+							paddingBottom : 0,
+							paddingLeft : 0,
+							backgroundColor: '#fff',
+							hoverColor: '#ca0c16'
+						}
+					})
+				</script>
+
+			
+				<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13298397" target="_blank" strategy="BlogCommendFromGuangxin_2">
+				<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 4：核心类 （CMainFrame）（3）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13298397" target="_blank" >
+				此前已经写了2篇文章介绍<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> （mpc-<em>hc</em>）源代码中的核心类 CMainFrame：
+<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 2...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-29 00:34:53</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：5850</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13297589" target="_blank" strategy="BlogCommendFromGuangxin_3">
+				<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 6：<em>Media</em>Info<em>选项卡</em> （CPPageFile<em>Media</em>Info）			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13297589" target="_blank" >
+				前几篇文章分析了<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em>（mpc-<em>hc</em>）的核心类（CMainFrame）：
+<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 2：核心类 （CM...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-30 00:42:45</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：6072</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13280659" target="_blank" strategy="BlogCommendFromGuangxin_4">
+				<em>Media</em> <em>Player</em> <em>Classic</em> - <em>HC</em> <em>源代码分析</em> 1：整体结构			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/leixiaohua1020/article/details/13280659" target="_blank" >
+				<em>Media</em> <em>Player</em> <em>Classic</em> - Home Cinema (mpc-<em>hc</em>)播放器一个经典的影音播放器，可播放CD、VCD、DVD、及MP3、MP4、AVI、AAC等多种影音格式。与此同时，...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/leixiaohua1020" title="leixiaohua1020" target="_blank">
+					<img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" alt="leixiaohua1020" class="avatar-pic">
+					<span class="name">leixiaohua1020</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2013-10-28 00:26:06</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：17558</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box csdn-tracking-statistics" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+		<h4 class="text-truncate">
+			<a href="https://blog.csdn.net/mathcompfrac/article/details/53869011" target="_blank" strategy="BlogCommendFromQuerySearch_5">
+				<em>Media</em>&amp;nbsp;<em>Player</em>&amp;nbsp;<em>Classic</em>播放文件时没…			</a>
+		</h4>
+		<p class="content">
+			<a href="https://blog.csdn.net/mathcompfrac/article/details/53869011" target="_blank" >
+				最近碰到个问题,用<em>Media</em> <em>Player</em>
+<em>Classic</em>播放文件时没有声音,会弹出如下对话框:
+<em>Media</em> <em>Player</em> <em>Classic</em>
+无法解析媒体中的某些流,您的系统可能没有安装回放所需的解码器...			</a>
+		</p>
+		<div class="info-box d-flex align-content-center">
+			<p>
+				<a class="avatar" src="https://blog.csdn.net/mathcompfrac" title="mathcompfrac" target="_blank">
+					<img src="https://avatar.csdn.net/3/C/C/3_mathcompfrac.jpg" alt="mathcompfrac" class="avatar-pic">
+					<span class="name">mathcompfrac</span>
+				</a>
+			</p>
+			<p>
+				<span class="date">2016-12-25 12:19:32</span>
+			</p>
+			<p>
+				<span class="read-num">阅读数：290</span>
+			</p>
+		</div>
+	</div>
+					<div class="recommend-item-box recommend-ad-box" id="a_d_feed_0"></div>
+			<script>
+				var width = $("div.recommend-box").outerWidth() - 48;
+				NEWS_FEED({
+					w: width,
+					h: 90,
+					showid: 'Afihld',
+					placeholderId: 'a_d_feed_0',
+					inject: 'define',
+					define: {
+						imagePosition: 'right',
+						imageBorderRadius: 0,
+						imageWidth: 120,
+						imageHeight: 90,
+						imageFill: 'clip',
+						displayImage: true,
+						displayTitle: true,
+						titleFontSize: 20,
+						titleFontColor: '#333',
+						titleFontFamily: 'Microsoft Yahei',
+						titleFontWeight: 'bold',
+						titlePaddingTop: 0,
+						titlePaddingRight: 0,
+						titlePaddingBottom: 10,
+						titlePaddingLeft: 0,
+						displayDesc: true,
+						descFontSize: 14,
+						descFontColor: '#6b6b6b',
+						descFontFamily: 'Microsoft Yahei',
+						paddingTop: 0,
+						paddingRight: 0,
+						paddingBottom: 0,
+						paddingLeft: 0,
+						backgroundColor: '#fff',
+						hoverColor: '#ca0c16'
+					}
+				})
+			</script>
+				<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/advmzxp/2250965" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+						<em>Media</em> <em>Player</em> <em>Classic</em> 原版加汉化版 20100214					</a>
+				</h4>
+				<p>
+					<span class="data">2010年04月17日 </span>
+					<span class="size">3.23MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/advmzxp/2250965" target="_blank" strategy="BlogCommendFromQuerySearch_6">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/gbtv123/5787323" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+						MPC调节亮度插件					</a>
+				</h4>
+				<p>
+					<span class="data">2013年07月20日 </span>
+					<span class="size">269KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/gbtv123/5787323" target="_blank" strategy="BlogCommendFromQuerySearch_7">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/lwb996140066666666/870883" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+						VC++ 暴风影音(<em>Media</em> <em>Player</em> <em>Classic</em>)源码					</a>
+				</h4>
+				<p>
+					<span class="data">2008年12月14日 </span>
+					<span class="size">739KB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/lwb996140066666666/870883" target="_blank" strategy="BlogCommendFromQuerySearch_8">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/rar.svg" alt="">
+				</a>
+			</div>
+		</div>
+						<div class="recommend-item-box recommend-download-box csdn-tracking-statistics clearfix" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+			<div class="content float-left">
+				<h4 class="text-truncate">
+					<a href="https://download.csdn.net/download/leixiaohua1020/6375141" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+						<em>Media</em> <em>Player</em> <em>Classic</em> - Home Cinema （mpc-<em>hc</em>）源代码					</a>
+				</h4>
+				<p>
+					<span class="data">2013年10月09日 </span>
+					<span class="size">14.42MB</span>
+					<span class="type">下载</span>
+				</p>
+			</div>
+			<div class="img-box float-right">
+				<a href="https://download.csdn.net/download/leixiaohua1020/6375141" target="_blank" strategy="BlogCommendFromQuerySearch_9">
+					<img src="http://csdnimg.cn/release/download/old_static/images/minetype/zip.svg" alt="">
+				</a>
+			</div>
+		</div>
+			            <!-- 第四范式SDK -->
+<script src="https://nbrecsys.4paradigm.com/resource/js/sdk-csdn-smallflow@js" async defer></script>
+            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    <div style="border-bottom: dashed 1px #666;"><span style="font-size: 0.8em; font-weight: bold;">此PDF由<a style="color:#0000ff" href="http://www.github.com/spygg">spygg</a>生成,请尊重原作者版权!!!<br/>我的邮箱:liushidc@163.com</span></div> </main>
+    <aside style="display: none;">
+		    <div id="asideProfile" class="aside-box">
+    <h3 class="aside-title">个人资料</h3>
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/leixiaohua1020">
+                <img src="https://avatar.csdn.net/A/7/6/3_leixiaohua1020.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/leixiaohua1020" target="_blank" class="text-truncate" id="uid">leixiaohua1020</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                                <a class="btn btn-sm btn-red-hollow" href="https://passport.csdn.net/account/login?from=https://blog.csdn.net/leixiaohua1020/article/details/13297621" target="_self">关注</a>
+                            </span>
+                    </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="373">
+                        <dt><a href="https://blog.csdn.net/leixiaohua1020?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/leixiaohua1020?t=1"><span class="count">373</span></a></dd>
+                    </dl>
+        <dl class="text-center" title="14088">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">1万+</span></dd>
+        </dl>
+        <dl class="text-center" title="460">
+            <dt>喜欢</dt>
+            <dd><span class="count">460</span></dd>
+        </dl>
+        <dl class="text-center" title="7317">
+            <dt>评论</dt>
+            <dd><span class="count">7317</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="9级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-9"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="10421409">
+                1042万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="62878">
+                6万+            </dd>
+        </dl>
+        <dl title="49">
+            <dt>排名：</dt>
+            <dd>49</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+                <a class="icon-badge" title="专栏达人">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-columns"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item1">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-columns"></use>
+                        </svg>
+                        <p>专栏达人</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！
+                    </div>
+                </div>
+            </div> 
+        </a>  
+                        <a class="icon-badge" title="持之以恒">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-lasting"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item2">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-lasting"></use>
+                        </svg>
+                        <p>持之以恒</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！
+                    </div>
+                </div>
+            </div>
+        </a>
+                                <a class="icon-badge" title="博客之星">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#csdnc-m-blogstar-l"></use>
+            </svg>
+            <div class="icon-arrow"></div>
+            <div class="grade-detail-box item4">
+                <div class="pos-box">
+                    <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                        <svg class="icon" aria-hidden="true">
+                            <use xlink:href="#csdnc-m-blogstar-l"></use>
+                        </svg>
+                        <p>博客之星</p>
+                    </div>
+                    <div class="right-box d-flex justify-content-center align-items-center">
+                        授予通过"CSDN博客之星评选"中脱颖而出的十大博客之星称号的用户。
+                    </div>
+                </div>
+            </div>
+        </a>   
+            </div>
+    </div>		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+        <!-- 投放代码 -->
+        <script type="text/javascript" src="//cee1.iteye.com/lgyyovfyh@js"></script>
+    </div>
+</div>
+		    <!--自定义模块-->
+<div id="asideCustom26787557" class="aside-box custom-box">
+    <h3 class="aside-title">关于我</h3>
+    <div class="aside-content clearfix">
+        姓名：雷霄骅<br>
+网名：leixiaohua1020<br>
+本科：<br>
+中国传媒大学-广播电视工程<br>
+硕士：<br>
+中国传媒大学-数字电视技术<br>
+博士：<br>
+中国传媒大学-数字视频技术<br>
+Email：<br>
+leixiaohua1020@126.com<br>
+QQ：<br>
+494085803<br>
+<br>
+[注1：QQ消息较多，难以一一回复，见谅]<br>
+[注2：CSDN私信功能使用很少，有问题可以直接在博客评论处留言]<br>
+<br>
+奖项：<br>
+<a href="http://vote.blog.csdn.net/Blogstar2014/List">2014年度 - CSDN博客之星</a><br>
+<a href="https://mvp.microsoft.com/en-us/mvp/Xiaohua%20Lei-5001392">2015年度 - 微软MVP</a><br>
+<a href="http://bss.csdn.net/m/topic/community_star/index">2015年度 - CSDN博客之星</a><br>
+简介：<br>
+主要从事与广播电视有关的视音频技术的研究。包括视音频质量评价，视音频编解码，流媒体，媒资检索等。
+<br>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/51187668" target="_blank">[投稿] Speex回声消除原理深度解析</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789619" target="_blank">[投稿]房间声学原理与Schroeder混响算法实现</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50789503" target="_blank">[投稿]一个频域语音降噪算法实现及改进方法</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50618190" target="_blank">最简单的基于FFmpeg的AVfilter的例子-纯净版</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/leixiaohua1020/article/details/50535230" target="_blank">视音频数据处理入门：UDP-RTP协议解析</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/videoquality.html">
+                            <img src="https://img-blog.csdn.net/20151123175555036?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/videoquality.html">视频质量评价</a></p>
+                        <div class="data">阅读量：<span>434203</span><span class="count">41 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/osmedia.html">
+                            <img src="https://img-blog.csdn.net/20151123175559974?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/osmedia.html">开源多媒体项目源代码分析</a></p>
+                        <div class="data">阅读量：<span>1158961</span><span class="count">91 篇</span></div>
+                    </div>
+                </li>
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/column/details/ffmpeg-devel.html">
+                            <img src="https://img-blog.csdn.net/20151123175857395?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/column/details/ffmpeg-devel.html">FFmpeg</a></p>
+                        <div class="data">阅读量：<span>4852475</span><span class="count">135 篇</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box flexible-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/04">
+                    2016年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/03">
+                    2016年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/02">
+                    2016年2月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2016/01">
+                    2016年1月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/12">
+                    2015年12月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/11">
+                    2015年11月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/08">
+                    2015年8月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/07">
+                    2015年7月                    <span class="count float-right">17篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/06">
+                    2015年6月                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/05">
+                    2015年5月                    <span class="count float-right">12篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/04">
+                    2015年4月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/03">
+                    2015年3月                    <span class="count float-right">25篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/02">
+                    2015年2月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2015/01">
+                    2015年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/12">
+                    2014年12月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/11">
+                    2014年11月                    <span class="count float-right">9篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/10">
+                    2014年10月                    <span class="count float-right">20篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/09">
+                    2014年9月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/08">
+                    2014年8月                    <span class="count float-right">7篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/07">
+                    2014年7月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/06">
+                    2014年6月                    <span class="count float-right">8篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/05">
+                    2014年5月                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/04">
+                    2014年4月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/02">
+                    2014年2月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2014/01">
+                    2014年1月                    <span class="count float-right">14篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/12">
+                    2013年12月                    <span class="count float-right">21篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/11">
+                    2013年11月                    <span class="count float-right">71篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/10">
+                    2013年10月                    <span class="count float-right">161篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/09">
+                    2013年9月                    <span class="count float-right">101篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/08">
+                    2013年8月                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/06">
+                    2013年6月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/leixiaohua1020/article/month/2013/03">
+                    2013年3月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+        <p class="text-center">
+        <a class="btn btn-link-blue flexible-btn" data-fbox="aside-archive">展开</a>
+    </p>
+    </div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tanhuifang520" class="user-name" target="_blank">tanhuifang520</a>：含着敬畏的心情又看了遍这个文章                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/42105049#comments">最简单的基于librtmp的示例：...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_32245927" class="user-name" target="_blank">qq_32245927</a>：[reply]hjl19901012[/reply]
+你们的是哪里有问题呢                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/46754977#comments">视频编码器评测系统：VideoCo...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/tqs_1220" class="user-name" target="_blank">tqs_1220</a>：天妒英才                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/38284961#comments">FFmpeg获取DirectSho...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/a137748099" class="user-name" target="_blank">a137748099</a>：[reply]liangqingzhi[/reply]
+大佬，有的电脑使用regsvr32注册不成...                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/leixiaohua1020/article/details/15811977#comments">[总结]FFMPEG视音频编解码零...</a>
+                <p class="comment">
+                    <a href="https://my.csdn.net/qq_17276615" class="user-name" target="_blank">qq_17276615</a>：每次视频编解码都会搜到你的文章，感谢您给我们这些菜鸡一些指引。谢谢！                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+						<script type="text/javascript" src="//cee1.iteye.com/avneunkwb@js"></script>
+					</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3@js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="pulllog-box" style="display: none;">
+	<div class="pulllog clearfix">
+		<span class="text float-left">加入CSDN，享受更精准的内容推荐，与500万程序员共同成长！</span>
+		<div class="pulllog-btn float-right clearfix">
+            <button class="pulllog-login float-left csdn-tracking-statistics tracking-click" data-mod="popu_557">
+                登录
+            </button>
+            <div class="pulllog-sigin float-left csdn-tracking-statistics tracking-click" data-mod="popu_558">
+                <a href="https://passport.csdn.net/account/mobileregister" target="_blank">注册</a>
+            </div>
+            <button class="btn-close">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#csdnc-times"></use>
+                </svg>
+            </button>
+		</div>
+	</div>
+</div>
+<div id="loginWrap" style="display:none"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li>
+			<button class="btn-like " title="点赞">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<p>3</p>
+			</button>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc" title="目录">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg><br>目录
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark" title="收藏">
+				<svg class="icon active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg><svg class="icon no-active" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg><br>收藏
+			</button>
+		</li>
+		<li>
+			<a class="btn-comments" title="评论" href="#commentBox">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg><br>评论
+			</a>
+		</li>
+				<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_weixin" data-cmd="weixin" title="微信分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-wechat"></use>
+				</svg><br>微信
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_tsina" data-cmd="tsina" title="微博分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-weibo"></use>
+				</svg><br>微博
+			</a>
+		</li>
+		<li class="bdsharebuttonbox">
+			<a class="btn-comments bds_qzone" data-cmd="qzone" title="QQ分享">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#csdnc-qq"></use>
+				</svg><br>QQ
+			</a>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share@js?v=89860594'];</script>
+<script>
+    var recommendCount = 10;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = "Media Player Classic - HC 源代码分析 7：详细信息选项卡（CPPageFileInfoDetails）";
+    var ChannelId = 16;
+    var articleId = "13297621";
+    var commentscount = 0;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/leixiaohua1020/article/details/13297621";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "";
+    var needInsertBaidu = true;
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.3/js/sandalstrap.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging@js"></script>
+
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,"Media Player Classic - HC 源代码分析 7：详细信息选项卡（CPPageFileInfoDetails）");
+        }
+    })
+</script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-bd54b21308.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-effe72036e.min@js"></script>
+<script src="https://csdnimg.cn/release/phoenix/themes/skin3-template/skin3-template-46c7bd3d86.min@js"></script>
+</body>
+<div class="box-box-default" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/mhzzjepzz@js"></script>
+</div>
+<div class="box-box-large" style="display:none;">
+    <a class="btn-remove">
+        关闭
+    </a>
+    <script type="text/javascript" src="//cee1.iteye.com/idvveasfs@js"></script>
+</div>
+</html>

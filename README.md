@@ -1,6 +1,7 @@
 # ffplayer-learn
 
 >这是一个[ffmpeg](https://ffmpeg.org/) 学习的课题十分感谢和怀念 *雷霄骅* 大神,他无私的奉献精神,值得每个人学习!!他的的[csdn](https://blog.csdn.net/leixiaohua1020/) ,[github](https://github.com/leixiaohua1020/) 
+用python写了个爬虫,爬取所有雷神的csdn博客,后续会继续上传pdf版本
 
 
 ***

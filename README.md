@@ -16,6 +16,9 @@
 2. video2YUV (从视频到yuv文件) √
 3. yuvplayer(YUV文件播放器) √
 4. simplevideoplayer(视频播放器√
+番外: 
+	a.添加雷神的博客pdf资源
+	b.添加雷神的代码资源
 5. simpleaduioplayer(音频播放器)
 6. player(播放器,同步音频和视频)
 

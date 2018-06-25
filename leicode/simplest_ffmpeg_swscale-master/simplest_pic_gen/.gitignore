@@ -1,0 +1,11 @@
+Debug/
+Release/
+
+*.yuv
+*.rgb
+
+*.exe
+*.obj
+*.out
+*.exe.manifest
+*.out.dSYM/

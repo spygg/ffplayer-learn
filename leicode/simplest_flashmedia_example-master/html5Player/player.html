@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+  
+    <!-- <script src="html5media.min.js"></script> -->
+
+    <script type="text/javascript">
+        
+        function fallback(video)
+{
+  var img = video.querySelector('img');
+  if (img)
+    video.parentNode.replaceChild(img, video);
+}
+    </script>
+</head>
+
+<body>
+<video autoplay="true" controls="true">
+  <source src="http://192.168.1.104:8000/cat.mp4"  type="video/mp4" />
+  <source src="image.webm" onerror="fallback(parentNode)">
+  <img src="image.gif">
+</video>
+
+
+
+<!-- <video height="250" width="250" controls>
+    <source src="http://192.168.1.104:8000/animate.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+<video height="250" width="250" controls>
+    <source src="http://192.168.1.104:8000/cat_1.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+<video height="250" width="250" controls>
+    <source src="http://192.168.1.104:8000/cat_2.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+<video height="250" width="250" controls>
+    <source src="http://192.168.1.104:8000/cat_3.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+<video muted height="250" width="250" controls>
+    <source src="http://192.168.1.104:8000/output.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+<video muted></video>
+<video src="http://192.168.1.104:8000/output.mp4"  type="video/mp4" controls autobuffer>your browser does not support the video tag</video>     -->
+
+<!--     <video src="http://192.168.1.104:8000/cat_3.mp4" type="video/mp4" controls="true" autobuffer>
+        
+    </video>   
+    <video src="http://192.168.1.104:8000/small.mp4"  type="video/mp4" controls autobuffer>your browser does not support the video tag</video>    
+    <video src="http://192.168.1.104:8000/test.ogv"  type="video/mp4" controls autobuffer>your browser does not support the video tag</video>    
+    <video src="http://192.168.1.104:8000/sintel.mp4"  type="video/mp4" controls="controls"></video>
+    <video src="http://192.168.1.104:8000/animate.mp4"  type="video/mp4" controls autobuffer></video>    
+  -->
+</body>
+</html>

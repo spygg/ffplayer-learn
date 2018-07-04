@@ -2,10 +2,24 @@
 <html>
 <head>
 <title>HLS Video Player Html5</title>
+
+
+<link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+
 </head>
 <body>
-<video src="http://live.3gv.ifeng.com/live/CCTV13.m3u8">
+<video id=example-video width=960 height=540 class="video-js vjs-default-skin" controls>
+  <source
+     src="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
+     type="application/x-mpegURL">
 </video>
 
+
+<script src="video.js"></script>
+<script src="videojs.hls.min.js"></script>
+<script>
+    var player = videojs('example-video');
+    player.play();
+</script>
 </body>
 </html>
